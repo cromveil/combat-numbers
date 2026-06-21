@@ -1,0 +1,27 @@
+{
+	"rules": [
+		{ "when": {}, "then": { "skin": "combatnumbers:default", "animation": "combatnumbers:default", "scale": 1.0 } },
+
+		{ "when": { "tags": ["minecraft:is_projectile"] },        "then": { "skin": "combatnumbers:physical" } },
+		{ "when": { "tags": ["minecraft:is_player_attack"] },     "then": { "skin": "combatnumbers:physical" } },
+		{ "when": { "tags": ["minecraft:is_fall"] },              "then": { "skin": "combatnumbers:physical" } },
+		{ "when": { "tags": ["minecraft:witch_resistant_to"] },   "then": { "skin": "combatnumbers:magic" } },
+		{ "when": { "tags": ["minecraft:wither_immune_to"] },     "then": { "skin": "combatnumbers:wither" } },
+		{ "when": { "tags": ["minecraft:is_lightning"] },         "then": { "skin": "combatnumbers:lightning" } },
+		{ "when": { "tags": ["minecraft:is_drowning"] },          "then": { "skin": "combatnumbers:water" } },
+		{ "when": { "tags": ["minecraft:is_freezing"] },          "then": { "skin": "combatnumbers:ice" } },
+		{ "when": { "tags": ["minecraft:is_explosion"] },         "then": { "skin": "combatnumbers:fire" } },
+		{ "when": { "tags": ["minecraft:is_fire"] },              "then": { "skin": "combatnumbers:fire" } },
+
+		{ "when": { "type": "minecraft:dragon_breath" },          "then": { "skin": "combatnumbers:magic" } },
+		{ "when": { "type": "minecraft:ender_pearl" },            "then": { "skin": "combatnumbers:magic" } },
+		{ "when": { "type": "minecraft:lightning_bolt" },         "then": { "skin": "combatnumbers:lightning" } },
+		{ "when": { "type": "minecraft:dry_out" },                "then": { "skin": "combatnumbers:physical" } },
+		{ "when": { "type": "minecraft:wither_skull" },           "then": { "skin": "combatnumbers:wither" } },
+		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:dot", "scale": 0.6 } },
+		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:dot", "scale": 0.6 } },
+		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:dot", "scale": 0.6 } },
+
+		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:crit", "scale": 1.4 } }
+	]
+}
