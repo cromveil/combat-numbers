@@ -39,9 +39,7 @@ public class CombatNumbers implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private MinecraftServer server;
-
-	private final RuleEngine ruleEngine = new RuleEngine();
-
+	
 	@Override
 	public void onInitialize() {
 		PayloadTypeRegistry.clientboundPlay()
@@ -63,6 +61,7 @@ public class CombatNumbers implements ModInitializer {
 		// ────────────────────────────────────────────────────────────────────
 		var animationRegistry = new AnimationRegistry();
 		var skinDefinitions = new SkinDefinitionRegistry();
+		var ruleEngine = new RuleEngine();
 		var ruleLoader = new RuleLoader(ruleEngine);
 		var filterRegistry = new FilterRegistry();
 		var filterLoader = new FilterLoader(filterRegistry);
@@ -87,8 +86,8 @@ public class CombatNumbers implements ModInitializer {
 			if (!filterRegistry.passes(event))
 				return;
 			// styling
-			Style info = ruleEngine.resolve(event);
-			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, info));
+			Style style = ruleEngine.resolve(event);
+			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, style));
 		});
 
 		// Send display events to clients

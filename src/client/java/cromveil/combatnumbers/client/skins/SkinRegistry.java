@@ -11,27 +11,29 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 public class SkinRegistry {
-	private final Map<Identifier, Skin> REGISTRY = new LinkedHashMap<>();
-	private final List<Identifier> ORDERED_IDS = new ArrayList<>();
+	private final Map<Identifier, Skin> registry = new LinkedHashMap<>();
+	private final List<Identifier> orderedIds = new ArrayList<>();
 
 	public void register(Identifier id, Skin skin) {
-		if (!REGISTRY.containsKey(id)) {
-			ORDERED_IDS.add(id);
+		if (!registry.containsKey(id)) {
+			orderedIds.add(id);
 		}
-		REGISTRY.put(id, skin);
+		registry.put(id, skin);
 	}
 
+	/** Accepts invalid indices, will just return null. */
 	public Skin getByIndex(int index) {
-		return REGISTRY.get(ORDERED_IDS.get(index));
+		if (index < 0 || index >= orderedIds.size()) return null;
+		return registry.get(orderedIds.get(index));
 	}
 
 	public void clear() {
-		REGISTRY.clear();
-		ORDERED_IDS.clear();
+		registry.clear();
+		orderedIds.clear();
 	}
 
 	public int size() {
-		return ORDERED_IDS.size();
+		return orderedIds.size();
 	}
 
 	public void reload(Map<Identifier, SkinDefinition> defs, ResourceManager manager) {
@@ -46,7 +48,7 @@ public class SkinRegistry {
 	}
 
 	public void reloadFromServer(Map<Identifier, SkinDefinition> serverDefs, ResourceManager manager) {
-		var existing = new LinkedHashMap<>(REGISTRY);
+		var existing = new LinkedHashMap<>(registry);
 		clear();
 		for (var entry : serverDefs.entrySet()) {
 			Identifier id = entry.getKey();

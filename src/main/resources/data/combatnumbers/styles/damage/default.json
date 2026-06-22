@@ -18,10 +18,10 @@
 		{ "when": { "type": "minecraft:lightning_bolt" },         "then": { "skin": "combatnumbers:lightning" } },
 		{ "when": { "type": "minecraft:dry_out" },                "then": { "skin": "combatnumbers:physical" } },
 		{ "when": { "type": "minecraft:wither_skull" },           "then": { "skin": "combatnumbers:wither" } },
-		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:dot", "scale": 0.6 } },
-		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:dot", "scale": 0.6 } },
-		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:dot", "scale": 0.6 } },
+		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:dot", "scale": 0.7 } },
+		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:dot", "scale": 0.7 } },
+		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:dot", "scale": 0.7 } },
 
-		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:crit", "scale": 1.4 } }
+		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:crit", "scale": 1.25 } }
 	]
 }

@@ -31,7 +31,9 @@ public class AnimationRegistry extends SimpleJsonResourceReloadListener<Animatio
 		registry.put(id, anim);
 	}
 
+	/** Accepts invalid indices, will just return null. */
 	public AnimationDefinition getByIndex(int index) {
+		if (index < 0 || index >= orderedIds.size()) return null;
 		return registry.get(orderedIds.get(index));
 	}
 

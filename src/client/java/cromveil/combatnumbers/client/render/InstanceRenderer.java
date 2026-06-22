@@ -13,7 +13,7 @@ public class InstanceRenderer {
 
 	private InstanceRenderer() {}
 
-	private static final float BASE_SCALE_FACTOR = 0.020f;
+	private static final float BASE_SCALE_FACTOR = 0.018f;
 	private static final float MIN_RENDER_DISTANCE = 0.5f;
 
 	public static void renderAll(
