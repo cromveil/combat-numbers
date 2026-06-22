@@ -1,0 +1,13 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:heal",
+    "columns": 10,
+    "cell_width": 9,
+    "cell_height": 13,
+    "char_order": "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ.,_-+%/�!\"'#&()�?$:;<>��=\\^[]`",
+    "letter_spacing": -1.0,
+    "scale": 0.9,
+    "advances": { "1": 0.8, "�": 0 }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:magic",
+    "columns": 10,
+    "cell_width": 8,
+    "cell_height": 8,
+    "char_order": "0123456789",
+    "letter_spacing": -1.0,
+    "advances": { "1": 0.625 }
+  }
+}
