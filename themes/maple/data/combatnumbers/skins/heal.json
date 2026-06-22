@@ -1,0 +1,13 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:heal_92_42x49",
+    "columns": 10,
+    "cell_width": 42,
+    "cell_height": 49,
+    "char_order": "0123456789",
+    "letter_spacing": -12.0,
+    "scale": 0.25,
+    "advances": { "1": 0.76 }
+  }
+}
