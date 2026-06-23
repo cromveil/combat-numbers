@@ -1,10 +1,13 @@
 package cromveil.combatnumbers.client;
 
-import cromveil.combatnumbers.animations.AnimationDefinition;
-import cromveil.combatnumbers.animations.AnimationRegistry;
-import cromveil.combatnumbers.client.render.Instance;
-import cromveil.combatnumbers.client.render.InstanceManager;
-import cromveil.combatnumbers.client.render.InstanceRenderer;
+import cromveil.combatnumbers.animation.Timeline;
+import cromveil.combatnumbers.animation.registry.AnimationRegistry;
+import cromveil.combatnumbers.client.animation.AnimationCompiler;
+import cromveil.combatnumbers.client.animation.AnimationEvaluator;
+import cromveil.combatnumbers.client.animation.AnimationInstance;
+import cromveil.combatnumbers.client.render.FloatingText;
+import cromveil.combatnumbers.client.render.FloatingTextManager;
+import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.ValueFormatter;
 import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinRegistry;
@@ -34,19 +37,18 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CombatNumbersClient implements ClientModInitializer {
 	private static final Skin DEFAULT_SKIN = TextSkin.createDefault();
-	private static final AnimationDefinition DEFAULT_ANIMATION = AnimationDefinition.createDefault();
+
+	private AnimationCompiler animationCompiler;
 
 	@Override
 	public void onInitializeClient() {
+		this.animationCompiler = new AnimationCompiler();
 		var animationRegistry = new AnimationRegistry();
 		var skinRegistry = new SkinRegistry();
 
-		// Resource pack skins (WIP)
-		// ────────────────────────────────────────────────────────────────────
 		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
 				new SimpleJsonResourceReloadListener<SkinDefinition>(SkinDefinition.CODEC,
@@ -59,8 +61,6 @@ public class CombatNumbersClient implements ClientModInitializer {
 				});
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-			// Sync animation and skin datapacks from server
-			// ────────────────────────────────────────────────────────────────────
 			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE, (packet, context) -> {
 				context.client().execute(() -> {
 					animationRegistry.clear();
@@ -80,9 +80,6 @@ public class CombatNumbersClient implements ClientModInitializer {
 				});
 			});
 
-			// Listen for combat number packets from server
-			// ────────────────────────────────────────────────────────────────────
-			// Index 0 = null/default sentinel; real entries start at 1
 			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE,
 					(payload, context) -> {
 						context.client().execute(() -> {
@@ -101,11 +98,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 							var camera = mc.gameRenderer.mainCamera();
 							Vec3 camPos = camera.position();
 
-							final float SPREAD = 0.1f;
-							Vec3 worldPos = livingEntity.getEyePosition().add(
-									(ThreadLocalRandom.current().nextFloat() * 2 - 1) * SPREAD,
-									(ThreadLocalRandom.current().nextFloat() * 2 - 1) * SPREAD,
-									(ThreadLocalRandom.current().nextFloat() * 2 - 1) * SPREAD);
+							Vec3 worldPos = livingEntity.getEyePosition();
 
 							var clipCtx = new ClipContext(
 									camPos, worldPos,
@@ -125,56 +118,62 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 							var visual = skin.createVisual(formattedValue);
 
-							var anim = animationRegistry.getByIndex(payload.animationIndex());
-							if (anim == null) {
-								anim = DEFAULT_ANIMATION;
+							var timeline = animationRegistry.getByIndex(payload.animationIndex());
+							if (timeline == null) {
+								timeline = Timeline.DEFAULT;
 							}
 
 							double gameTime = level.getGameTime()
 									+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
+							AnimationEvaluator eval = animationCompiler.compile(
+									timeline, formattedValue.length(),
+									Double.doubleToRawLongBits(gameTime));
+							AnimationInstance anim = new AnimationInstance(eval);
+
 							float styleScale = payload.scale() == 0f ? 1.0f : payload.scale();
 							float combinedScale = styleScale * skin.getScale();
 
-							var instance = new Instance(
+							var text = new FloatingText(
 									worldPos, formattedValue,
 									visual, anim, combinedScale, gameTime);
-							InstanceManager.addInstance(instance);
+							FloatingTextManager.add(text);
 						});
 					});
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			InstanceManager.clear();
+			FloatingTextManager.clear();
+			animationCompiler.clearCache();
 			animationRegistry.clear();
 			skinRegistry.clear();
 			SpriteSheet.clearServerTextures();
 		});
 
-		// Client render pipeline for combat numbers
-		// ────────────────────────────────────────────────────────────────────
 		LevelRenderEvents.END_MAIN.register(context -> {
 			if (!ModConfig.getInstance().enabled) {
-				InstanceManager.clear();
+				FloatingTextManager.clear();
 				return;
 			}
 
 			Minecraft mc = Minecraft.getInstance();
 			var level = mc.level;
 			if (level == null) {
-				InstanceManager.clear();
+				FloatingTextManager.clear();
 				return;
 			}
 			double gameTime = level.getGameTime()
 					+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-			InstanceManager.cleanupExpired(gameTime);
+			for (FloatingText text : FloatingTextManager.getActive()) {
+				text.setGameTime(gameTime);
+			}
+			FloatingTextManager.cleanupExpired();
 
-			InstanceRenderer.renderAll(
+			FloatingTextRenderer.renderAll(
 					context.poseStack(),
 					context.submitNodeCollector(),
-					context.levelState().cameraRenderState,
-					gameTime);
+					context.levelState().cameraRenderState);
 		});
 	}
 }

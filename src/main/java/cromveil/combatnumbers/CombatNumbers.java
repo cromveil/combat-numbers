@@ -1,6 +1,8 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.animations.AnimationRegistry;
+import cromveil.combatnumbers.animation.Timeline;
+import cromveil.combatnumbers.animation.codec.TimelineCodec;
+import cromveil.combatnumbers.animation.registry.AnimationRegistry;
 import cromveil.combatnumbers.config.ModConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
@@ -22,14 +24,19 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.Identifier;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +46,7 @@ public class CombatNumbers implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private MinecraftServer server;
-	
+
 	@Override
 	public void onInitialize() {
 		PayloadTypeRegistry.clientboundPlay()
@@ -53,12 +60,9 @@ public class CombatNumbers implements ModInitializer {
 
 		ModConfig.getInstance();
 
-		// need server references
 		ServerLifecycleEvents.SERVER_STARTED.register(x -> this.server = x);
 		ServerLifecycleEvents.SERVER_STOPPING.register(x -> this.server = null);
 
-		// Load datapacks
-		// ────────────────────────────────────────────────────────────────────
 		var animationRegistry = new AnimationRegistry();
 		var skinDefinitions = new SkinDefinitionRegistry();
 		var ruleEngine = new RuleEngine();
@@ -68,7 +72,14 @@ public class CombatNumbers implements ModInitializer {
 
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
-				animationRegistry);
+				new SimpleJsonResourceReloadListener<>(TimelineCodec.CODEC,
+						FileToIdConverter.json("animations")) {
+					@Override
+					protected void apply(Map<Identifier, Timeline> entries, ResourceManager manager,
+							ProfilerFiller profiler) {
+						animationRegistry.reload(entries);
+					}
+				});
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "styles"),
 				ruleLoader);
@@ -79,19 +90,13 @@ public class CombatNumbers implements ModInitializer {
 				Identifier.fromNamespaceAndPath("combatnumbers", "filters"),
 				filterLoader);
 
-		// Run server pipeline on events
-		// ────────────────────────────────────────────────────────────────────
 		CombatNumbersEvents.COMBAT.register(event -> {
-			// filter pass
 			if (!filterRegistry.passes(event))
 				return;
-			// styling
 			Style style = ruleEngine.resolve(event);
 			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, style));
 		});
 
-		// Send display events to clients
-		// ────────────────────────────────────────────────────────────────────
 		CombatNumbersEvents.RENDER.register((instance) -> {
 			LivingEntity entity = instance.entity();
 			int skinIndex = skinDefinitions.indexOf(instance.skinId());
@@ -115,8 +120,6 @@ public class CombatNumbers implements ModInitializer {
 			}
 		});
 
-		// Sync animation and skin datapacks to clients
-		// ────────────────────────────────────────────────────────────────────
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, _server) -> {
 			var animPacket = new SyncAnimationDataPacket(animationRegistry.getAll());
 			ServerPlayNetworking.send(handler.getPlayer(), animPacket);

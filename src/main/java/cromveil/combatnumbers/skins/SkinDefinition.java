@@ -5,19 +5,18 @@ import net.minecraft.util.ExtraCodecs;
 
 public sealed interface SkinDefinition permits TextSkinDefinition, SpriteSkinDefinition {
 	String type();
+
 	float scale();
 
 	Codec<Integer> COLOR_CODEC = Codec.STRING.xmap(
-		str -> (int) Long.parseLong(str.replace("0x", "").replace("0X", "").replace("#", ""), 16),
-		val -> "0x" + Integer.toHexString(val)
-	);
+			str -> (int) Long.parseLong(str.replace("0x", "").replace("0X", "").replace("#", ""), 16),
+			val -> "0x" + Integer.toHexString(val));
 
 	Codec<SkinDefinition> CODEC = ExtraCodecs.<String, SkinDefinition>dispatchOptionalValue(
-		"type", "settings",
-		Codec.STRING,
-		SkinDefinition::type,
-		SkinDefinition::codecForType
-	).codec();
+			"type", "settings",
+			Codec.STRING,
+			SkinDefinition::type,
+			SkinDefinition::codecForType).codec();
 
 	private static Codec<? extends SkinDefinition> codecForType(String type) {
 		@SuppressWarnings("unchecked")
