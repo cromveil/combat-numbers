@@ -103,7 +103,7 @@ public class CombatNumbers implements ModInitializer {
 			int animIndex = animationRegistry.indexOf(instance.animationId());
 			RenderPacket packet = new RenderPacket(
 					entity.getId(), instance.value(),
-					skinIndex, animIndex, instance.scale());
+					skinIndex, animIndex);
 
 			ServerLevel level = (ServerLevel) entity.level();
 			double entityX = entity.getX();

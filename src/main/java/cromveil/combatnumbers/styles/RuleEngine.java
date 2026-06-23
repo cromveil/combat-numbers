@@ -24,9 +24,9 @@ public class RuleEngine {
 	public Style resolve(CombatEvent event) {
 		var state = kindStates.get(event.kind());
 		if (state == null)
-			return new Style(null, null, null);
+			return new Style(null, null);
 
-		Style info = new Style(null, null, null);
+		Style info = new Style(null, null);
 
 		var matching = state.rules().stream()
 			.filter(r -> r.when().matches(event))

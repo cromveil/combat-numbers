@@ -7,7 +7,7 @@ import net.minecraft.resources.Identifier;
 
 public record RenderPacket(
 		int entityId, float value,
-		int skinIndex, int animationIndex, float scale
+		int skinIndex, int animationIndex
 ) implements CustomPacketPayload {
 
 	public static final Type<RenderPacket> TYPE =
@@ -21,8 +21,7 @@ public record RenderPacket(
 			buf.readVarInt(),
 			buf.readFloat(),
 			buf.readVarInt(),
-			buf.readVarInt(),
-			buf.readFloat()
+			buf.readVarInt()
 		);
 	}
 
@@ -31,7 +30,6 @@ public record RenderPacket(
 		buf.writeFloat(value);
 		buf.writeVarInt(skinIndex);
 		buf.writeVarInt(animationIndex);
-		buf.writeFloat(scale);
 	}
 
 	@Override

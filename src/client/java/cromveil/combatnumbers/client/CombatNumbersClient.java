@@ -131,12 +131,9 @@ public class CombatNumbersClient implements ClientModInitializer {
 									Double.doubleToRawLongBits(gameTime));
 							AnimationInstance anim = new AnimationInstance(eval);
 
-							float styleScale = payload.scale() == 0f ? 1.0f : payload.scale();
-							float combinedScale = styleScale * skin.getScale();
-
-							var text = new FloatingText(
-									worldPos, formattedValue,
-									visual, anim, combinedScale, gameTime);
+						var text = new FloatingText(
+								worldPos, formattedValue,
+								visual, anim, skin.getScale(), gameTime);
 							FloatingTextManager.add(text);
 						});
 					});
