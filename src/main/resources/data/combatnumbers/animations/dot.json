@@ -3,8 +3,8 @@
     "start": 0,
     "duration": 0,
     "channels": {
-      "x": { "type": "random", "min": -0.4, "max": 0.4 },
-      "z": { "type": "random", "min": -0.4, "max": 0.4 }
+      "x": { "type": "random", "min": -0.2, "max": 0.2 },
+      "z": { "type": "random", "min": -0.2, "max": 0.2 }
     }
   },
   {
@@ -23,7 +23,7 @@
     "channels": {
       "scale": { "type": "keyframe", "values": [1, 0.9], "easing": "ease_out_circ" },
       "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
-      "y": { "type": "tween", "to": 0.2, "compose": "add", "easing": "ease_out_circ" }
+      "y": { "type": "tween", "to": 0.1, "compose": "add", "easing": "ease_out_circ" }
     }
   }
 ]

@@ -4,7 +4,9 @@
     "duration": 0,
     "channels": {
       "scale": { "type": "constant", "value": 0 },
-      "opacity": { "type": "constant", "value": 0 }
+      "opacity": { "type": "constant", "value": 0 },
+      "x": { "type": "random", "min": -0.4, "max": 0.4 },
+      "z": { "type": "random", "min": -0.4, "max": 0.4 }
     }
   },
   {
@@ -34,17 +36,9 @@
     "duration": 300,
     "label": "exit",
     "channels": {
-      "scale": {
-        "type": "keyframe",
-        "values": [1, 0.9],
-        "easing": "ease_out_circ"
-      },
-      "opacity": {
-        "type": "keyframe",
-        "values": [1, 0],
-        "easing": "ease_out_circ"
-      },
-      "y": { "type": "tween", "to": 0.2, "easing": "ease_out_circ" }
+      "scale": { "type": "keyframe", "values": [1, 0.9], "easing": "ease_out_circ" },
+      "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
+      "y": { "type": "tween", "to": 0.1, "easing": "ease_out_circ" }
     }
   }
 ]
