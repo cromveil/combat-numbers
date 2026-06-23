@@ -37,6 +37,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CombatNumbersClient implements ClientModInitializer {
 	private static final Skin DEFAULT_SKIN = TextSkin.createDefault();
@@ -126,9 +127,10 @@ public class CombatNumbersClient implements ClientModInitializer {
 							double gameTime = level.getGameTime()
 									+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-							AnimationEvaluator eval = animationCompiler.compile(
-									timeline, formattedValue.length(),
-									Double.doubleToRawLongBits(gameTime));
+						long seed = ThreadLocalRandom.current()
+								.nextLong();
+						AnimationEvaluator eval = animationCompiler.compile(
+								timeline, formattedValue.length(), seed);
 							AnimationInstance anim = new AnimationInstance(eval);
 
 						var text = new FloatingText(
@@ -141,7 +143,6 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			FloatingTextManager.clear();
-			animationCompiler.clearCache();
 			animationRegistry.clear();
 			skinRegistry.clear();
 			SpriteSheet.clearServerTextures();

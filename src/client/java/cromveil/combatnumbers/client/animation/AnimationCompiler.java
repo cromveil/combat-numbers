@@ -16,38 +16,13 @@ import cromveil.combatnumbers.client.animation.eval.EvalSpring;
 import cromveil.combatnumbers.client.animation.eval.EvalTween;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class AnimationCompiler {
 
-	private static final int CACHE_MAX = 64;
-
-	private record CacheKey(int timelineHash, int charCount, long seed) {
-	}
-
-	private final Map<CacheKey, AnimationEvaluator> cache = new LinkedHashMap<>(16, 0.75f, true) {
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<CacheKey, AnimationEvaluator> eldest) {
-			return size() > CACHE_MAX;
-		}
-	};
-
 	public AnimationEvaluator compile(Timeline timeline, int charCount, long seed) {
-		var key = new CacheKey(timeline.hashCode(), charCount, seed);
-		AnimationEvaluator cached = cache.get(key);
-		if (cached != null)
-			return cached;
-
-		AnimationEvaluator compiled = build(timeline, charCount, seed);
-		cache.put(key, compiled);
-		return compiled;
-	}
-
-	public void clearCache() {
-		cache.clear();
+		return build(timeline, charCount, seed);
 	}
 
 	private AnimationEvaluator build(Timeline timeline, int charCount, long seed) {
