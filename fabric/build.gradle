@@ -47,3 +47,13 @@ sourceSets.configureEach {
         }
     }
 }
+
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "test-${project.name}"
+		eula = true
+		// enableGameTests = true
+		// enableClientGameTests = true
+	}
+}
