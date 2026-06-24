@@ -1,4 +1,4 @@
-package com.example.examplemod.platform;
+package cromveil.combatnumbers.platform;
 
 import cromveil.combatnumbers.platform.services.IPlatformHelper;
 import net.neoforged.fml.ModList;
