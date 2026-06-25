@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.platform.Services;
 import net.minecraft.world.phys.Vec3;
 
 public final class FloatingTextRenderer {
@@ -11,13 +11,12 @@ public final class FloatingTextRenderer {
 	private static final float MIN_FADE_DISTANCE = 0.5f;
 
 	public static void renderAll(Strategy strategy) {
-		var config = ModConfig.getInstance();
-		float basePixelSize = config.basePixelSize;
-		float nearFadeDistance = config.nearFadeDistance;
-		float maxRenderDistance = config.maxRenderDistance;
-		float falloffStart = config.distanceFalloffStart;
-		float falloffEnd = config.distanceFalloffEnd;
-		float minScale = config.distanceMinScale;
+		float baseFontSize = Services.CONFIG.baseFontSize();
+		float nearFadeDistance = Services.CONFIG.nearFadeDistance();
+		float maxRenderDistance = Services.CONFIG.maxRenderDistance();
+		float falloffStart = Services.CONFIG.distanceFalloffStart();
+		float falloffEnd = Services.CONFIG.distanceFalloffEnd();
+		float minScale = Services.CONFIG.distanceMinScale();
 		float fontRef = BillboardMath.fontReferenceHeight();
 		Vec3 camPos = strategy.camPos();
 
@@ -55,8 +54,8 @@ public final class FloatingTextRenderer {
 			}
 
 			float animScale = text.getScaleMultiplier();
-			float scale = basePixelSize * text.scale * animScale;
-			float offsetScale = basePixelSize / fontRef;
+			float scale = baseFontSize * text.scale * animScale;
+			float offsetScale = baseFontSize / fontRef;
 			float rot = text.getRotation();
 			float offX = text.getOffsetX() * offsetScale;
 			float offY = text.getOffsetY() * offsetScale;

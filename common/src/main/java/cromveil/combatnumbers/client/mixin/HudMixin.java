@@ -2,8 +2,7 @@ package cromveil.combatnumbers.client.mixin;
 
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.HudStrategy;
-import cromveil.combatnumbers.client.render.RenderOption;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.platform.Services;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,8 +23,7 @@ public abstract class HudMixin {
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void combatnumbers$renderFloatingTextHud(
 			GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		var config = ModConfig.getInstance();
-		if (!config.enabled || !RenderOption.fromConfig(config.renderMode).isHud()) {
+		if (!Services.CONFIG.clientEnabled() || !Services.CONFIG.renderMode().isHud()) {
 			return;
 		}
 

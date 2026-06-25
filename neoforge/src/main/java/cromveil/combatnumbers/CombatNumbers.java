@@ -3,7 +3,7 @@ package cromveil.combatnumbers;
 import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.animation.registry.AnimationRegistry;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.config.NeoForgeServerConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
 import cromveil.combatnumbers.filters.FilterLoader;
@@ -15,6 +15,7 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinDefinitionRegistry;
 import cromveil.combatnumbers.skins.SpriteSkinDefinition;
+import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleLoader;
 import cromveil.combatnumbers.styles.Style;
@@ -28,7 +29,9 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -48,8 +51,8 @@ public class CombatNumbers {
 	private final RuleEngine ruleEngine = new RuleEngine();
 	private final FilterRegistry filterRegistry = new FilterRegistry();
 
-	public CombatNumbers(IEventBus modEventBus) {
-		ModConfig.getInstance();
+	public CombatNumbers(IEventBus modEventBus, ModContainer container) {
+		container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
 
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, e -> {
 			PayloadRegistrar registrar = e.registrar(Constants.MOD_ID);
@@ -127,7 +130,7 @@ public class CombatNumbers {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = ModConfig.getInstance().maxRenderDistance;
+			double maxDistSq = Services.CONFIG.serverMaxRenderDistance();
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

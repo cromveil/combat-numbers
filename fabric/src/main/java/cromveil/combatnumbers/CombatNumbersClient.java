@@ -14,12 +14,15 @@ import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinRegistry;
 import cromveil.combatnumbers.client.skins.SpriteSheet;
 import cromveil.combatnumbers.client.skins.TextSkin;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.config.FabricClientConfig;
+import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.skins.SkinDefinition;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -48,6 +51,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		this.animationCompiler = new AnimationCompiler();
+		AutoConfig.register(FabricClientConfig.class, GsonConfigSerializer::new);
 		var animationRegistry = new AnimationRegistry();
 		var skinRegistry = new SkinRegistry();
 
@@ -85,7 +89,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE,
 					(payload, context) -> {
 						context.client().execute(() -> {
-							if (!ModConfig.getInstance().enabled)
+							if (!Services.CONFIG.clientEnabled())
 								return;
 
 							Minecraft mc = context.client();
@@ -150,7 +154,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 		});
 
 		LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(context -> {
-			if (!ModConfig.getInstance().enabled) {
+			if (!Services.CONFIG.clientEnabled()) {
 				FloatingTextManager.clear();
 				return;
 			}
@@ -169,7 +173,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 			}
 			FloatingTextManager.cleanupExpired();
 
-			RenderOption option = RenderOption.fromConfig(ModConfig.getInstance().renderMode);
+			RenderOption option = Services.CONFIG.renderMode();
 			if (option.isHud()) {
 				return;
 			}

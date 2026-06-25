@@ -3,7 +3,8 @@ package cromveil.combatnumbers;
 import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.animation.registry.AnimationRegistry;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.config.FabricServerConfig;
+import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
 import cromveil.combatnumbers.filters.FilterLoader;
@@ -18,6 +19,8 @@ import cromveil.combatnumbers.skins.SpriteSkinDefinition;
 import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleLoader;
 import cromveil.combatnumbers.styles.Style;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -52,7 +55,7 @@ public class CombatNumbers implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay()
 				.register(SyncSpriteTexturePacket.TYPE, SyncSpriteTexturePacket.STREAM_CODEC);
 
-		ModConfig.getInstance();
+		AutoConfig.register(FabricServerConfig.class, GsonConfigSerializer::new);
 
 		ServerLifecycleEvents.SERVER_STARTED.register(x -> this.server = x);
 		ServerLifecycleEvents.SERVER_STOPPING.register(x -> this.server = null);
@@ -104,8 +107,7 @@ public class CombatNumbers implements ModInitializer {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = ModConfig
-					.getInstance().maxRenderDistance;
+			double maxDistSq = Services.CONFIG.serverMaxRenderDistance();
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

@@ -21,6 +21,9 @@
 		"client": [
 			"cromveil.combatnumbers.CombatNumbersClient"
 		],
+		"modmenu": [
+			"cromveil.combatnumbers.CombatNumbersModMenu"
+		],
 		"fabric-gametest": [
 			"cromveil.combatnumbers.gametest.CombatNumbersGameTest"
 		]
@@ -33,11 +36,12 @@
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",
+        "cloth-config": "*",
         "minecraft": "~${minecraft_version}",
         "java": ">=${java_version}"
     },
     "suggests": {
-        "another-mod": "*"
+        "modmenu": "*"
     }
 }
   

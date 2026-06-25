@@ -5,16 +5,6 @@ public enum RenderOption {
 	SCREEN,
 	HUD;
 
-	public static RenderOption fromConfig(String mode) {
-		if ("hud".equals(mode)) {
-			return HUD;
-		}
-		if ("screen".equals(mode)) {
-			return SCREEN;
-		}
-		return WORLD;
-	}
-
 	public boolean isHud() {
 		return this == HUD;
 	}

@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.config.ModConfig;
 import cromveil.combatnumbers.detector.HealTypeTracker;
 import cromveil.combatnumbers.events.CombatEvent;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
+import cromveil.combatnumbers.platform.Services;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
@@ -59,7 +59,7 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 
 	@Inject(method = "heal", at = @At("RETURN"))
 	private void onHealReturn(float amount, CallbackInfo ci) {
-		if (!ModConfig.getInstance().enabled)
+		if (!Services.CONFIG.serverEnabled())
 			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;

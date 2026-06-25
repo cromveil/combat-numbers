@@ -11,7 +11,8 @@ import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinRegistry;
 import cromveil.combatnumbers.client.skins.SpriteSheet;
 import cromveil.combatnumbers.client.skins.TextSkin;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.config.NeoForgeClientConfig;
+import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -29,9 +30,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -46,8 +51,11 @@ public class CombatNumbersClient {
 	private final AnimationRegistry animationRegistry = new AnimationRegistry();
 	private final SkinRegistry skinRegistry = new SkinRegistry();
 
-	public CombatNumbersClient(IEventBus modEventBus) {
+	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
 		this.animationCompiler = new AnimationCompiler();
+
+		container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
+		container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
 			e.register(SyncAnimationDataPacket.TYPE,
@@ -72,7 +80,7 @@ public class CombatNumbersClient {
 			e.register(RenderPacket.TYPE,
 					(payload, context) -> context.enqueueWork(() -> {
 						Minecraft mc = Minecraft.getInstance();
-						if (!ModConfig.getInstance().enabled)
+						if (!Services.CONFIG.clientEnabled())
 							return;
 
 						var level = mc.level;

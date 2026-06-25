@@ -1,0 +1,43 @@
+{
+  "text.autoconfig.combatnumbers-client.title": "Combat Numbers",
+
+  "text.autoconfig.combatnumbers-client.option.enabled": "Enabled",
+
+  "text.autoconfig.combatnumbers-client.option.renderMode": "Render Mode",
+  "text.autoconfig.combatnumbers-client.option.renderMode.tooltip": "Changes how combat numbers are rendered. HUD: Renders text on the GUI layer. Recommended option as it's pretty simple and reliable. SCREEN: Renders text directly in front of your camera. Known issue: may be obscured by water. WORLD: Renders text where the entity is standing on. Known issue: may be obscured by entities, particles, water.",
+  "text.autoconfig.combatnumbers-client.option.renderMode.@Tooltip[0]": "Changes how combat numbers are rendered.",
+  "text.autoconfig.combatnumbers-client.option.renderMode.@Tooltip[1]": "HUD: Renders text on the GUI layer. Recommended option as it's pretty simple and reliable.",
+  "text.autoconfig.combatnumbers-client.option.renderMode.@Tooltip[2]": "SCREEN: Renders text directly in front of your camera. Known issue: may be obscured by water.",
+  "text.autoconfig.combatnumbers-client.option.renderMode.@Tooltip[3]": "WORLD: Renders text where the entity is standing on. Known issue: may be obscured by entities, particles, water.",
+
+  "text.autoconfig.combatnumbers-client.option.baseFontSize": "Font Size",
+  "text.autoconfig.combatnumbers-client.option.baseFontSize.tooltip": "How large the text is. This is also affected by your GUI scale setting.",
+  "text.autoconfig.combatnumbers-client.option.baseFontSize.@Tooltip": "How large the text is. This is also affected by your GUI scale setting.",
+
+  "text.autoconfig.combatnumbers-client.option.nearFadeDistance": "Near Fade Distance",
+  "text.autoconfig.combatnumbers-client.option.nearFadeDistance.tooltip": "Text will begin fading out from this distance (in blocks) as you get nearer.",
+  "text.autoconfig.combatnumbers-client.option.nearFadeDistance.@Tooltip": "Text will begin fading out from this distance (in blocks) as you get nearer.",
+
+  "text.autoconfig.combatnumbers-client.option.maxRenderDistance": "Max Render Distance",
+  "text.autoconfig.combatnumbers-client.option.maxRenderDistance.tooltip": "Maximum distance (in blocks) at which the text is rendered. Note that the server side also has a max render distance, which may be lower than this value.",
+  "text.autoconfig.combatnumbers-client.option.maxRenderDistance.@Tooltip": "Maximum distance (in blocks) at which the text is rendered. Note that the server side also has a max render distance, which may be lower than this value.",
+
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffStart": "Distance Falloff Start",
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffStart.tooltip": "Distance (in blocks) at which text will begin to appear smaller in size.",
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffStart.@Tooltip": "Distance (in blocks) at which text will begin to appear smaller in size.",
+
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffEnd": "Distance Falloff End",
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffEnd.tooltip": "Distance (in blocks) at which the text reaches its minimum scale.",
+  "text.autoconfig.combatnumbers-client.option.distanceFalloffEnd.@Tooltip": "Distance (in blocks) at which the text reaches its minimum scale.",
+
+  "text.autoconfig.combatnumbers-client.option.distanceMinScale": "Distance Minimum Scale",
+  "text.autoconfig.combatnumbers-client.option.distanceMinScale.tooltip": "Minimum scale at max distance falloff.",
+  "text.autoconfig.combatnumbers-client.option.distanceMinScale.@Tooltip": "Minimum scale at max distance falloff.",
+
+  "text.autoconfig.combatnumbers-server.title": "Combat Numbers",
+
+  "text.autoconfig.combatnumbers-server.option.enabled": "Enabled",
+
+  "text.autoconfig.combatnumbers-server.option.maxRenderDistance": "Max Render Distance",
+  "text.autoconfig.combatnumbers-server.option.maxRenderDistance.tooltip": "Server broadcasts combat events to clients within this range (in blocks)."
+}

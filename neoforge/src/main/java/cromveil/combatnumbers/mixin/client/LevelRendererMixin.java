@@ -8,7 +8,7 @@ import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
-import cromveil.combatnumbers.config.ModConfig;
+import cromveil.combatnumbers.platform.Services;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -44,8 +44,7 @@ public abstract class LevelRendererMixin {
 			boolean shouldRenderSky,
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		var config = ModConfig.getInstance();
-		if (!config.enabled) {
+		if (!Services.CONFIG.clientEnabled()) {
 			FloatingTextManager.clear();
 			return;
 		}
@@ -62,7 +61,7 @@ public abstract class LevelRendererMixin {
 		}
 		FloatingTextManager.cleanupExpired();
 
-		RenderOption option = RenderOption.fromConfig(config.renderMode);
+		RenderOption option = Services.CONFIG.renderMode();
 		if (option.isHud()) {
 			return;
 		}

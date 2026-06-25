@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.config.ModConfig;
 import cromveil.combatnumbers.detector.CritTracker;
 import cromveil.combatnumbers.events.CombatEvent;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
+import cromveil.combatnumbers.platform.Services;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -67,7 +67,7 @@ public class LivingEntityDamageMixin implements CritTracker {
 			this.combatNumbers$critCount = 0;
 			return;
 		}
-		if (!ModConfig.getInstance().enabled)
+		if (!Services.CONFIG.serverEnabled())
 			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;
