@@ -7,8 +7,9 @@ import cromveil.combatnumbers.client.animation.AnimationEvaluator;
 import cromveil.combatnumbers.client.animation.AnimationInstance;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
+import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
-import cromveil.combatnumbers.client.render.ValueFormatter;
+import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinRegistry;
 import cromveil.combatnumbers.client.skins.SpriteSheet;
@@ -115,7 +116,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 								skin = DEFAULT_SKIN;
 							}
 
-							String formattedValue = ValueFormatter.formatValue(payload.value());
+							String formattedValue = String.valueOf(Math.round(payload.value()));
 
 							var visual = skin.createVisual(formattedValue);
 
@@ -127,15 +128,15 @@ public class CombatNumbersClient implements ClientModInitializer {
 							double gameTime = level.getGameTime()
 									+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-						long seed = ThreadLocalRandom.current()
-								.nextLong();
-						AnimationEvaluator eval = animationCompiler.compile(
-								timeline, formattedValue.length(), seed);
+							long seed = ThreadLocalRandom.current()
+									.nextLong();
+							AnimationEvaluator eval = animationCompiler.compile(
+									timeline, formattedValue.length(), seed);
 							AnimationInstance anim = new AnimationInstance(eval);
 
-						var text = new FloatingText(
-								worldPos, formattedValue,
-								visual, anim, skin.getScale(), gameTime);
+							var text = new FloatingText(
+									worldPos, formattedValue,
+									visual, anim, skin.getScale(), gameTime);
 							FloatingTextManager.add(text);
 						});
 					});
@@ -148,7 +149,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 			SpriteSheet.clearServerTextures();
 		});
 
-		LevelRenderEvents.END_MAIN.register(context -> {
+		LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(context -> {
 			if (!ModConfig.getInstance().enabled) {
 				FloatingTextManager.clear();
 				return;
@@ -168,10 +169,16 @@ public class CombatNumbersClient implements ClientModInitializer {
 			}
 			FloatingTextManager.cleanupExpired();
 
-			FloatingTextRenderer.renderAll(
+			RenderOption option = RenderOption.fromConfig(ModConfig.getInstance().renderMode);
+			if (option.isHud()) {
+				return;
+			}
+
+			FloatingTextRenderer.renderAll(BillboardStrategy.create(
+					option,
 					context.poseStack(),
 					context.submitNodeCollector(),
-					context.levelState().cameraRenderState);
+					context.levelState().cameraRenderState));
 		});
 	}
 }

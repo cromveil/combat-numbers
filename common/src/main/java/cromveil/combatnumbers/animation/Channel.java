@@ -8,7 +8,6 @@ public enum Channel {
 	SCALE(1f),
 	X(0f),
 	Y(0f),
-	Z(0f),
 	OPACITY(1f),
 	ROTATION(0f);
 

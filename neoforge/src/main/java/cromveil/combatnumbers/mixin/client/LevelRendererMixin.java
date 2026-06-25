@@ -3,9 +3,11 @@ package cromveil.combatnumbers.mixin.client;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
+import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
+import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.config.ModConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -21,22 +23,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// FIXME: probably needs to be moved to a custom render pipeline
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
 
 	@Shadow
 	private SubmitNodeStorage submitNodeStorage;
 
-	@Inject(
-		method = "render",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/LevelRenderer;submitFeatures(" +
-					"Lnet/minecraft/client/renderer/state/level/LevelRenderState;" +
-					"Lnet/minecraft/client/renderer/SubmitNodeCollector;Z)V"
-		)
-	)
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;submitFeatures("
+			+
+			"Lnet/minecraft/client/renderer/state/level/LevelRenderState;" +
+			"Lnet/minecraft/client/renderer/SubmitNodeCollector;Z)V"))
 	private void injectCombatNumbersRender(
 			GraphicsResourceAllocator resourceAllocator,
 			DeltaTracker deltaTracker,
@@ -48,7 +44,8 @@ public abstract class LevelRendererMixin {
 			boolean shouldRenderSky,
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		if (!ModConfig.getInstance().enabled) {
+		var config = ModConfig.getInstance();
+		if (!config.enabled) {
 			FloatingTextManager.clear();
 			return;
 		}
@@ -65,7 +62,13 @@ public abstract class LevelRendererMixin {
 		}
 		FloatingTextManager.cleanupExpired();
 
+		RenderOption option = RenderOption.fromConfig(config.renderMode);
+		if (option.isHud()) {
+			return;
+		}
+
 		PoseStack poseStack = new PoseStack();
-		FloatingTextRenderer.renderAll(poseStack, submitNodeStorage, cameraState);
+		FloatingTextRenderer.renderAll(
+				BillboardStrategy.create(option, poseStack, submitNodeStorage, cameraState));
 	}
 }

@@ -16,7 +16,7 @@
       "y": {
         "type": "keyframe",
         "times": [0, 0.25, 0.5, 0.75, 1],
-        "values": [0, 0.2, 0, 0.06, 0],
+        "values": [0, 20, 0, 6, 0],
         "easing": ["ease_out_circ", "ease_in_circ", "ease_out_circ", "ease_in_circ"]
       }
     }
@@ -25,9 +25,8 @@
     "start": 50,
     "duration": 600,
     "channels": {
-      "y": { "type": "tween", "to": { "type": "random", "min": -0.1, "max": 0.3 }, "compose": "add", "easing": "ease_out_sine" },
-      "x": { "type": "tween", "to": { "type": "random", "min": 0.25, "max": 0.5, "signed": true }, "compose": "add", "easing": "ease_out_sine" },
-      "z": { "type": "tween", "to": { "type": "random", "min": 0.25, "max": 0.5, "signed": true }, "compose": "add", "easing": "ease_out_sine" }
+      "y": { "type": "tween", "to": { "type": "random", "min": -8, "max": 12 }, "compose": "add", "easing": "ease_out_sine" },
+      "x": { "type": "tween", "to": { "type": "random", "min": 16, "max": 32, "signed": true }, "compose": "add", "easing": "ease_out_sine" }
     }
   },
   {
@@ -37,7 +36,7 @@
     "channels": {
       "scale": { "type": "keyframe", "values": [1, 0.9], "easing": "ease_out_circ" },
       "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
-      "y": { "type": "tween", "to": 0.1, "compose": "add", "easing": "ease_out_circ" }
+      "y": { "type": "tween", "to": 8, "compose": "add", "easing": "ease_out_circ" }
     }
   }
 ]

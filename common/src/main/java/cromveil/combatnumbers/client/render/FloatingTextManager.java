@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FloatingTextManager {
+public final class FloatingTextManager {
 
 	private static final int MAX_ACTIVE = 256;
 	private static final List<FloatingText> active = new ArrayList<>();

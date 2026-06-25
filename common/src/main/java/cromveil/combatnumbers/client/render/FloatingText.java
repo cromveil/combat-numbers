@@ -60,10 +60,6 @@ public class FloatingText {
 		animation.sample(charIdx, channelBuffer, elapsed);
 	}
 
-	public float getChannel(Channel ch) {
-		return channelBuffer.get(ch);
-	}
-
 	public float getAlpha() {
 		sampleChannels(0);
 		return Math.clamp(channelBuffer.get(Channel.OPACITY), 0f, 1f);
@@ -84,20 +80,24 @@ public class FloatingText {
 		return Math.clamp(channelBuffer.get(Channel.OPACITY), 0f, 1f);
 	}
 
-	public Vec3 getMovementOffset() {
+	public float getOffsetX() {
 		sampleChannels(0);
-		return new Vec3(
-				channelBuffer.get(Channel.X),
-				channelBuffer.get(Channel.Y),
-				channelBuffer.get(Channel.Z));
+		return channelBuffer.get(Channel.X);
 	}
 
-	public Vec3 getCharMovementOffset(int charIdx) {
+	public float getOffsetY() {
+		sampleChannels(0);
+		return channelBuffer.get(Channel.Y);
+	}
+
+	public float getCharOffsetX(int charIdx) {
 		sampleChannels(charIdx);
-		return new Vec3(
-				channelBuffer.get(Channel.X),
-				channelBuffer.get(Channel.Y),
-				channelBuffer.get(Channel.Z));
+		return channelBuffer.get(Channel.X);
+	}
+
+	public float getCharOffsetY(int charIdx) {
+		sampleChannels(charIdx);
+		return channelBuffer.get(Channel.Y);
 	}
 
 	public float getRotation() {
@@ -108,14 +108,6 @@ public class FloatingText {
 	public float getCharRotation(int charIdx) {
 		sampleChannels(charIdx);
 		return channelBuffer.get(Channel.ROTATION);
-	}
-
-	public Vec3 getRenderPos() {
-		return worldPos.add(getMovementOffset());
-	}
-
-	public Vec3 getCharRenderPos(int charIdx) {
-		return worldPos.add(getCharMovementOffset(charIdx));
 	}
 
 	public boolean isExpired() {

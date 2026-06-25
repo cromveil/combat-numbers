@@ -14,7 +14,8 @@ public class ModConfig {
 	private static ModConfig instance;
 
 	public boolean enabled = true;
-	public float baseSize = 1.0f;
+	public String renderMode = "hud";
+	public float basePixelSize = 8.0f;
 	public float nearFadeDistance = 1.5f;
 	public float maxRenderDistance = 32.0f;
 	public float distanceFalloffStart = 3.0f;
