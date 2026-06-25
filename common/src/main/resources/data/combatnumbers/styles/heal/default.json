@@ -1,5 +1,5 @@
 {
 	"rules": [
-		{ "when": {}, "then": { "skin": "combatnumbers:heal", "animation": "combatnumbers:default" } }
+		{ "when": {}, "then": { "skin": "combatnumbers:heal", "animation": "combatnumbers:gentle" } }
 	]
 }

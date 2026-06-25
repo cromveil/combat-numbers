@@ -1,9 +1,9 @@
 {
 	"rules": [
-		{ "when": {}, "then": { "skin": "combatnumbers:default", "animation": "combatnumbers:default" } },
+		{ "when": {}, "then": { "skin": "combatnumbers:physical", "animation": "combatnumbers:generic" } },
 
 		{ "when": { "tags": ["minecraft:is_projectile"] },        "then": { "skin": "combatnumbers:physical" } },
-		{ "when": { "tags": ["minecraft:is_player_attack"] },     "then": { "skin": "combatnumbers:physical" } },
+		{ "when": { "tags": ["minecraft:is_player_attack"] },     "then": { "skin": "combatnumbers:physical", "animation": "combatnumbers:boing" } },
 		{ "when": { "tags": ["minecraft:is_fall"] },              "then": { "skin": "combatnumbers:physical" } },
 		{ "when": { "tags": ["minecraft:witch_resistant_to"] },   "then": { "skin": "combatnumbers:magic" } },
 		{ "when": { "tags": ["minecraft:wither_immune_to"] },     "then": { "skin": "combatnumbers:wither" } },
@@ -18,10 +18,10 @@
 		{ "when": { "type": "minecraft:lightning_bolt" },         "then": { "skin": "combatnumbers:lightning" } },
 		{ "when": { "type": "minecraft:dry_out" },                "then": { "skin": "combatnumbers:physical" } },
 		{ "when": { "type": "minecraft:wither_skull" },           "then": { "skin": "combatnumbers:wither" } },
-		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:dot" } },
-		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:dot" } },
-		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:dot" } },
+		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:impact" } },
 
-		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:crit" } }
+		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:wave" } }
 	]
 }

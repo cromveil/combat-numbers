@@ -5,7 +5,8 @@
     "channels": {
       "scale": { "type": "constant", "value": 0 },
       "opacity": { "type": "constant", "value": 0 },
-      "x": { "type": "random", "min": -32, "max": 32 }
+      "y": { "type": "random", "min": -6, "max": 8 },
+      "x": { "type": "random", "min": 10, "max": 14, "signed": true }
     }
   },
   {
@@ -17,7 +18,7 @@
       "scale": {
         "type": "keyframe",
         "times": [0, 0.64, 1],
-        "values": [0, 1.6, 1.1],
+        "values": [0, 1.6, 1.2],
         "easing": ["ease_out_sine", "ease_in_out"]
       }
     }
@@ -31,13 +32,21 @@
     }
   },
   {
+    "start": 0,
+    "duration": 800,
+    "channels": {
+      "y": { "type": "tween", "to": 2, "compose": "multiply", "easing": "ease_out_circ" },
+      "x": { "type": "tween", "to": 2, "compose": "multiply", "easing": "ease_out_circ" }
+    }
+  },
+  {
     "start": 700,
     "duration": 300,
     "label": "exit",
     "channels": {
-      "scale": { "type": "keyframe", "values": [1.1, 1], "easing": "ease_out_circ" },
-      "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
-      "y": { "type": "tween", "to": 8, "easing": "ease_out_circ" }
+      "scale": { "type": "tween", "to": 1.1, "easing": "ease_out_circ" },
+      "opacity": { "type": "tween", "to": 0, "easing": "ease_out_circ" },
+      "y": { "type": "tween", "to": 8, "compose": "add", "easing": "ease_out_circ" }
     }
   }
 ]
