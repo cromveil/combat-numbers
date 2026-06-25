@@ -7,7 +7,6 @@ import cromveil.combatnumbers.client.animation.AnimationEvaluator;
 import cromveil.combatnumbers.client.animation.AnimationInstance;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
-import cromveil.combatnumbers.client.render.ValueFormatter;
 import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinRegistry;
 import cromveil.combatnumbers.client.skins.SpriteSheet;
@@ -103,7 +102,7 @@ public class CombatNumbersClient {
 							skin = DEFAULT_SKIN;
 						}
 
-						String formattedValue = ValueFormatter.formatValue(payload.value());
+						String formattedValue = String.valueOf(Math.round(payload.value()));
 
 						var visual = skin.createVisual(formattedValue);
 
