@@ -1,0 +1,7 @@
+{
+  "_comment": "Available themes should be listed here. Auto-discovery planned.",
+  "themes": [
+    { "id": "basic", "name": "Basic" },
+    { "id": "maple", "name": "Maple" }
+  ]
+}

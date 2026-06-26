@@ -18,10 +18,16 @@ public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
 	private static final FileToIdConverter LISTER = FileToIdConverter.json("styles");
 
 	private final RuleEngine engine;
+	private Runnable onReload = () -> {
+	};
 
 	public RuleLoader(RuleEngine engine) {
 		super(RuleSet.CODEC, LISTER);
 		this.engine = engine;
+	}
+
+	public void setOnReload(Runnable onReload) {
+		this.onReload = onReload;
 	}
 
 	@Override
@@ -49,5 +55,7 @@ public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
 		int total = rulesByKind.values().stream().mapToInt(List::size).sum();
 		Constants.LOG.info("Loaded {} rules across {} kinds from {} files",
 				total, rulesByKind.size(), entries.size());
+
+		onReload.run();
 	}
 }

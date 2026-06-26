@@ -1,8 +1,6 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.animation.codec.TimelineCodec;
-import cromveil.combatnumbers.animation.registry.AnimationRegistry;
+import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.config.FabricServerConfig;
 import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
@@ -13,12 +11,12 @@ import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
-import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.skins.SkinDefinitionRegistry;
-import cromveil.combatnumbers.skins.SpriteSkinDefinition;
+import cromveil.combatnumbers.packets.SyncStyleTablePacket;
+import cromveil.combatnumbers.skins.SkinRegistry;
 import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleLoader;
 import cromveil.combatnumbers.styles.Style;
+import cromveil.combatnumbers.styles.StyleTable;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -27,22 +25,17 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.Identifier;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class CombatNumbers implements ModInitializer {
 	private MinecraftServer server;
+	private StyleTable styleTable = StyleTable.EMPTY;
 
 	@Override
 	public void onInitialize() {
@@ -54,6 +47,8 @@ public class CombatNumbers implements ModInitializer {
 				.register(SyncSkinDataPacket.TYPE, SyncSkinDataPacket.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay()
 				.register(SyncSpriteTexturePacket.TYPE, SyncSpriteTexturePacket.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay()
+				.register(SyncStyleTablePacket.TYPE, SyncStyleTablePacket.STREAM_CODEC);
 
 		AutoConfig.register(FabricServerConfig.class, GsonConfigSerializer::new);
 
@@ -61,31 +56,20 @@ public class CombatNumbers implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STOPPING.register(x -> this.server = null);
 
 		var animationRegistry = new AnimationRegistry();
-		var skinDefinitions = new SkinDefinitionRegistry();
+		var skinRegistry = new SkinRegistry();
 		var ruleEngine = new RuleEngine();
 		var ruleLoader = new RuleLoader(ruleEngine);
 		var filterRegistry = new FilterRegistry();
 		var filterLoader = new FilterLoader(filterRegistry);
 
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
-				new SimpleJsonResourceReloadListener<>(TimelineCodec.CODEC,
-						FileToIdConverter.json("animations")) {
-					@Override
-					protected void apply(Map<Identifier, Timeline> entries, ResourceManager manager,
-							ProfilerFiller profiler) {
-						animationRegistry.reload(entries);
-					}
-				});
+				Identifier.fromNamespaceAndPath("combatnumbers", "animations"), animationRegistry);
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "styles"),
-				ruleLoader);
+				Identifier.fromNamespaceAndPath("combatnumbers", "styles"), ruleLoader);
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
-				skinDefinitions);
+				Identifier.fromNamespaceAndPath("combatnumbers", "skins"), skinRegistry);
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "filters"),
-				filterLoader);
+				Identifier.fromNamespaceAndPath("combatnumbers", "filters"), filterLoader);
 
 		CombatNumbersEvents.COMBAT.register(event -> {
 			if (!filterRegistry.passes(event))
@@ -94,13 +78,17 @@ public class CombatNumbers implements ModInitializer {
 			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, style));
 		});
 
+		ruleLoader.setOnReload(() -> {
+			this.styleTable = StyleTable.from(ruleEngine);
+			broadcast(new SyncStyleTablePacket(this.styleTable));
+		});
+
 		CombatNumbersEvents.RENDER.register((instance) -> {
 			LivingEntity entity = instance.entity();
-			int skinIndex = skinDefinitions.indexOf(instance.skinId());
-			int animIndex = animationRegistry.indexOf(instance.animationId());
 			RenderPacket packet = new RenderPacket(
 					entity.getId(), instance.value(),
-					skinIndex, animIndex);
+					this.styleTable.skinIndex(instance.skinId()),
+					this.styleTable.animationIndex(instance.animationId()));
 
 			ServerLevel level = (ServerLevel) entity.level();
 			double entityX = entity.getX();
@@ -117,68 +105,33 @@ public class CombatNumbers implements ModInitializer {
 		});
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, _server) -> {
-			var animPacket = new SyncAnimationDataPacket(animationRegistry.getAll());
-			ServerPlayNetworking.send(handler.getPlayer(), animPacket);
-
-			var texPacket = collectTexturePacket(skinDefinitions);
+			ServerPlayer player = handler.getPlayer();
+			ServerPlayNetworking.send(player, new SyncStyleTablePacket(this.styleTable));
+			ServerPlayNetworking.send(player, new SyncAnimationDataPacket(animationRegistry.getAll()));
+			var texPacket = skinRegistry.buildTexturePacket();
 			if (texPacket != null) {
-				ServerPlayNetworking.send(handler.getPlayer(), texPacket);
+				ServerPlayNetworking.send(player, texPacket);
 			}
-
-			var skinPacket = new SyncSkinDataPacket(skinDefinitions.getAll());
-			ServerPlayNetworking.send(handler.getPlayer(), skinPacket);
+			ServerPlayNetworking.send(player, new SyncSkinDataPacket(skinRegistry.getAll()));
 		});
 
-		animationRegistry.setOnReload(() -> {
-			if (this.server == null)
-				return;
-			var packet = new SyncAnimationDataPacket(animationRegistry.getAll());
-			for (ServerPlayer player : this.server.getPlayerList().getPlayers()) {
-				ServerPlayNetworking.send(player, packet);
-			}
-		});
+		animationRegistry.setOnReload(() ->
+				broadcast(new SyncAnimationDataPacket(animationRegistry.getAll())));
 
-		skinDefinitions.setOnReload(() -> {
-			if (this.server == null)
-				return;
-
-			var texPacket = collectTexturePacket(skinDefinitions);
+		skinRegistry.setOnReload(() -> {
+			var texPacket = skinRegistry.buildTexturePacket();
 			if (texPacket != null) {
-				for (ServerPlayer player : this.server.getPlayerList().getPlayers()) {
-					ServerPlayNetworking.send(player, texPacket);
-				}
+				broadcast(texPacket);
 			}
-
-			var packet = new SyncSkinDataPacket(skinDefinitions.getAll());
-			for (ServerPlayer player : this.server.getPlayerList().getPlayers()) {
-				ServerPlayNetworking.send(player, packet);
-			}
+			broadcast(new SyncSkinDataPacket(skinRegistry.getAll()));
 		});
 	}
 
-	private static SyncSpriteTexturePacket collectTexturePacket(SkinDefinitionRegistry skinDefinitions) {
-		var rm = skinDefinitions.getResourceManager();
-		if (rm == null)
-			return null;
-
-		var textures = new LinkedHashMap<Identifier, byte[]>();
-		for (var entry : skinDefinitions.getAll().entrySet()) {
-			SkinDefinition def = entry.getValue();
-			if (def instanceof SpriteSkinDefinition spriteDef) {
-				Identifier textureId = spriteDef.texture();
-				Identifier pngPath = Identifier.fromNamespaceAndPath(
-						textureId.getNamespace(), "textures/" + textureId.getPath() + ".png");
-				try {
-					var resource = rm.getResourceOrThrow(pngPath);
-					try (var in = resource.open()) {
-						textures.put(textureId, in.readAllBytes());
-					}
-				} catch (Exception e) {
-					Constants.LOG.warn("Failed to read texture '{}' for skin '{}': {}",
-							pngPath, entry.getKey(), e.getMessage());
-				}
-			}
+	private void broadcast(CustomPacketPayload packet) {
+		if (this.server == null)
+			return;
+		for (ServerPlayer player : this.server.getPlayerList().getPlayers()) {
+			ServerPlayNetworking.send(player, packet);
 		}
-		return textures.isEmpty() ? null : new SyncSpriteTexturePacket(textures);
 	}
 }

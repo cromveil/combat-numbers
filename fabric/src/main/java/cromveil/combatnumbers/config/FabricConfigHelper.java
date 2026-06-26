@@ -19,6 +19,11 @@ public final class FabricConfigHelper implements IConfigHelper {
 	}
 
 	@Override
+	public String clientTheme() {
+		return client().theme;
+	}
+
+	@Override
 	public RenderOption renderMode() {
 		return client().renderMode;
 	}

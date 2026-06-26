@@ -1,13 +1,18 @@
 package cromveil.combatnumbers.config;
 
 import cromveil.combatnumbers.client.render.RenderOption;
+import cromveil.combatnumbers.client.theme.ThemeManager;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class NeoForgeClientConfig {
 
 	public static final ModConfigSpec SPEC;
 
 	public static final ModConfigSpec.BooleanValue ENABLED;
+	public static final ModConfigSpec.ConfigValue<String> THEME;
 	public static final ModConfigSpec.EnumValue<RenderOption> RENDER_MODE;
 	public static final ModConfigSpec.DoubleValue BASE_FONT_SIZE;
 	public static final ModConfigSpec.DoubleValue NEAR_FADE_DISTANCE;
@@ -26,6 +31,21 @@ public final class NeoForgeClientConfig {
 		ENABLED = builder
 				.translation("text.autoconfig.combatnumbers-client.option.enabled")
 				.define("enabled", true);
+
+		List<String> themeOptions = new ArrayList<>();
+		themeOptions.add("");
+		for (String id : ThemeManager.builtinThemeIds()) {
+			if (!themeOptions.contains(id)) {
+				themeOptions.add(id);
+			}
+		}
+		if (!themeOptions.contains("default")) {
+			themeOptions.add("default");
+		}
+
+		THEME = builder
+				.translation("text.autoconfig.combatnumbers-client.option.theme")
+				.defineInList("theme", "maple", themeOptions);
 
 		RENDER_MODE = builder
 				.translation("text.autoconfig.combatnumbers-client.option.renderMode")

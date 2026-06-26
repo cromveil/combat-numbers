@@ -1,0 +1,32 @@
+[
+  {
+    "start": 0,
+    "duration": 0,
+    "channels": {
+      "y": { "type": "random", "min": -4, "max": 6 },
+      "x": { "type": "random", "min": -16, "max": 16 }
+    }
+  },
+  {
+    "start": 0,
+    "duration": 200,
+    "channels": {
+      "opacity": { "type": "keyframe", "values": [0, 1], "easing": "ease_out" },
+      "scale": { "type": "keyframe", "values": [0.5, 1], "easing": "ease_out" }
+    }
+  },
+  {
+    "start": 0,
+    "duration": 1000,
+    "channels": {
+      "y": { "type": "tween", "to": 20, "easing": "linear" }
+    }
+  },
+  {
+    "start": 700,
+    "duration": 300,
+    "channels": {
+      "opacity": { "type": "tween", "to": 0, "easing": "ease_out_circ" }
+    }
+  }
+]
