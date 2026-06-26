@@ -10,6 +10,11 @@ public final class NeoForgeConfigHelper implements IConfigHelper {
 	}
 
 	@Override
+	public String clientTheme() {
+		return NeoForgeClientConfig.THEME.get();
+	}
+
+	@Override
 	public RenderOption renderMode() {
 		return NeoForgeClientConfig.RENDER_MODE.get();
 	}

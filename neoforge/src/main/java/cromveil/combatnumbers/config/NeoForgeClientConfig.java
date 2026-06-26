@@ -8,6 +8,7 @@ public final class NeoForgeClientConfig {
 	public static final ModConfigSpec SPEC;
 
 	public static final ModConfigSpec.BooleanValue ENABLED;
+	public static final ModConfigSpec.ConfigValue<String> THEME;
 	public static final ModConfigSpec.EnumValue<RenderOption> RENDER_MODE;
 	public static final ModConfigSpec.DoubleValue BASE_FONT_SIZE;
 	public static final ModConfigSpec.DoubleValue NEAR_FADE_DISTANCE;

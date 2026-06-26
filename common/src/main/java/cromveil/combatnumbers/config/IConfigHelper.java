@@ -16,6 +16,8 @@ public interface IConfigHelper {
     // Client
     boolean clientEnabled();
 
+    String clientTheme();
+
     RenderOption renderMode();
 
     float baseFontSize();
