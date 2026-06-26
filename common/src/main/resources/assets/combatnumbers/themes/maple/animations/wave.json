@@ -12,7 +12,6 @@
   {
     "start": 0,
     "duration": 280,
-    "label": "enter",
     "stagger": { "delay_ms": 50, "from": "left" },
     "channels": {
       "scale": {
@@ -42,7 +41,6 @@
   {
     "start": 700,
     "duration": 300,
-    "label": "exit",
     "channels": {
       "scale": { "type": "tween", "to": 1.1, "easing": "ease_out_circ" },
       "opacity": { "type": "tween", "to": 0, "easing": "ease_out_circ" },

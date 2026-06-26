@@ -26,7 +26,6 @@
   {
     "start": 700,
     "duration": 300,
-    "label": "exit",
     "channels": {
       "opacity": { "type": "tween", "to": 0, "easing": "ease_out_circ" },
       "y": { "type": "tween", "to": 1.1, "compose": "multiply", "easing": "ease_out_circ" },
