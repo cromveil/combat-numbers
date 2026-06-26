@@ -1,29 +1,26 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.animation.registry.AnimationRegistry;
-import cromveil.combatnumbers.client.animation.AnimationCompiler;
-import cromveil.combatnumbers.client.animation.AnimationEvaluator;
-import cromveil.combatnumbers.client.animation.AnimationInstance;
+import cromveil.combatnumbers.animation.codec.TimelineCodec;
+import cromveil.combatnumbers.client.ClientRuntime;
+import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
-import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
-import cromveil.combatnumbers.client.skins.Skin;
-import cromveil.combatnumbers.client.skins.SkinRegistry;
-import cromveil.combatnumbers.client.skins.SpriteSheet;
-import cromveil.combatnumbers.client.skins.TextSkin;
 import cromveil.combatnumbers.config.FabricClientConfig;
 import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
+import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.skins.SkinDefinition;
+import cromveil.combatnumbers.styles.StyleTable;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
@@ -35,25 +32,16 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CombatNumbersClient implements ClientModInitializer {
-	private static final Skin DEFAULT_SKIN = TextSkin.createDefault();
 
-	private AnimationCompiler animationCompiler;
+	private final ClientRuntime runtime = new ClientRuntime();
 
 	@Override
 	public void onInitializeClient() {
-		this.animationCompiler = new AnimationCompiler();
 		AutoConfig.register(FabricClientConfig.class, GsonConfigSerializer::new);
-		var animationRegistry = new AnimationRegistry();
-		var skinRegistry = new SkinRegistry();
 
 		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
@@ -62,96 +50,43 @@ public class CombatNumbersClient implements ClientModInitializer {
 					@Override
 					protected void apply(Map<Identifier, SkinDefinition> entries, ResourceManager manager,
 							ProfilerFiller profiler) {
-						skinRegistry.reload(entries, manager);
+						runtime.applyResourcePackSkins(entries, manager);
 					}
 				});
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+				Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
+				new SimpleJsonResourceReloadListener<Timeline>(TimelineCodec.CODEC,
+						FileToIdConverter.json("animations")) {
+					@Override
+					protected void apply(Map<Identifier, Timeline> entries, ResourceManager manager,
+							ProfilerFiller profiler) {
+						runtime.applyResourcePackAnimations(entries);
+					}
+				});
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> runtime.tickThemeWatch());
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE, (packet, context) -> {
-				context.client().execute(() -> {
-					animationRegistry.clear();
-					packet.animations().forEach(animationRegistry::register);
-				});
-			});
-			ClientPlayNetworking.registerReceiver(SyncSkinDataPacket.TYPE, (packet, context) -> {
-				context.client().execute(() -> {
-					skinRegistry.reloadFromServer(packet.skins(), context.client().getResourceManager());
-				});
-			});
-			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE, (packet, context) -> {
-				context.client().execute(() -> {
-					for (var entry : packet.textures().entrySet()) {
-						SpriteSheet.registerServerTexture(entry.getKey(), entry.getValue());
-					}
-				});
-			});
+			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE, (packet, context) ->
+					context.client().execute(() ->
+							runtime.applyStyleTable(new StyleTable(packet.skinIds(), packet.animationIds()))));
 
-			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE,
-					(payload, context) -> {
-						context.client().execute(() -> {
-							if (!Services.CONFIG.clientEnabled())
-								return;
+			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE, (packet, context) ->
+					context.client().execute(() -> runtime.applyServerAnimations(packet.animations())));
 
-							Minecraft mc = context.client();
-							var level = mc.level;
-							if (level == null)
-								return;
+			ClientPlayNetworking.registerReceiver(SyncSkinDataPacket.TYPE, (packet, context) ->
+					context.client().execute(() -> runtime.applyServerSkins(packet.skins())));
 
-							var entity = level.getEntity(payload.entityId());
-							if (!(entity instanceof LivingEntity livingEntity))
-								return;
+			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE, (packet, context) ->
+					context.client().execute(() -> runtime.applyServerTextures(packet.textures())));
 
-							var camera = mc.gameRenderer.mainCamera();
-							Vec3 camPos = camera.position();
-
-							Vec3 worldPos = livingEntity.getEyePosition();
-
-							var clipCtx = new ClipContext(
-									camPos, worldPos,
-									ClipContext.Block.COLLIDER,
-									ClipContext.Fluid.NONE,
-									mc.player);
-							var hit = level.clip(clipCtx);
-							if (hit.getType() == HitResult.Type.BLOCK)
-								return;
-
-							var skin = skinRegistry.getByIndex(payload.skinIndex());
-							if (skin == null) {
-								skin = DEFAULT_SKIN;
-							}
-
-							String formattedValue = String.valueOf(Math.round(payload.value()));
-
-							var visual = skin.createVisual(formattedValue);
-
-							var timeline = animationRegistry.getByIndex(payload.animationIndex());
-							if (timeline == null) {
-								timeline = Timeline.DEFAULT;
-							}
-
-							double gameTime = level.getGameTime()
-									+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-
-							long seed = ThreadLocalRandom.current()
-									.nextLong();
-							AnimationEvaluator eval = animationCompiler.compile(
-									timeline, formattedValue.length(), seed);
-							AnimationInstance anim = new AnimationInstance(eval);
-
-							var text = new FloatingText(
-									worldPos, formattedValue,
-									visual, anim, skin.getScale(), gameTime);
-							FloatingTextManager.add(text);
-						});
-					});
+			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE, (payload, context) ->
+					context.client().execute(() -> runtime.onRenderPacket(
+							payload.entityId(), payload.value(),
+							payload.skinIndex(), payload.animationIndex())));
 		});
 
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			FloatingTextManager.clear();
-			animationRegistry.clear();
-			skinRegistry.clear();
-			SpriteSheet.clearServerTextures();
-		});
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
 
 		LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(context -> {
 			if (!Services.CONFIG.clientEnabled()) {

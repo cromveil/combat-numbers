@@ -1,33 +1,21 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.animation.registry.AnimationRegistry;
-import cromveil.combatnumbers.client.animation.AnimationCompiler;
-import cromveil.combatnumbers.client.animation.AnimationEvaluator;
-import cromveil.combatnumbers.client.animation.AnimationInstance;
-import cromveil.combatnumbers.client.render.FloatingText;
-import cromveil.combatnumbers.client.render.FloatingTextManager;
-import cromveil.combatnumbers.client.skins.Skin;
-import cromveil.combatnumbers.client.skins.SkinRegistry;
-import cromveil.combatnumbers.client.skins.SpriteSheet;
-import cromveil.combatnumbers.client.skins.TextSkin;
+import cromveil.combatnumbers.animation.codec.TimelineCodec;
+import cromveil.combatnumbers.client.ClientRuntime;
 import cromveil.combatnumbers.config.NeoForgeClientConfig;
-import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
+import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.skins.SkinDefinition;
-import net.minecraft.client.Minecraft;
+import cromveil.combatnumbers.styles.StyleTable;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -35,104 +23,42 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class CombatNumbersClient {
-	private static final Skin DEFAULT_SKIN = TextSkin.createDefault();
 
-	private AnimationCompiler animationCompiler;
-	private final AnimationRegistry animationRegistry = new AnimationRegistry();
-	private final SkinRegistry skinRegistry = new SkinRegistry();
+	private final ClientRuntime runtime = new ClientRuntime();
 
 	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
-		this.animationCompiler = new AnimationCompiler();
-
 		container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
 		container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
-			e.register(SyncAnimationDataPacket.TYPE,
-					(payload, context) -> {
-						animationRegistry.clear();
-						payload.animations().forEach(animationRegistry::register);
-					});
+			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
+					runtime.applyStyleTable(new StyleTable(payload.skinIds(), payload.animationIds()))));
 
-			e.register(SyncSkinDataPacket.TYPE,
-					(payload, context) -> {
-						skinRegistry.reloadFromServer(payload.skins(),
-								Minecraft.getInstance().getResourceManager());
-					});
+			e.register(SyncAnimationDataPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
+					runtime.applyServerAnimations(payload.animations())));
 
-			e.register(SyncSpriteTexturePacket.TYPE,
-					(payload, context) -> {
-						for (var entry : payload.textures().entrySet()) {
-							SpriteSheet.registerServerTexture(entry.getKey(), entry.getValue());
-						}
-					});
+			e.register(SyncSkinDataPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
+					runtime.applyServerSkins(payload.skins())));
 
-			e.register(RenderPacket.TYPE,
-					(payload, context) -> context.enqueueWork(() -> {
-						Minecraft mc = Minecraft.getInstance();
-						if (!Services.CONFIG.clientEnabled())
-							return;
+			e.register(SyncSpriteTexturePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
+					runtime.applyServerTextures(payload.textures())));
 
-						var level = mc.level;
-						if (level == null)
-							return;
-
-						var entity = level.getEntity(payload.entityId());
-						if (!(entity instanceof LivingEntity livingEntity))
-							return;
-
-						var camera = mc.gameRenderer.mainCamera();
-						Vec3 camPos = camera.position();
-
-						Vec3 worldPos = livingEntity.getEyePosition();
-
-						var clipCtx = new ClipContext(
-								camPos, worldPos,
-								ClipContext.Block.COLLIDER,
-								ClipContext.Fluid.NONE,
-								mc.player);
-						var hit = level.clip(clipCtx);
-						if (hit.getType() == HitResult.Type.BLOCK)
-							return;
-
-						var skin = skinRegistry.getByIndex(payload.skinIndex());
-						if (skin == null) {
-							skin = DEFAULT_SKIN;
-						}
-
-						String formattedValue = String.valueOf(Math.round(payload.value()));
-
-						var visual = skin.createVisual(formattedValue);
-
-						var timeline = animationRegistry.getByIndex(payload.animationIndex());
-						if (timeline == null) {
-							timeline = Timeline.DEFAULT;
-						}
-
-						double gameTime = level.getGameTime()
-								+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-
-						long seed = ThreadLocalRandom.current().nextLong();
-						AnimationEvaluator eval = animationCompiler.compile(
-								timeline, formattedValue.length(), seed);
-						AnimationInstance anim = new AnimationInstance(eval);
-
-						var text = new FloatingText(
-								worldPos, formattedValue,
-								visual, anim, skin.getScale(), gameTime);
-						FloatingTextManager.add(text);
-					}));
+			e.register(RenderPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
+					runtime.onRenderPacket(
+							payload.entityId(), payload.value(),
+							payload.skinIndex(), payload.animationIndex())));
 		});
+
 		modEventBus.addListener(AddClientReloadListenersEvent.class, e -> {
 			e.addListener(
 					Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
@@ -141,15 +67,22 @@ public class CombatNumbersClient {
 						@Override
 						protected void apply(Map<Identifier, SkinDefinition> entries,
 								ResourceManager manager, ProfilerFiller profiler) {
-							skinRegistry.reload(entries, manager);
+							runtime.applyResourcePackSkins(entries, manager);
+						}
+					});
+			e.addListener(
+					Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
+					new SimpleJsonResourceReloadListener<Timeline>(TimelineCodec.CODEC,
+							FileToIdConverter.json("animations")) {
+						@Override
+						protected void apply(Map<Identifier, Timeline> entries,
+								ResourceManager manager, ProfilerFiller profiler) {
+							runtime.applyResourcePackAnimations(entries);
 						}
 					});
 		});
-		NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, e -> {
-			FloatingTextManager.clear();
-			animationRegistry.clear();
-			skinRegistry.clear();
-			SpriteSheet.clearServerTextures();
-		});
+
+		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, e -> runtime.tickThemeWatch());
+		NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, e -> runtime.onDisconnect());
 	}
 }

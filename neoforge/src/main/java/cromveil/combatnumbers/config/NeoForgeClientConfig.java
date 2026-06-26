@@ -1,7 +1,11 @@
 package cromveil.combatnumbers.config;
 
 import cromveil.combatnumbers.client.render.RenderOption;
+import cromveil.combatnumbers.client.theme.ThemeManager;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class NeoForgeClientConfig {
 
@@ -27,6 +31,21 @@ public final class NeoForgeClientConfig {
 		ENABLED = builder
 				.translation("text.autoconfig.combatnumbers-client.option.enabled")
 				.define("enabled", true);
+
+		List<String> themeOptions = new ArrayList<>();
+		themeOptions.add("");
+		for (String id : ThemeManager.builtinThemeIds()) {
+			if (!themeOptions.contains(id)) {
+				themeOptions.add(id);
+			}
+		}
+		if (!themeOptions.contains("default")) {
+			themeOptions.add("default");
+		}
+
+		THEME = builder
+				.translation("text.autoconfig.combatnumbers-client.option.theme")
+				.defineInList("theme", "default", themeOptions);
 
 		RENDER_MODE = builder
 				.translation("text.autoconfig.combatnumbers-client.option.renderMode")
