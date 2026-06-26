@@ -1,25 +1,40 @@
 # Combat Numbers
 
-Fabric mod to show damage numbers, currently compatible with Minecraft 26.2.
-
-Started off as part of a bigger project in an older version of MC and later abandoned, just like all my other projects. I like RPGs, but after trying most RPG modpacks, I came to the disappointing conclusion there's a lack of extravagrant Maplestory-style customizable damage numbers that nobody else other than me is going to ask for.
-
-Has to be installed on the server side for accurate detection and numbers, without it client side can only work with consolidated health deltas. If you're looking for a purely client sided damage number mod, there are plenty of others that work just fine and you won't need something like this at all. But if you also like the idea of having damage skins, I do have plans to try and get a "client-only mode" going, it will fall back to using the not-so-accurate health deltas but hey at least you get to see pretty numbers.
-
-Backports are planned because, well, there's not really much RPG packs on 26.2 right now.
+A mod dedicated to displaying fancy damage numbers.
 
 ## Features
 
-- [x] Damage detection
-- [x] Heal detection
-- [ ] Absorption damage detection
-- [ ] Shield block detection
+**Built-in themes** - Opinionated default styling. Currently only the "basic" and "maple" themes are available.
 
-## TODO
+**Damage Types** - Supports showing different styles based on damage type.
 
-- [ ] Backport to 26.1 - 26.1.2
-- [ ] Try backporting to 1.20.1 - 1.21.11 too (no guarantees though, major changes in rendering API here)
-- [ ] Client-only mode (won't have accurate numbers though)
+**Heal Types** - Supports different healing sources.
+
+**Critical Hits** - Support for vanilla critical hits.
+
+**Fully customizable** - Styling, skins and animations can be modified via datapacks and resource packs.
+
+## Installation
+
+This is a client + server mod, meaning it has to be installed on both client and server side for dedicated servers. Works without any additional setup on single player.
+
+This mod relies on server hooks to figure out the actual damage amount and type. Without it, a vanilla client only receives health deltas from the server and there's a limit to how much we can do with that info.
+
+### Compatibility
+
+Combat Numbers should be compatible with most mods.
+
+Works with Iris shaders, just make sure the mod's Render Mode config is set to "HUD" (default).
+
+# Motivation
+
+Started off as a toy project in an older version of MC and later abandoned like 90% of my other projects. I like RPG modpacks, but sadly I came to the disappointing conclusion there's a lack of extravagrant Maplestory-style customizable damage numbers that nobody else other than me is going to ask for.
+
+## Future Plans
+
+- Backports are planned because, well, there's not really much RPG packs on 26.2 right now.
+- I do have plans to try and get a "client-only mode" going, it will fall back to using the not-so-accurate health deltas but hey at least you get to see pretty numbers.
+- Contributions are welcome, especially additional themes. I am no artist, just a guy whose neuron activates whenever he sees pretty damage numbers.
 
 # Customizing
 
@@ -34,18 +49,17 @@ Default themes are bundled into the mod. You can switch themes via the mod confi
 
 Available options:
 
-- `default`, damage indicators using the default Minecraft font
+- `basic`, damage indicators using the default Minecraft font
 - `maple`, MapleStory aesthetic
 
 ## Resource Packs
 
-If no theme is quite right, you can override the look with a resource pack. Make
-a normal resource pack and add files under `assets/combatnumbers/`:
+You can override skins and animations with a resource pack. Make a normal resource pack and add files under `assets/combatnumbers/`:
 
 ```
 assets/combatnumbers/skins/<id>.json
 assets/combatnumbers/animations/<id>.json
-assets/combatnumbers/textures/<file>.png     <-- images for sprite-based skins
+assets/combatnumbers/textures/<file>.png     <-- put images for sprite-based skins here
 ```
 
 For examples, look at GitHub sources for themes.
@@ -56,7 +70,7 @@ Resource packs are prioritized over the built-in themes and layered on top.
 
 A skin is either recolored text or your own sprites.
 
-Regular text:
+#### Regular text
 
 ```json
 {
@@ -71,7 +85,7 @@ Regular text:
 
 Colors are ARGB hex. `outline_color` and `scale` are optional.
 
-Sprites:
+#### Sprites
 
 ```json
 {
@@ -91,8 +105,7 @@ For more info, look at GitHub sources.
 
 ### Animations
 
-An animation is a list of steps. Each step nudges one or more channels
-(`opacity`, `scale`, `x`, `y`, `rotation`) over a time window. Example:
+An animation is a list of steps. Each step nudges one or more channels (`opacity`, `scale`, `x`, `y`, `rotation`) over a time window.
 
 ```json
 [
@@ -121,8 +134,7 @@ A datapack can also double as a resource pack. They take priority over any built
 
 The main purpose of a datapack though, is to control styling rules.
 
-A rule has a `when` (what to match) and a `then` (which skin and animation to
-use):
+A rule has a `when` (what to match) and a `then` (which skin and animation to use):
 
 ```json
 {
@@ -149,7 +161,7 @@ use):
 }
 ```
 
-### Damage Rules
+### Example: Damage Rules
 
 Match by damage tag, which groups many sources at once (all fire, all projectiles, and
 so on):
@@ -170,13 +182,9 @@ Match by exact damage type, for one specific cause:
 }
 ```
 
-For the full list of damage types and tags, see the Minecraft Wiki pages on
-[damage types](https://minecraft.wiki/w/Damage_type) and
-[tags](https://minecraft.wiki/w/Tag).
+For the full list of damage types and tags, see the Minecraft Wiki pages on [damage types](https://minecraft.wiki/w/Damage_type) and [tags](https://minecraft.wiki/w/Damage_type_tag_%28Java_Edition%29).
 
-To match by who or what was involved, using vanilla
-[predicates](https://minecraft.wiki/w/Predicate) for `target`, `attacker`, or
-`weapon`:
+To match by who or what was involved, using vanilla [predicates](https://minecraft.wiki/w/Predicate) for `target`, `attacker`, or `weapon`:
 
 ```json
 {
@@ -185,7 +193,7 @@ To match by who or what was involved, using vanilla
 }
 ```
 
-### Heal Rules
+### Example: Heal Rules
 
 Minecraft does not label heals the way it labels damage. The mod works out the cause itself and lets you match it in `type` on a heal rule:
 
@@ -194,12 +202,9 @@ Minecraft does not label heals the way it labels damage. The mod works out the c
 - `combatnumbers:instant_health`, Instant Health potions and similar.
 - `combatnumbers:generic_heal`, anything else (commands, other mods, and so on).
 
-### Filter Rules
+### Example: Filter Rules
 
-Filters drop events before they show. They live at
-`data/combatnumbers/filters/<file>.json`, each a list of conditions that use the
-same fields as a rule's `when`. Anything matching any condition is hidden. The
-shipped default hides passive regeneration:
+Filters drop events before they show. They live at `data/combatnumbers/filters/<file>.json`, each a list of conditions that use the same fields as a rule's `when`. Anything matching any condition is hidden. The shipped default hides passive regeneration:
 
 ```json
 [
@@ -211,5 +216,7 @@ shipped default hides passive regeneration:
 To also hide all fall damage, for example:
 
 ```json
-[{ "tags": ["minecraft:is_fall"] }]
+[
+    { "tags": ["minecraft:is_fall"] }
+]
 ```
