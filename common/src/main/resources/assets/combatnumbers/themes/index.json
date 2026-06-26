@@ -1,7 +1,7 @@
 {
   "_comment": "Available themes should be listed here. Auto-discovery planned.",
   "themes": [
-    { "id": "default", "name": "Default" },
-    { "id": "free-assets", "name": "Free Assets" }
+    { "id": "basic", "name": "Basic" },
+    { "id": "maple", "name": "Maple" }
   ]
 }

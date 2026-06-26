@@ -45,7 +45,7 @@ public final class NeoForgeClientConfig {
 
 		THEME = builder
 				.translation("text.autoconfig.combatnumbers-client.option.theme")
-				.defineInList("theme", "default", themeOptions);
+				.defineInList("theme", "maple", themeOptions);
 
 		RENDER_MODE = builder
 				.translation("text.autoconfig.combatnumbers-client.option.renderMode")

@@ -1,0 +1,36 @@
+[
+  {
+    "start": 0,
+    "duration": 0,
+    "channels": {
+      "y": { "type": "random", "min": -3, "max": 4 },
+      "x": { "type": "random", "min": 3, "max": 7, "signed": true }
+    }
+  },
+  {
+    "start": 0,
+    "duration": 200,
+    "channels": {
+      "opacity": { "type": "keyframe", "values": [0, 1], "easing": "ease_out" },
+      "scale": { "type": "keyframe", "values": [0.5, 1], "easing": "ease_out" }
+    }
+  },
+  {
+    "start": 0,
+    "duration": 700,
+    "channels": {
+      "y": { "type": "tween", "to": 4, "compose": "multiply", "easing": "ease_out_circ" },
+      "x": { "type": "tween", "to": 4, "compose": "multiply", "easing": "ease_out_circ" }
+    }
+  },
+  {
+    "start": 700,
+    "duration": 300,
+    "label": "exit",
+    "channels": {
+      "opacity": { "type": "tween", "to": 0, "easing": "ease_out_circ" },
+      "y": { "type": "tween", "to": 1.1, "compose": "multiply", "easing": "ease_out_circ" },
+      "x": { "type": "tween", "to": 1.1, "compose": "multiply", "easing": "ease_out_circ" }
+    }
+  }
+]

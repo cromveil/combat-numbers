@@ -11,7 +11,7 @@ public class FabricClientConfig implements ConfigData {
 	public boolean enabled = true;
 
 	@ConfigEntry.Gui.Tooltip(count = 2)
-	public String theme = "default";
+	public String theme = "maple";
 
 	@ConfigEntry.Gui.Tooltip(count = 4)
 	@ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
