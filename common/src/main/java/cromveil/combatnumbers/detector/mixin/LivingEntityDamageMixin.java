@@ -1,6 +1,7 @@
 package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.detector.CritTracker;
+import cromveil.combatnumbers.detector.PoisonTickTracker;
 import cromveil.combatnumbers.events.CombatEvent;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.platform.Services;
@@ -18,13 +19,16 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityDamageMixin implements CritTracker {
+public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 
 	@Unique
 	private float combatNumbers$actualDamage;
 
 	@Unique
 	private int combatNumbers$critCount;
+
+	@Unique
+	private boolean combatNumbers$poisonTick;
 
 	@Override
 	public void combatNumbers$setCritAttack(boolean crit) {
@@ -38,6 +42,18 @@ public class LivingEntityDamageMixin implements CritTracker {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void combatNumbers$setPoisonTick(boolean value) {
+		this.combatNumbers$poisonTick = value;
+	}
+
+	@Override
+	public boolean combatNumbers$getAndClearPoisonTick() {
+		boolean value = this.combatNumbers$poisonTick;
+		this.combatNumbers$poisonTick = false;
+		return value;
 	}
 
 	@Inject(method = "hurtServer", at = @At("HEAD"))
@@ -65,6 +81,7 @@ public class LivingEntityDamageMixin implements CritTracker {
 			CallbackInfoReturnable<Boolean> cir) {
 		if (!cir.getReturnValue()) {
 			this.combatNumbers$critCount = 0;
+			this.combatNumbers$poisonTick = false;
 			return;
 		}
 		if (!Services.CONFIG.serverEnabled())
@@ -81,6 +98,9 @@ public class LivingEntityDamageMixin implements CritTracker {
 		Set<Identifier> flags = new HashSet<>();
 		if (this.combatNumbers$consumeCritAttack()) {
 			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "crit"));
+		}
+		if (this.combatNumbers$getAndClearPoisonTick()) {
+			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "poison_tick"));
 		}
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(

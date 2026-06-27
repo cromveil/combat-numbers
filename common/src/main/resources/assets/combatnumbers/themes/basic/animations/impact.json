@@ -3,7 +3,7 @@
     "start": 0,
     "duration": 0,
     "channels": {
-      "x": { "type": "random", "min": -16, "max": 16 },
+      "x": { "type": "random", "min": -8, "max": 8 },
       "y": { "type": "random", "min": 8, "max": 16 }
     }
   },

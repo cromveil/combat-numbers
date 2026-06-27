@@ -22,6 +22,7 @@
 		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:impact" } },
 		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:impact" } },
 
+		{ "when": { "flags": ["combatnumbers:poison_tick"] },     "then": { "skin": "combatnumbers:nature", "animation": "combatnumbers:impact" } },
 		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:wave" } }
 	]
 }
