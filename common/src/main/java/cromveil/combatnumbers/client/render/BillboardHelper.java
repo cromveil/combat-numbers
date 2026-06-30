@@ -4,12 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
-public final class BillboardMath {
+public final class BillboardHelper {
 
-	private BillboardMath() {
+	private BillboardHelper() {
 	}
 
 	public static float fontReferenceHeight() {
@@ -36,8 +37,9 @@ public final class BillboardMath {
 		return depth * 2.0f / (focalLength * guiScaledHeight);
 	}
 
-	public static void faceCamera(PoseStack ps, Quaternionf orientation) {
-		ps.mulPose(orientation);
+	public static void faceCamera(PoseStack ps, CameraRenderState cam) {
+		var invView = new Matrix4f(cam.viewRotationMatrix).invertAffine();
+		ps.mulPose(invView);
 	}
 
 	public static void rotateZ(PoseStack ps, float degrees) {

@@ -68,7 +68,7 @@ public final class HudStrategy implements Strategy {
 
 	@Override
 	public void draw(FloatingText text, int charIndex, boolean perChar, GlyphPlacement placement) {
-		float s = placement.scale() * placement.perceivedScale() / BillboardMath.fontReferenceHeight();
+		float s = placement.scale() * placement.perceivedScale() / BillboardHelper.fontReferenceHeight();
 		pose.pushMatrix();
 		pose.translate(screenX, screenY);
 		pose.translate(placement.offX() * placement.perceivedScale(),

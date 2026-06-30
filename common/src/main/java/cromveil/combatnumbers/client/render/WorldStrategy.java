@@ -18,8 +18,8 @@ public final class WorldStrategy extends BillboardStrategy {
 
 	@Override
 	protected float anchor(Vec3 worldPos) {
-		float depth = BillboardMath.forwardDepth(cam, worldPos);
-		float guiPixelToWorld = BillboardMath.guiPixelToWorld(cam, depth);
+		float depth = BillboardHelper.forwardDepth(cam, worldPos);
+		float guiPixelToWorld = BillboardHelper.guiPixelToWorld(cam, depth);
 		ps.translate(
 				worldPos.x - cam.pos.x,
 				worldPos.y - cam.pos.y,

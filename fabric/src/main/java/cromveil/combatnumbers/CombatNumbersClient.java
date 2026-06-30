@@ -88,7 +88,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
 
-		LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(context -> {
+		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
 			if (!Services.CONFIG.clientEnabled()) {
 				FloatingTextManager.clear();
 				return;

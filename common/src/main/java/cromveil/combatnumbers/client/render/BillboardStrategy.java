@@ -49,11 +49,11 @@ public abstract sealed class BillboardStrategy implements Strategy
 	public void draw(FloatingText text, int charIndex, boolean perChar, GlyphPlacement placement) {
 		ps.pushPose();
 		float guiPixelToWorld = anchor(text.worldPos);
-		BillboardMath.faceCamera(ps, cam.orientation);
-		BillboardMath.translatePixelOffsets(ps, placement.offX(), placement.offY(),
+		BillboardHelper.faceCamera(ps, cam);
+		BillboardHelper.translatePixelOffsets(ps, placement.offX(), placement.offY(),
 				guiPixelToWorld, placement.perceivedScale());
-		BillboardMath.rotateZ(ps, placement.rotation());
-		BillboardMath.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
+		BillboardHelper.rotateZ(ps, placement.rotation());
+		BillboardHelper.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
 		if (perChar) {
 			text.visual.renderChar3d(charIndex, ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
 		} else {

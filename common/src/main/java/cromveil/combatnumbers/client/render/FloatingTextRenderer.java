@@ -17,7 +17,7 @@ public final class FloatingTextRenderer {
 		float falloffStart = Services.CONFIG.distanceFalloffStart();
 		float falloffEnd = Services.CONFIG.distanceFalloffEnd();
 		float minScale = Services.CONFIG.distanceMinScale();
-		float fontRef = BillboardMath.fontReferenceHeight();
+		float fontRef = BillboardHelper.fontReferenceHeight();
 		Vec3 camPos = strategy.camPos();
 
 		for (FloatingText text : FloatingTextManager.getActive()) {

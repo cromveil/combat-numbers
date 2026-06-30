@@ -19,8 +19,8 @@ public final class ScreenStrategy extends BillboardStrategy {
 
 	@Override
 	protected float anchor(Vec3 worldPos) {
-		float depth = BillboardMath.forwardDepth(cam, worldPos);
-		float guiPixelToWorld = BillboardMath.guiPixelToWorld(cam, FIXED_DEPTH);
+		float depth = BillboardHelper.forwardDepth(cam, worldPos);
+		float guiPixelToWorld = BillboardHelper.guiPixelToWorld(cam, FIXED_DEPTH);
 		float factor = FIXED_DEPTH / depth;
 		ps.translate(
 				(worldPos.x - cam.pos.x) * factor,
