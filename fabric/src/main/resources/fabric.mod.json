@@ -8,11 +8,12 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://modrinth.com/mod/combat-numbers",
+        "issues": "https://github.com/cromveil/combat-numbers/issues",
+        "sources": "https://github.com/cromveil/combat-numbers"
     },
     "license": "${license}",
-    "icon": "${mod_id}.png",
+    "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
 		"main": [
