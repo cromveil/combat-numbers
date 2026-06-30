@@ -25,7 +25,7 @@ public class HealOrHarmEffectMixin {
 		}
 	}
 
-	@Inject(method = "applyInstantaneousEffect", at = @At("HEAD"))
+	@Inject(method = "applyInstantenousEffect", at = @At("HEAD"))
 	private void combatNumbers$markInstantHealthEffect(ServerLevel serverLevel, @Nullable Entity source, @Nullable Entity owner,
 			LivingEntity mob, int amplification, double scale, CallbackInfo ci) {
 		if (mob instanceof HealTypeTracker tracker) {

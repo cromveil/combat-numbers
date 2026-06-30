@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CombatNumbersGameTest {
@@ -20,7 +20,7 @@ public class CombatNumbersGameTest {
 	@GameTest(maxTicks = 40)
 	public void basicDamagePacket(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
+		LivingEntity zombie = helper.spawn(EntityType.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
 		List<RenderEvent> captured = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CombatNumbersGameTest {
 	@GameTest(maxTicks = 40)
 	public void twoDamagesInSameTick(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
+		LivingEntity zombie = helper.spawn(EntityType.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
 		List<RenderEvent> captured = new ArrayList<>();
@@ -66,7 +66,7 @@ public class CombatNumbersGameTest {
 		final float DAMAGE = 1000f;
 
 		ServerLevel level = helper.getLevel();
-		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
+		LivingEntity zombie = helper.spawn(EntityType.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
 		List<RenderEvent> captured = new ArrayList<>();

@@ -142,7 +142,7 @@ public final class ClientRuntime {
 			return;
 		}
 
-		Vec3 camPos = mc.gameRenderer.mainCamera().position();
+		Vec3 camPos = mc.gameRenderer.getMainCamera().position();
 		Vec3 worldPos = livingEntity.getEyePosition();
 
 		var clipCtx = new ClipContext(

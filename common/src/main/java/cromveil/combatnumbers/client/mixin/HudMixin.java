@@ -6,19 +6,15 @@ import cromveil.combatnumbers.platform.Services;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Hud.class)
+@Mixin(Gui.class)
 public abstract class HudMixin {
-
-	@Shadow
-	public abstract boolean isHidden();
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void combatnumbers$renderFloatingTextHud(
@@ -28,11 +24,11 @@ public abstract class HudMixin {
 		}
 
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.level == null || this.isHidden()) {
+		if (mc.level == null || mc.options.hideGui) {
 			return;
 		}
 
-		CameraRenderState cam = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState;
+		CameraRenderState cam = mc.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState;
 		FloatingTextRenderer.renderAll(new HudStrategy(graphics, cam));
 	}
 }
