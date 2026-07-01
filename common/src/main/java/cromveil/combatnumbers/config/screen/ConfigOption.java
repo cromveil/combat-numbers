@@ -26,6 +26,7 @@ public final class ConfigOption<T> {
 	final Function<T, Component> displayFn;
 	final T emptyValue;
 	final Component emptyDisplay;
+	final Function<Object, Component> descriptionFn;
 
 	final double sliderMin;
 	final double sliderMax;
@@ -35,6 +36,7 @@ public final class ConfigOption<T> {
 			Supplier<T> externalReader, Consumer<T> externalWriter,
 			List<T> cycleValues, Function<T, Component> displayFn,
 			T emptyValue, Component emptyDisplay,
+			Function<Object, Component> descriptionFn,
 			double sliderMin, double sliderMax, SliderFormat sliderFormat) {
 		this.key = key;
 		this.type = type;
@@ -45,6 +47,7 @@ public final class ConfigOption<T> {
 		this.displayFn = displayFn;
 		this.emptyValue = emptyValue;
 		this.emptyDisplay = emptyDisplay;
+		this.descriptionFn = descriptionFn;
 		this.sliderMin = sliderMin;
 		this.sliderMax = sliderMax;
 		this.sliderFormat = sliderFormat;
@@ -53,7 +56,7 @@ public final class ConfigOption<T> {
 	public static ConfigOption<Boolean> ofBool(String key, boolean defaultValue,
 			Supplier<Boolean> reader, Consumer<Boolean> writer) {
 		return new ConfigOption<>(key, Type.BOOLEAN, defaultValue, reader, writer,
-				null, null, null, null, 0, 0, null);
+				null, null, null, null, null, 0, 0, null);
 	}
 
 	public static <E extends Enum<E>> ConfigOption<E> ofEnum(String key, E defaultValue,
@@ -61,12 +64,21 @@ public final class ConfigOption<T> {
 		@SuppressWarnings("unchecked")
 		E[] constants = (E[]) defaultValue.getClass().getEnumConstants();
 		return new ConfigOption<>(key, Type.CYCLE, defaultValue, reader, writer,
-				List.of(constants), displayFn, null, null, 0, 0, null);
+				List.of(constants), displayFn, null, null, null, 0, 0, null);
 	}
 
 	public static ConfigOption<String> ofStringCycle(String key, String defaultValue,
 			Supplier<String> reader, Consumer<String> writer,
 			List<String> values, Function<String, Component> displayFn,
+			boolean allowEmpty, Component emptyDisplay) {
+		return ofStringCycle(key, defaultValue, reader, writer, values, displayFn,
+				null, allowEmpty, emptyDisplay);
+	}
+
+	public static ConfigOption<String> ofStringCycle(String key, String defaultValue,
+			Supplier<String> reader, Consumer<String> writer,
+			List<String> values, Function<String, Component> displayFn,
+			Function<Object, Component> descriptionFn,
 			boolean allowEmpty, Component emptyDisplay) {
 		List<String> allValues;
 		if (allowEmpty) {
@@ -77,14 +89,15 @@ public final class ConfigOption<T> {
 			allValues = new ArrayList<>(values);
 		}
 		return new ConfigOption<>(key, Type.CYCLE, defaultValue, reader, writer,
-				allValues, displayFn, allowEmpty ? "" : null, emptyDisplay, 0, 0, null);
+				allValues, displayFn, allowEmpty ? "" : null, emptyDisplay,
+				descriptionFn, 0, 0, null);
 	}
 
 	public static ConfigOption<Double> ofSlider(String key, double defaultValue,
 			double min, double max, Supplier<Double> reader, Consumer<Double> writer,
 			SliderFormat format) {
 		return new ConfigOption<>(key, Type.SLIDER, defaultValue, reader, writer,
-				null, null, null, null, min, max, format);
+				null, null, null, null, null, min, max, format);
 	}
 
 	public String key() { return key; }
@@ -118,5 +131,9 @@ public final class ConfigOption<T> {
 
 	public Component tooltip(String prefix) {
 		return Component.translatable(prefix + ".option." + key + ".tooltip");
+	}
+
+	public Function<Object, Component> description() {
+		return descriptionFn;
 	}
 }

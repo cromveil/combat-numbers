@@ -4,6 +4,7 @@
   "config.combatnumbers.option.enabled": "Enabled",
   "config.combatnumbers.option.theme": "Theme",
   "config.combatnumbers.option.theme.tooltip": "Selects the base theme. Leave blank for no theme. Resource packs and custom server data are layered on top of the theme.",
+  "config.combatnumbers.option.theme.off.description": "No theme applied. Clean slate for resource packs, datapacks or server overrides.",
   "config.combatnumbers.option.renderMode": "Render Mode",
   "config.combatnumbers.option.renderMode.tooltip": "Changes how combat numbers are rendered.",
   "config.combatnumbers.option.baseFontSize": "Font Size",

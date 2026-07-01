@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.config;
 
+import cromveil.combatnumbers.client.theme.ThemeManager;
 import cromveil.combatnumbers.config.screen.ConfigOption;
 import cromveil.combatnumbers.config.screen.SliderFormat;
 import net.minecraft.network.chat.Component;
@@ -47,7 +48,7 @@ public final class ConfigId<T> {
 
 	public static ConfigId<Double> floatSlider(Category category, String key, double defaultValue,
 			double min, double max, SliderFormat format) {
-		return new ConfigId<>(category, key, Kind.FLOAT_SLIDER, defaultValue,
+		return new ConfigId<>(category, key, Kind.DOUBLE_SLIDER, defaultValue,
 				min, max, format, null, false, null);
 	}
 
@@ -55,6 +56,12 @@ public final class ConfigId<T> {
 			Supplier<List<String>> values, boolean allowEmpty) {
 		return new ConfigId<>(category, key, Kind.STRING_CYCLE, defaultValue,
 				0, 0, null, values, allowEmpty, null);
+	}
+
+	public static ConfigId<String> stringCycle(Category category, String key, String defaultValue,
+			Supplier<List<String>> values, Function<String, Component> displayFn, boolean allowEmpty) {
+		return new ConfigId<>(category, key, Kind.STRING_CYCLE, defaultValue,
+				0, 0, null, values, allowEmpty, displayFn);
 	}
 
 	public static <E extends Enum<E>> ConfigId<E> enumCycle(Category category, String key,
@@ -93,9 +100,25 @@ public final class ConfigId<T> {
 			case STRING_CYCLE -> {
 				ConfigId<String> self = (ConfigId<String>) (Object) this;
 				List<String> values = allowedValuesSupplier.get();
+				@SuppressWarnings("unchecked")
+				Function<String, Component> disp = (Function<String, Component>) (Object) displayFn;
+				if (disp == null) {
+					disp = Component::literal;
+				}
+				Function<Object, Component> descFn = null;
+				if (displayFn != null) {
+					descFn = current -> {
+						String currentId = (String) current;
+						if (currentId == null || currentId.isEmpty()) {
+							return Component.translatable("config.combatnumbers.option.theme.off.description");
+						}
+						String desc = ThemeManager.description(currentId);
+						return desc != null ? Component.literal(desc) : null;
+					};
+				}
 				yield ConfigOption.ofStringCycle(key, self.defaultValue,
 						() -> store.get(self), v -> store.set(self, v),
-						values, Component::literal, allowEmpty,
+						values, disp, descFn, allowEmpty,
 						Component.translatable("options.off"));
 			}
 			case ENUM_CYCLE -> {

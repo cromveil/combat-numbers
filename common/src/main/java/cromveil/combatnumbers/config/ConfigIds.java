@@ -16,7 +16,7 @@ public final class ConfigIds {
 
 	public static final ConfigId<String> CLIENT_THEME =
 			ConfigId.stringCycle(ConfigId.Category.CLIENT, "theme", "maple",
-					ThemeManager::builtinThemeIds, true);
+					ThemeManager::themeIds, ThemeManager::displayName, true);
 
 	public static final ConfigId<RenderOption> RENDER_MODE =
 			ConfigId.enumCycle(ConfigId.Category.CLIENT, "renderMode", RenderOption.HUD,

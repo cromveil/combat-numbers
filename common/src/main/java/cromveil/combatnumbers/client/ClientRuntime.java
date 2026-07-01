@@ -93,6 +93,9 @@ public final class ClientRuntime {
 	}
 
 	public void reloadTheme() {
+		if (lastResourceManager != null) {
+			ThemeManager.discoverThemes(lastResourceManager);
+		}
 		appliedTheme = Config.get(ConfigIds.CLIENT_THEME);
 		if (lastResourceManager == null) {
 			// resources not loaded yet

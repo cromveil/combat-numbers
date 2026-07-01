@@ -81,10 +81,29 @@ public class ConfigScreen extends Screen {
 			resetBtn.setTooltip(Tooltip.create(
 					Component.translatable(prefix + ".option.reset.tooltip")));
 
-			Runnable onChanged = () -> resetBtn.active = !opt.isAtDefault();
+			AbstractWidget[] wRef = new AbstractWidget[1];
+			Runnable onChanged = () -> {
+				resetBtn.active = !opt.isAtDefault();
+				var descFn = opt.description();
+				if (descFn != null) {
+					Component descComp = descFn.apply(opt.get());
+					if (descComp != null) {
+						wRef[0].setTooltip(Tooltip.create(descComp));
+					}
+				}
+			};
 
 			AbstractWidget w = widgetFactory.create(opt, widgetX, y, widgetW, onChanged);
-			w.setTooltip(Tooltip.create(opt.tooltip(prefix)));
+			wRef[0] = w;
+			var descFn = opt.description();
+			if (descFn != null) {
+				Component descComp = descFn.apply(opt.get());
+				if (descComp != null) {
+					w.setTooltip(Tooltip.create(descComp));
+				}
+			} else {
+				w.setTooltip(Tooltip.create(opt.tooltip(prefix)));
+			}
 			addRenderableWidget(w);
 			rowWidgets.add(w);
 
