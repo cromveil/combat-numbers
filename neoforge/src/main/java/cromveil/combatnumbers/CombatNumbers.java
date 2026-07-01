@@ -1,7 +1,9 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.config.NeoForgeServerConfig;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.config.NeoForgeConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
 import cromveil.combatnumbers.filters.FilterLoader;
@@ -12,7 +14,6 @@ import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.skins.SkinRegistry;
-import cromveil.combatnumbers.platform.Services;
 import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleLoader;
 import cromveil.combatnumbers.styles.Style;
@@ -45,7 +46,10 @@ public class CombatNumbers {
 	private final FilterRegistry filterRegistry = new FilterRegistry();
 
 	public CombatNumbers(IEventBus modEventBus, ModContainer container) {
-		container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
+		NeoForgeConfig config = NeoForgeConfig.instance();
+		Config.init(config);
+
+		container.registerConfig(ModConfig.Type.SERVER, config.serverSpec());
 
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, e -> {
 			PayloadRegistrar registrar = e.registrar(Constants.MOD_ID);
@@ -107,7 +111,7 @@ public class CombatNumbers {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = Services.CONFIG.serverMaxRenderDistance();
+			double maxDistSq = Config.get(ConfigIds.SERVER_MAX_RENDER_DISTANCE);
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

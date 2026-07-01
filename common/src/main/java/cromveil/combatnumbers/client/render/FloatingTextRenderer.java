@@ -1,6 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.platform.Services;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.ConfigIds;
 import net.minecraft.world.phys.Vec3;
 
 public final class FloatingTextRenderer {
@@ -11,12 +12,12 @@ public final class FloatingTextRenderer {
 	private static final float MIN_FADE_DISTANCE = 0.5f;
 
 	public static void renderAll(Strategy strategy) {
-		float baseFontSize = Services.CONFIG.baseFontSize();
-		float nearFadeDistance = Services.CONFIG.nearFadeDistance();
-		float maxRenderDistance = Services.CONFIG.maxRenderDistance();
-		float falloffStart = Services.CONFIG.distanceFalloffStart();
-		float falloffEnd = Services.CONFIG.distanceFalloffEnd();
-		float minScale = Services.CONFIG.distanceMinScale();
+		float baseFontSize = Config.get(ConfigIds.BASE_FONT_SIZE).floatValue();
+		float nearFadeDistance = Config.get(ConfigIds.NEAR_FADE_DISTANCE).floatValue();
+		float maxRenderDistance = Config.get(ConfigIds.MAX_RENDER_DISTANCE).floatValue();
+		float falloffStart = Config.get(ConfigIds.DISTANCE_FALLOFF_START).floatValue();
+		float falloffEnd = Config.get(ConfigIds.DISTANCE_FALLOFF_END).floatValue();
+		float minScale = Config.get(ConfigIds.DISTANCE_MIN_SCALE).floatValue();
 		float fontRef = BillboardHelper.fontReferenceHeight();
 		Vec3 camPos = strategy.camPos();
 

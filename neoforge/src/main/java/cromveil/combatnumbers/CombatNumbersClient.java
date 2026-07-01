@@ -3,7 +3,9 @@ package cromveil.combatnumbers;
 import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.ClientRuntime;
-import cromveil.combatnumbers.config.NeoForgeClientConfig;
+import cromveil.combatnumbers.config.CombatNumbersOptions;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.NeoForgeConfig;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -21,10 +23,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -37,8 +38,12 @@ public class CombatNumbersClient {
 	private final ClientRuntime runtime = new ClientRuntime();
 
 	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
-		container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
-		container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+		NeoForgeConfig config = NeoForgeConfig.instance();
+		Config.init(config);
+
+		container.registerConfig(ModConfig.Type.CLIENT, config.clientSpec());
+		container.registerExtensionPoint(IConfigScreenFactory.class,
+				(container1, screen) -> CombatNumbersOptions.createScreen(screen, Config.store()));
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
 			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
@@ -82,7 +87,11 @@ public class CombatNumbersClient {
 					});
 		});
 
-		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, e -> runtime.tickThemeWatch());
+		modEventBus.addListener(ModConfigEvent.Reloading.class, event -> {
+			if (event.getConfig().getSpec() == config.clientSpec()) {
+				runtime.reloadTheme();
+			}
+		});
 		NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, e -> runtime.onDisconnect());
 	}
 }

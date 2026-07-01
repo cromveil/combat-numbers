@@ -11,6 +11,7 @@ import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.skins.SkinDefinition;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -27,6 +28,136 @@ import java.util.Optional;
 public class ThemeManager {
 
 	private static final String INDEX_PATH = "assets/" + Constants.MOD_ID + "/themes/index.json";
+	private static List<ThemeInfo> cachedThemes;
+
+	public synchronized static void discoverThemes(ResourceManager resources) {
+		List<ThemeInfo> themes = new ArrayList<>();
+		loadBuiltinThemes(themes);
+		loadResourcePackThemes(themes, resources);
+		cachedThemes = List.copyOf(themes);
+	}
+
+	public static List<String> themeIds() {
+		return ensureDiscovered().stream().map(ThemeInfo::id).toList();
+	}
+
+	public static Component displayName(String id) {
+		ThemeInfo info = info(id);
+		if (info == null) {
+			return Component.literal(id);
+		}
+		String name = info.name() != null ? info.name() : info.id();
+		if (info.builtIn()) {
+			name += " (built-in)";
+		}
+		return Component.literal(name);
+	}
+
+	public static String description(String id) {
+		ThemeInfo info = info(id);
+		return info != null ? info.description() : null;
+	}
+
+	public static ThemeInfo info(String id) {
+		for (ThemeInfo info : ensureDiscovered()) {
+			if (info.id().equals(id)) {
+				return info;
+			}
+		}
+		return null;
+	}
+
+	private static List<ThemeInfo> ensureDiscovered() {
+		if (cachedThemes == null) {
+			List<ThemeInfo> themes = new ArrayList<>();
+			loadBuiltinThemes(themes);
+			cachedThemes = List.copyOf(themes);
+		}
+		return cachedThemes;
+	}
+
+	private static void loadBuiltinThemes(List<ThemeInfo> out) {
+		try (InputStream in = ThemeManager.class.getClassLoader().getResourceAsStream(INDEX_PATH)) {
+			if (in == null) {
+				return;
+			}
+			JsonObject root = JsonParser
+					.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+					.getAsJsonObject();
+			if (root.has("themes") && root.get("themes").isJsonArray()) {
+				for (JsonElement element : root.getAsJsonArray("themes")) {
+					ThemeInfo info = parseThemeEntry(element, true);
+					if (info != null) {
+						out.add(info);
+					}
+				}
+			}
+		} catch (Exception e) {
+			Constants.LOG.warn("Failed to read built-in theme index", e);
+		}
+	}
+
+	private static void loadResourcePackThemes(List<ThemeInfo> out, ResourceManager resources) {
+		String prefix = "themes";
+		var found = resources.listResources(prefix,
+				location -> location.getPath().endsWith("/theme.json"));
+		for (var entry : found.entrySet()) {
+			String path = entry.getKey().getPath();
+			String dir = path.substring(prefix.length() + 1,
+					path.length() - "/theme.json".length());
+			if (dir.isEmpty()) {
+				continue;
+			}
+			if (containsId(out, dir)) {
+				continue;
+			}
+			ThemeInfo info = parseThemeJson(dir, entry.getValue());
+			if (info != null) {
+				out.add(info);
+			}
+		}
+	}
+
+	private static boolean containsId(List<ThemeInfo> themes, String id) {
+		for (ThemeInfo info : themes) {
+			if (info.id().equals(id)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static ThemeInfo parseThemeEntry(JsonElement element, boolean builtIn) {
+		if (element.isJsonObject()) {
+			JsonObject obj = element.getAsJsonObject();
+			if (!obj.has("id")) {
+				return null;
+			}
+			String id = obj.get("id").getAsString();
+			String name = obj.has("name") ? obj.get("name").getAsString() : id;
+			String description = obj.has("description") ? obj.get("description").getAsString() : null;
+			return new ThemeInfo(id, name, builtIn, description);
+		}
+		if (element.isJsonPrimitive()) {
+			String id = element.getAsString();
+			return new ThemeInfo(id, id, builtIn, null);
+		}
+		return null;
+	}
+
+	private static ThemeInfo parseThemeJson(String id, Resource resource) {
+		try (InputStream in = resource.open()) {
+			JsonObject obj = JsonParser
+					.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+					.getAsJsonObject();
+			String name = obj.has("name") ? obj.get("name").getAsString() : id;
+			String description = obj.has("description") ? obj.get("description").getAsString() : null;
+			return new ThemeInfo(id, name, false, description);
+		} catch (Exception e) {
+			Constants.LOG.warn("Failed to parse theme metadata for '{}'", id, e);
+			return null;
+		}
+	}
 
 	public Optional<LoadedTheme> load(String themeId, ResourceManager resources) {
 		if (themeId == null || themeId.isBlank()) {
@@ -94,31 +225,6 @@ public class ThemeManager {
 			Constants.LOG.warn("Failed to read theme texture {}", location, e);
 			return null;
 		}
-	}
-
-	// TODO: auto discovery from resource packs
-	public static List<String> builtinThemeIds() {
-		List<String> ids = new ArrayList<>();
-		try (InputStream in = ThemeManager.class.getClassLoader().getResourceAsStream(INDEX_PATH)) {
-			if (in == null) {
-				return ids;
-			}
-			JsonObject root = JsonParser
-					.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8))
-					.getAsJsonObject();
-			if (root.has("themes") && root.get("themes").isJsonArray()) {
-				for (JsonElement element : root.getAsJsonArray("themes")) {
-					if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
-						ids.add(element.getAsJsonObject().get("id").getAsString());
-					} else if (element.isJsonPrimitive()) {
-						ids.add(element.getAsString());
-					}
-				}
-			}
-		} catch (Exception e) {
-			Constants.LOG.warn("Failed to read theme index", e);
-		}
-		return ids;
 	}
 
 	public record LoadedTheme(

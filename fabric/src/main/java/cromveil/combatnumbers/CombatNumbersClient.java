@@ -8,8 +8,8 @@ import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
-import cromveil.combatnumbers.config.FabricClientConfig;
-import cromveil.combatnumbers.platform.Services;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -17,10 +17,7 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.styles.StyleTable;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
@@ -32,7 +29,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-
 import java.util.Map;
 
 public class CombatNumbersClient implements ClientModInitializer {
@@ -41,7 +37,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		AutoConfig.register(FabricClientConfig.class, GsonConfigSerializer::new);
+		Config.store().addChangeListener(runtime::reloadTheme);
 
 		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
@@ -63,8 +59,6 @@ public class CombatNumbersClient implements ClientModInitializer {
 						runtime.applyResourcePackAnimations(entries);
 					}
 				});
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> runtime.tickThemeWatch());
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
 			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE, (packet, context) ->
@@ -89,7 +83,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
-			if (!Services.CONFIG.clientEnabled()) {
+			if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
 				FloatingTextManager.clear();
 				return;
 			}
@@ -108,7 +102,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 			}
 			FloatingTextManager.cleanupExpired();
 
-			RenderOption option = Services.CONFIG.renderMode();
+			RenderOption option = Config.get(ConfigIds.RENDER_MODE);
 			if (option.isHud()) {
 				return;
 			}
