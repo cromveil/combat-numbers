@@ -23,7 +23,7 @@ public final class ConfigIds {
 					m -> Component.translatable("config.combatnumbers.renderOption." + m.name()));
 
 	public static final ConfigId<Double> BASE_FONT_SIZE =
-			ConfigId.floatSlider(ConfigId.Category.CLIENT, "baseFontSize", 8.0,
+			ConfigId.floatSlider(ConfigId.Category.CLIENT, "baseFontSize", 9.0,
 					0.1, 32.0, SliderFormat.ONE_DECIMAL);
 
 	public static final ConfigId<Double> NEAR_FADE_DISTANCE =
