@@ -1,7 +1,14 @@
 {
-  "_comment": "Available themes should be listed here. Auto-discovery planned.",
   "themes": [
-    { "id": "basic", "name": "Basic" },
-    { "id": "maple", "name": "Maple" }
+    {
+      "id": "basic",
+      "name": "Basic",
+      "description": "Basic theme using default Minecraft font."
+    },
+    {
+      "id": "maple",
+      "name": "Maple",
+      "description": "MapleStory-style sprites for fancier damage numbers."
+    }
   ]
 }

@@ -11,7 +11,8 @@ import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.client.theme.ThemeManager;
-import cromveil.combatnumbers.platform.Services;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.styles.StyleTable;
 import net.minecraft.client.Minecraft;
@@ -24,7 +25,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class ClientRuntime {
@@ -92,18 +92,11 @@ public final class ClientRuntime {
 		};
 	}
 
-	/**
-	 * Rebuilds the theme layer if the configured theme changed since last applied.
-	 * FIXME: better way to detect theme changes than polling every tick
-	 */
-	public void tickThemeWatch() {
-		if (!Objects.equals(Services.CONFIG.clientTheme(), appliedTheme)) {
-			reloadTheme();
+	public void reloadTheme() {
+		if (lastResourceManager != null) {
+			ThemeManager.discoverThemes(lastResourceManager);
 		}
-	}
-
-	private void reloadTheme() {
-		appliedTheme = Services.CONFIG.clientTheme();
+		appliedTheme = Config.get(ConfigIds.CLIENT_THEME);
 		if (lastResourceManager == null) {
 			// resources not loaded yet
 			return;
@@ -129,7 +122,7 @@ public final class ClientRuntime {
 	}
 
 	public void onRenderPacket(int entityId, float value, int skinIndex, int animationIndex) {
-		if (!Services.CONFIG.clientEnabled()) {
+		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();

@@ -59,7 +59,7 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 
 	@Inject(method = "heal", at = @At("RETURN"))
 	private void onHealReturn(float amount, CallbackInfo ci) {
-		if (!Services.CONFIG.serverEnabled())
+		if (!cromveil.combatnumbers.config.Config.get(cromveil.combatnumbers.config.ConfigIds.SERVER_ENABLED))
 			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;
