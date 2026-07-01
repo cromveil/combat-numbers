@@ -20,7 +20,6 @@ import cromveil.combatnumbers.styles.StyleTable;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
@@ -32,6 +31,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.InteractionResult;
 
 import java.util.Map;
 
@@ -42,6 +42,12 @@ public class CombatNumbersClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		AutoConfig.register(FabricClientConfig.class, GsonConfigSerializer::new);
+
+		AutoConfig.getConfigHolder(FabricClientConfig.class)
+				.registerSaveListener((holder, config) -> {
+					runtime.reloadTheme();
+					return InteractionResult.SUCCESS;
+				});
 
 		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
@@ -63,8 +69,6 @@ public class CombatNumbersClient implements ClientModInitializer {
 						runtime.applyResourcePackAnimations(entries);
 					}
 				});
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> runtime.tickThemeWatch());
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
 			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE, (packet, context) ->

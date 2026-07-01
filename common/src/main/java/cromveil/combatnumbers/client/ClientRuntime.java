@@ -24,7 +24,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class ClientRuntime {
@@ -92,17 +91,7 @@ public final class ClientRuntime {
 		};
 	}
 
-	/**
-	 * Rebuilds the theme layer if the configured theme changed since last applied.
-	 * FIXME: better way to detect theme changes than polling every tick
-	 */
-	public void tickThemeWatch() {
-		if (!Objects.equals(Services.CONFIG.clientTheme(), appliedTheme)) {
-			reloadTheme();
-		}
-	}
-
-	private void reloadTheme() {
+	public void reloadTheme() {
 		appliedTheme = Services.CONFIG.clientTheme();
 		if (lastResourceManager == null) {
 			// resources not loaded yet

@@ -21,9 +21,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
@@ -82,7 +82,11 @@ public class CombatNumbersClient {
 					});
 		});
 
-		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, e -> runtime.tickThemeWatch());
+		modEventBus.addListener(ModConfigEvent.Reloading.class, event -> {
+			if (event.getConfig().getSpec() == NeoForgeClientConfig.SPEC) {
+				runtime.reloadTheme();
+			}
+		});
 		NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, e -> runtime.onDisconnect());
 	}
 }
