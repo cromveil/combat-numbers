@@ -15,25 +15,26 @@ public interface IConfigHelper {
 
     // Client
     boolean clientEnabled();
-
     String clientTheme();
-
     RenderOption renderMode();
-
     float baseFontSize();
-
     float nearFadeDistance();
-
     float maxRenderDistance();
-
     float distanceFalloffStart();
-
     float distanceFalloffEnd();
-
     float distanceMinScale();
+
+    void setClientEnabled(boolean enabled);
+    void setClientTheme(String theme);
+    void setClientRenderMode(RenderOption mode);
+    void setBaseFontSize(float size);
+    void setNearFadeDistance(float distance);
+    void setClientMaxRenderDistance(float distance);
+    void setDistanceFalloffStart(float distance);
+    void setDistanceFalloffEnd(float distance);
+    void setDistanceMinScale(float scale);
 
     // Server
     boolean serverEnabled();
-
     float serverMaxRenderDistance();
 }

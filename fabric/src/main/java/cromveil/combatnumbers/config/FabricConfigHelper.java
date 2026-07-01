@@ -59,6 +59,69 @@ public final class FabricConfigHelper implements IConfigHelper {
 	}
 
 	@Override
+	public void setClientEnabled(boolean enabled) {
+		var config = client();
+		config.enabled = enabled;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setClientTheme(String theme) {
+		var config = client();
+		config.theme = theme;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setClientRenderMode(RenderOption mode) {
+		var config = client();
+		config.renderMode = mode;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setBaseFontSize(float size) {
+		var config = client();
+		config.baseFontSize = size;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setNearFadeDistance(float distance) {
+		var config = client();
+		config.nearFadeDistance = distance;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setClientMaxRenderDistance(float distance) {
+		var config = client();
+		config.maxRenderDistance = distance;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setDistanceFalloffStart(float distance) {
+		var config = client();
+		config.distanceFalloffStart = distance;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setDistanceFalloffEnd(float distance) {
+		var config = client();
+		config.distanceFalloffEnd = distance;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
+	public void setDistanceMinScale(float scale) {
+		var config = client();
+		config.distanceMinScale = scale;
+		AutoConfig.getConfigHolder(FabricClientConfig.class).save();
+	}
+
+	@Override
 	public boolean serverEnabled() {
 		return server().enabled;
 	}

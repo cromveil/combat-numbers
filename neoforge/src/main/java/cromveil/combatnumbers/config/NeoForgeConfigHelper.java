@@ -50,6 +50,60 @@ public final class NeoForgeConfigHelper implements IConfigHelper {
 	}
 
 	@Override
+	public void setClientEnabled(boolean enabled) {
+		NeoForgeClientConfig.ENABLED.set(enabled);
+		NeoForgeClientConfig.ENABLED.save();
+	}
+
+	@Override
+	public void setClientTheme(String theme) {
+		NeoForgeClientConfig.THEME.set(theme);
+		NeoForgeClientConfig.THEME.save();
+	}
+
+	@Override
+	public void setClientRenderMode(RenderOption mode) {
+		NeoForgeClientConfig.RENDER_MODE.set(mode);
+		NeoForgeClientConfig.RENDER_MODE.save();
+	}
+
+	@Override
+	public void setBaseFontSize(float size) {
+		NeoForgeClientConfig.BASE_FONT_SIZE.set((double) size);
+		NeoForgeClientConfig.BASE_FONT_SIZE.save();
+	}
+
+	@Override
+	public void setNearFadeDistance(float distance) {
+		NeoForgeClientConfig.NEAR_FADE_DISTANCE.set((double) distance);
+		NeoForgeClientConfig.NEAR_FADE_DISTANCE.save();
+	}
+
+	@Override
+	public void setClientMaxRenderDistance(float distance) {
+		NeoForgeClientConfig.MAX_RENDER_DISTANCE.set((double) distance);
+		NeoForgeClientConfig.MAX_RENDER_DISTANCE.save();
+	}
+
+	@Override
+	public void setDistanceFalloffStart(float distance) {
+		NeoForgeClientConfig.DISTANCE_FALLOFF_START.set((double) distance);
+		NeoForgeClientConfig.DISTANCE_FALLOFF_START.save();
+	}
+
+	@Override
+	public void setDistanceFalloffEnd(float distance) {
+		NeoForgeClientConfig.DISTANCE_FALLOFF_END.set((double) distance);
+		NeoForgeClientConfig.DISTANCE_FALLOFF_END.save();
+	}
+
+	@Override
+	public void setDistanceMinScale(float scale) {
+		NeoForgeClientConfig.DISTANCE_MIN_SCALE.set((double) scale);
+		NeoForgeClientConfig.DISTANCE_MIN_SCALE.save();
+	}
+
+	@Override
 	public boolean serverEnabled() {
 		return NeoForgeServerConfig.ENABLED.get();
 	}
