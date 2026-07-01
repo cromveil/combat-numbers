@@ -84,7 +84,7 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 			this.combatNumbers$poisonTick = false;
 			return;
 		}
-		if (!Services.CONFIG.serverEnabled())
+		if (!cromveil.combatnumbers.config.Config.get(cromveil.combatnumbers.config.ConfigIds.SERVER_ENABLED))
 			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;

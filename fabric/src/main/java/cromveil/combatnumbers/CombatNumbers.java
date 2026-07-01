@@ -1,8 +1,9 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.config.FabricServerConfig;
-import cromveil.combatnumbers.platform.Services;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.config.FabricConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
 import cromveil.combatnumbers.filters.FilterLoader;
@@ -17,8 +18,6 @@ import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleLoader;
 import cromveil.combatnumbers.styles.Style;
 import cromveil.combatnumbers.styles.StyleTable;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -39,6 +38,7 @@ public class CombatNumbers implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		Config.init(new FabricConfig());
 		PayloadTypeRegistry.clientboundPlay()
 				.register(RenderPacket.TYPE, RenderPacket.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay()
@@ -49,8 +49,6 @@ public class CombatNumbers implements ModInitializer {
 				.register(SyncSpriteTexturePacket.TYPE, SyncSpriteTexturePacket.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay()
 				.register(SyncStyleTablePacket.TYPE, SyncStyleTablePacket.STREAM_CODEC);
-
-		AutoConfig.register(FabricServerConfig.class, GsonConfigSerializer::new);
 
 		ServerLifecycleEvents.SERVER_STARTED.register(x -> this.server = x);
 		ServerLifecycleEvents.SERVER_STOPPING.register(x -> this.server = null);
@@ -95,7 +93,7 @@ public class CombatNumbers implements ModInitializer {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = Services.CONFIG.serverMaxRenderDistance();
+			double maxDistSq = Config.get(ConfigIds.SERVER_MAX_RENDER_DISTANCE);
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

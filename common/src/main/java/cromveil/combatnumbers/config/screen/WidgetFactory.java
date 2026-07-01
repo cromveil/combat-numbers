@@ -77,11 +77,11 @@ final class WidgetFactory {
 
 	@SuppressWarnings("unchecked")
 	private AbstractWidget makeSlider(ConfigOption<?> opt, int x, int y, int width, Runnable onChanged) {
-		ConfigOption<Float> fOpt = (ConfigOption<Float>) opt;
-		float min = fOpt.sliderMin;
-		float max = fOpt.sliderMax;
-		SliderFormat format = fOpt.sliderFormat;
-		float current = fOpt.get();
+		ConfigOption<Double> dOpt = (ConfigOption<Double>) opt;
+		double min = dOpt.sliderMin;
+		double max = dOpt.sliderMax;
+		SliderFormat format = dOpt.sliderFormat;
+		double current = dOpt.get();
 		double normalized = (current - min) / (max - min);
 
 		return new AbstractSliderButton(x, y, width, Layout.WIDGET_HEIGHT, Component.empty(), normalized) {
@@ -91,14 +91,15 @@ final class WidgetFactory {
 
 			@Override
 			protected void updateMessage() {
-				float actual = min + (float) ((max - min) * this.value);
+				double actual = format.snap(min + (max - min) * this.value);
 				setMessage(Component.literal(format.format(actual)));
 			}
 
 			@Override
 			protected void applyValue() {
-				float actual = min + (float) ((max - min) * this.value);
-				fOpt.set(actual);
+				double actual = format.snap(min + (max - min) * this.value);
+				dOpt.set(actual);
+				this.value = (actual - min) / (max - min);
 				onChanged.run();
 			}
 		};

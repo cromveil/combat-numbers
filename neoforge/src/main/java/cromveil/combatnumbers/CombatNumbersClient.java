@@ -3,8 +3,9 @@ package cromveil.combatnumbers;
 import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.ClientRuntime;
-import cromveil.combatnumbers.config.NeoForgeClientConfig;
 import cromveil.combatnumbers.config.CombatNumbersOptions;
+import cromveil.combatnumbers.config.Config;
+import cromveil.combatnumbers.config.NeoForgeConfig;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -37,9 +38,12 @@ public class CombatNumbersClient {
 	private final ClientRuntime runtime = new ClientRuntime();
 
 	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
-		container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
+		NeoForgeConfig config = NeoForgeConfig.instance();
+		Config.init(config);
+
+		container.registerConfig(ModConfig.Type.CLIENT, config.clientSpec());
 		container.registerExtensionPoint(IConfigScreenFactory.class,
-				(container1, screen) -> CombatNumbersOptions.createScreen(screen));
+				(container1, screen) -> CombatNumbersOptions.createScreen(screen, Config.store()));
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
 			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
@@ -84,7 +88,7 @@ public class CombatNumbersClient {
 		});
 
 		modEventBus.addListener(ModConfigEvent.Reloading.class, event -> {
-			if (event.getConfig().getSpec() == NeoForgeClientConfig.SPEC) {
+			if (event.getConfig().getSpec() == config.clientSpec()) {
 				runtime.reloadTheme();
 			}
 		});

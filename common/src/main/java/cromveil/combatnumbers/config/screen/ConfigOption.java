@@ -27,15 +27,15 @@ public final class ConfigOption<T> {
 	final T emptyValue;
 	final Component emptyDisplay;
 
-	final float sliderMin;
-	final float sliderMax;
+	final double sliderMin;
+	final double sliderMax;
 	final SliderFormat sliderFormat;
 
 	private ConfigOption(String key, Type type, T defaultValue,
 			Supplier<T> externalReader, Consumer<T> externalWriter,
 			List<T> cycleValues, Function<T, Component> displayFn,
 			T emptyValue, Component emptyDisplay,
-			float sliderMin, float sliderMax, SliderFormat sliderFormat) {
+			double sliderMin, double sliderMax, SliderFormat sliderFormat) {
 		this.key = key;
 		this.type = type;
 		this.defaultValue = defaultValue;
@@ -80,8 +80,8 @@ public final class ConfigOption<T> {
 				allValues, displayFn, allowEmpty ? "" : null, emptyDisplay, 0, 0, null);
 	}
 
-	public static ConfigOption<Float> ofSlider(String key, float defaultValue,
-			float min, float max, Supplier<Float> reader, Consumer<Float> writer,
+	public static ConfigOption<Double> ofSlider(String key, double defaultValue,
+			double min, double max, Supplier<Double> reader, Consumer<Double> writer,
 			SliderFormat format) {
 		return new ConfigOption<>(key, Type.SLIDER, defaultValue, reader, writer,
 				null, null, null, null, min, max, format);
@@ -102,8 +102,8 @@ public final class ConfigOption<T> {
 	public void save() { externalWriter.accept(pendingValue); }
 
 	public boolean isAtDefault() {
-		if (pendingValue instanceof Float f && defaultValue instanceof Float d) {
-			return Math.abs(f - d) < 0.001f;
+		if (pendingValue instanceof Double d && defaultValue instanceof Double def) {
+			return Math.abs(d - def) < 0.001;
 		}
 		return Objects.equals(pendingValue, defaultValue);
 	}

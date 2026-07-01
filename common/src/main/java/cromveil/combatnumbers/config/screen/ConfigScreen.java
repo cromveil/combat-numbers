@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.config.screen;
 
+import cromveil.combatnumbers.config.ConfigStore;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -18,7 +19,7 @@ public class ConfigScreen extends Screen {
 	private final Screen parent;
 	private final String prefix;
 	private final Supplier<List<ConfigOption<?>>> optionsSupplier;
-	private final Runnable onSave;
+	private final ConfigStore store;
 
 	private List<ConfigOption<?>> options;
 
@@ -33,12 +34,12 @@ public class ConfigScreen extends Screen {
 	private Button resetAllBtn;
 
 	public ConfigScreen(Screen parent, Component title, String prefix,
-			Supplier<List<ConfigOption<?>>> optionsSupplier, Runnable onSave) {
+			Supplier<List<ConfigOption<?>>> optionsSupplier, ConfigStore store) {
 		super(title);
 		this.parent = parent;
 		this.prefix = prefix;
 		this.optionsSupplier = optionsSupplier;
-		this.onSave = onSave;
+		this.store = store;
 		this.widgetFactory = new WidgetFactory(font);
 	}
 
@@ -96,9 +97,7 @@ public class ConfigScreen extends Screen {
 			for (ConfigOption<?> opt : options) {
 				opt.save();
 			}
-			if (onSave != null) {
-				onSave.run();
-			}
+			store.save();
 			onClose();
 		}).bounds(Layout.saveLeft(width), btnY, Layout.BOTTOM_BTN_WIDTH, Layout.WIDGET_HEIGHT).build();
 		addRenderableWidget(saveBtn);
