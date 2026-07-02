@@ -2,7 +2,7 @@ package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -23,14 +23,14 @@ public final class BillboardHelper {
 				(float) (worldPos.y - cam.pos.y),
 				(float) (worldPos.z - cam.pos.z),
 				1.0f);
-		cam.viewRotationMatrix.transform(v);
+		RenderStateCache.viewRotationMatrix().transform(v);
 		float depth = -v.z;
 		return depth < 0.05f ? 0.05f : depth;
 	}
 
 	public static float guiPixelToWorld(CameraRenderState cam, float depth) {
 		int guiScaledHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-		float focalLength = Math.abs(cam.projectionMatrix.m11());
+		float focalLength = Math.abs(RenderStateCache.projectionMatrix().m11());
 		if (focalLength < 1.0e-6f || guiScaledHeight <= 0) {
 			return 0f;
 		}
@@ -38,7 +38,7 @@ public final class BillboardHelper {
 	}
 
 	public static void faceCamera(PoseStack ps, CameraRenderState cam) {
-		var invView = new Matrix4f(cam.viewRotationMatrix).invertAffine();
+		var invView = new Matrix4f().rotation(cam.orientation);
 		ps.mulPose(invView);
 	}
 

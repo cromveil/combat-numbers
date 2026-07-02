@@ -20,7 +20,7 @@ import cromveil.combatnumbers.styles.StyleTable;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.FileToIdConverter;
@@ -39,7 +39,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Config.store().addChangeListener(runtime::reloadTheme);
 
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
 				new SimpleJsonResourceReloadListener<SkinDefinition>(SkinDefinition.CODEC,
 						FileToIdConverter.json("skins")) {
@@ -49,7 +49,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 						runtime.applyResourcePackSkins(entries, manager);
 					}
 				});
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
 				new SimpleJsonResourceReloadListener<Timeline>(TimelineCodec.CODEC,
 						FileToIdConverter.json("animations")) {
@@ -82,7 +82,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
 
-		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
+		WorldRenderEvents.BEFORE_ENTITIES.register(context -> {
 			if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
 				FloatingTextManager.clear();
 				return;
@@ -109,9 +109,9 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 			FloatingTextRenderer.renderAll(BillboardStrategy.create(
 					option,
-					context.poseStack(),
-					context.submitNodeCollector(),
-					context.levelState().cameraRenderState));
+					context.matrices(),
+					context.commandQueue(),
+					context.worldState().cameraRenderState));
 		});
 	}
 }

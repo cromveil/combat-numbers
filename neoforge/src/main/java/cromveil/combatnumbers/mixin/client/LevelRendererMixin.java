@@ -1,7 +1,5 @@
 package cromveil.combatnumbers.mixin.client;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.FloatingText;
@@ -10,15 +8,11 @@ import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
-import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.level.Level;
-import org.joml.Matrix4fc;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,23 +28,14 @@ public abstract class LevelRendererMixin {
 	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass("
 			+ "Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;"
 			+ "Lnet/minecraft/client/renderer/culling/Frustum;"
-			+ "Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"
-			+ "ZLnet/minecraft/client/renderer/state/level/LevelRenderState;"
+			+ "Lorg/joml/Matrix4f;"
+			+ "Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"
+			+ "Z"
+			+ "Lnet/minecraft/client/renderer/state/LevelRenderState;"
 			+ "Lnet/minecraft/client/DeltaTracker;"
 			+ "Lnet/minecraft/util/profiling/ProfilerFiller;"
-			+ "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;"
 			+ ")V"))
-	private void injectCombatNumbersRender(
-			GraphicsResourceAllocator resourceAllocator,
-			DeltaTracker deltaTracker,
-			boolean renderOutline,
-			CameraRenderState cameraState,
-			Matrix4fc modelViewMatrix,
-			GpuBufferSlice terrainFog,
-			Vector4f fogColor,
-			boolean shouldRenderSky,
-			ChunkSectionsToRender chunkSectionsToRender,
-			CallbackInfo ci) {
+	private void injectCombatNumbersRender(CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
 		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
 			FloatingTextManager.clear();
@@ -63,7 +48,7 @@ public abstract class LevelRendererMixin {
 			return;
 		}
 
-		double gameTime = level.getGameTime() + deltaTracker.getGameTimeDeltaPartialTick(false);
+		double gameTime = level.getGameTime() + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		for (FloatingText text : FloatingTextManager.getActive()) {
 			text.setGameTime(gameTime);
 		}
@@ -74,8 +59,9 @@ public abstract class LevelRendererMixin {
 			return;
 		}
 
+		CameraRenderState cam = mc.gameRenderer.getLevelRenderState().cameraRenderState;
 		PoseStack poseStack = new PoseStack();
 		FloatingTextRenderer.renderAll(
-				BillboardStrategy.create(option, poseStack, submitNodeStorage, cameraState));
+				BillboardStrategy.create(option, poseStack, submitNodeStorage, cam));
 	}
 }

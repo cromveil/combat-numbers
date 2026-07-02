@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
@@ -15,7 +15,7 @@ public final class HudStrategy implements Strategy {
 
 	private static final float NDC_MARGIN = 1.1f;
 
-	private final GuiGraphicsExtractor graphics;
+	private final GuiGraphics graphics;
 	private final Matrix3x2fStack pose;
 	private final CameraRenderState cam;
 	private final int guiWidth;
@@ -24,7 +24,7 @@ public final class HudStrategy implements Strategy {
 	private float screenX;
 	private float screenY;
 
-	public HudStrategy(GuiGraphicsExtractor graphics, CameraRenderState cam) {
+	public HudStrategy(GuiGraphics graphics, CameraRenderState cam) {
 		this.graphics = graphics;
 		this.pose = graphics.pose();
 		this.cam = cam;
@@ -41,8 +41,8 @@ public final class HudStrategy implements Strategy {
 	public boolean cull(FloatingText text) {
 		Vec3 worldPos = text.worldPos;
 		Vec3 camPos = cam.pos;
-		Matrix4f projection = cam.projectionMatrix;
-		Matrix4f viewRotation = cam.viewRotationMatrix;
+		Matrix4f viewRotation = RenderStateCache.viewRotationMatrix();
+		Matrix4f projection = RenderStateCache.projectionMatrix();
 
 		Vector4f clip = new Vector4f(
 				(float) (worldPos.x - camPos.x),

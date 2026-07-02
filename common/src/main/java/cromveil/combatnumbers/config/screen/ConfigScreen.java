@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.config.screen;
 
 import cromveil.combatnumbers.config.ConfigStore;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -160,8 +160,8 @@ public class ConfigScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.centeredText(font, title, width / 2, Layout.titleY(), 0xFFFFFFFF);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		graphics.drawCenteredString(font, title, width / 2, Layout.titleY(), 0xFFFFFFFF);
 
 		int contentTop = Layout.scissorTop();
 		int contentBottom = Layout.scissorBottom(height);
@@ -173,14 +173,14 @@ public class ConfigScreen extends Screen {
 
 		for (int i = 0; i < options.size(); i++) {
 			int rowY = Layout.rowY(i, scroll.pixelOffset());
-			graphics.text(font, rowLabels.get(i), Layout.labelX(), Layout.labelY(rowY), 0xFFFFFFFF, true);
+			graphics.drawString(font, rowLabels.get(i), Layout.labelX(), Layout.labelY(rowY), 0xFFFFFFFF, true);
 		}
 
 		for (AbstractWidget w : rowWidgets) {
-			w.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			w.render(graphics, mouseX, mouseY, partialTick);
 		}
 		for (Button b : resetButtons) {
-			b.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			b.render(graphics, mouseX, mouseY, partialTick);
 		}
 
 		if (scroll.needsScroll()) {
@@ -188,13 +188,13 @@ public class ConfigScreen extends Screen {
 		}
 
 		if (saveBtn != null) {
-			saveBtn.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			saveBtn.render(graphics, mouseX, mouseY, partialTick);
 		}
 		if (cancelBtn != null) {
-			cancelBtn.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			cancelBtn.render(graphics, mouseX, mouseY, partialTick);
 		}
 		if (resetAllBtn != null) {
-			resetAllBtn.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			resetAllBtn.render(graphics, mouseX, mouseY, partialTick);
 		}
 
 		if (scroll.needsScroll()) {
@@ -202,7 +202,7 @@ public class ConfigScreen extends Screen {
 		}
 	}
 
-	private void drawScrollbar(GuiGraphicsExtractor graphics) {
+	private void drawScrollbar(GuiGraphics graphics) {
 		int sbL = Layout.scrollbarLeft(width);
 		int sbR = Layout.scrollbarRight(width);
 		int sbT = Layout.scrollbarTop();

@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
-    "HudMixin"
+    "HudMixin",
+    "LevelRenderStateCaptureMixin"
   ],
   "server": [],
   "injectors": {

@@ -2,7 +2,7 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -133,7 +133,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	public void render2d(GuiGraphics graphics, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -142,7 +142,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
+	public void renderChar2d(int index, GuiGraphics graphics, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0 || index < 0 || index >= charInfos.length)
 			return;
@@ -150,7 +150,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 		blitChars(graphics, -totalWidth / 2f, color, index, index + 1);
 	}
 
-	private void blitChars(GuiGraphicsExtractor graphics, float startX, int color, int from, int to) {
+	private void blitChars(GuiGraphics graphics, float startX, int color, int from, int to) {
 		int texWidth = spriteSheet.columns() * spriteSheet.cellWidth();
 		int texHeight = spriteSheet.rows() * spriteSheet.cellHeight();
 		for (int i = from; i < to; i++) {

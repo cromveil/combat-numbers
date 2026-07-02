@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -42,7 +42,7 @@ public abstract sealed class BillboardStrategy implements Strategy
 	@Override
 	public boolean cull(FloatingText text) {
 		Vec3 p = text.worldPos;
-		return !cam.cullFrustum.pointInFrustum(p.x, p.y, p.z);
+		return !RenderStateCache.cullFrustum().pointInFrustum(p.x, p.y, p.z);
 	}
 
 	@Override
@@ -55,9 +55,9 @@ public abstract sealed class BillboardStrategy implements Strategy
 		BillboardHelper.rotateZ(ps, placement.rotation());
 		BillboardHelper.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
 		if (perChar) {
-			text.visual.renderChar3d(charIndex, ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.renderChar3d(charIndex, ps, collector, placement.alpha(), LightTexture.FULL_BRIGHT);
 		} else {
-			text.visual.render3d(ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.render3d(ps, collector, placement.alpha(), LightTexture.FULL_BRIGHT);
 		}
 		ps.popPose();
 	}

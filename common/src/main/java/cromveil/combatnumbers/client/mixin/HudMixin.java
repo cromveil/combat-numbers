@@ -6,9 +6,9 @@ import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,9 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Gui.class)
 public abstract class HudMixin {
 
-	@Inject(method = "extractRenderState", at = @At("TAIL"))
+	@Inject(method = "render", at = @At("TAIL"))
 	private void combatnumbers$renderFloatingTextHud(
-			GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+			GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (!Config.get(ConfigIds.CLIENT_ENABLED) || !Config.get(ConfigIds.RENDER_MODE).isHud()) {
 			return;
 		}
@@ -29,7 +29,7 @@ public abstract class HudMixin {
 			return;
 		}
 
-		CameraRenderState cam = mc.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState;
+		CameraRenderState cam = mc.gameRenderer.getLevelRenderState().cameraRenderState;
 		FloatingTextRenderer.renderAll(new HudStrategy(graphics, cam));
 	}
 }

@@ -3,7 +3,7 @@ package cromveil.combatnumbers.client.skins;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -83,7 +83,7 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	public void render2d(GuiGraphics graphics, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -94,7 +94,7 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
+	public void renderChar2d(int index, GuiGraphics graphics, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -104,14 +104,14 @@ public class TextSkinRenderer implements SkinRenderer {
 		drawText(graphics, font, charSequences[index], x, y, a);
 	}
 
-	private void drawText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence sequence,
+	private void drawText(GuiGraphics graphics, Font font, FormattedCharSequence sequence,
 			int x, int y, int a) {
 		int fColor = (a << 24) | (fillColor & 0x00FFFFFF);
 		int oColor = (a << 24) | (outlineColor & 0x00FFFFFF);
 		for (int[] off : OUTLINE_OFFSETS) {
-			graphics.text(font, sequence, x + off[0], y + off[1], oColor, false);
+			graphics.drawString(font, sequence, x + off[0], y + off[1], oColor, false);
 		}
-		graphics.text(font, sequence, x, y, fColor, false);
+		graphics.drawString(font, sequence, x, y, fColor, false);
 	}
 
 	private float charStartX(Font font, int index) {

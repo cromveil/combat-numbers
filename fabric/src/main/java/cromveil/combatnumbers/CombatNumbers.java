@@ -39,15 +39,15 @@ public class CombatNumbers implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init(new FabricConfig());
-		PayloadTypeRegistry.clientboundPlay()
+		PayloadTypeRegistry.playS2C()
 				.register(RenderPacket.TYPE, RenderPacket.STREAM_CODEC);
-		PayloadTypeRegistry.clientboundPlay()
+		PayloadTypeRegistry.playS2C()
 				.register(SyncAnimationDataPacket.TYPE, SyncAnimationDataPacket.STREAM_CODEC);
-		PayloadTypeRegistry.clientboundPlay()
+		PayloadTypeRegistry.playS2C()
 				.register(SyncSkinDataPacket.TYPE, SyncSkinDataPacket.STREAM_CODEC);
-		PayloadTypeRegistry.clientboundPlay()
+		PayloadTypeRegistry.playS2C()
 				.register(SyncSpriteTexturePacket.TYPE, SyncSpriteTexturePacket.STREAM_CODEC);
-		PayloadTypeRegistry.clientboundPlay()
+		PayloadTypeRegistry.playS2C()
 				.register(SyncStyleTablePacket.TYPE, SyncStyleTablePacket.STREAM_CODEC);
 
 		ServerLifecycleEvents.SERVER_STARTED.register(x -> this.server = x);
@@ -60,13 +60,13 @@ public class CombatNumbers implements ModInitializer {
 		var filterRegistry = new FilterRegistry();
 		var filterLoader = new FilterLoader(filterRegistry);
 
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "animations"), animationRegistry);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "styles"), ruleLoader);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "skins"), skinRegistry);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(
 				Identifier.fromNamespaceAndPath("combatnumbers", "filters"), filterLoader);
 
 		CombatNumbersEvents.COMBAT.register(event -> {
