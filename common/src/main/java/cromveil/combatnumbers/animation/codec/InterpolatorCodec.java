@@ -315,12 +315,13 @@ public final class InterpolatorCodec {
 			InterpolatorCodec::typeName,
 			InterpolatorCodec::codecFor);
 
+	@SuppressWarnings("unused")
 	private static String typeName(Interpolator ip) {
 		return switch (ip) {
 			case ConstantInterpolator c -> c.source() instanceof ConstantInterpolator.Fixed ? "constant" : "random";
-			case TweenInterpolator _ -> "tween";
-			case KeyframeInterpolator _ -> "keyframe";
-			case SpringInterpolator _ -> "spring";
+			case TweenInterpolator t -> "tween";
+			case KeyframeInterpolator k -> "keyframe";
+			case SpringInterpolator s -> "spring";
 		};
 	}
 

@@ -14,18 +14,18 @@ public final class NeoForgeConfig implements ConfigStore {
 
 	public static NeoForgeConfig instance() { return INSTANCE; }
 
+	private final ModConfigSpec commonSpec;
 	private final ModConfigSpec clientSpec;
-	private final ModConfigSpec serverSpec;
+	private final Map<String, ConfigValue<?>> commonValues = new HashMap<>();
 	private final Map<String, ConfigValue<?>> clientValues = new HashMap<>();
-	private final Map<String, ConfigValue<?>> serverValues = new HashMap<>();
 
 	private NeoForgeConfig() {
+		this.commonSpec = buildSpec(ConfigIds.ALL_COMMON, commonValues);
 		this.clientSpec = buildSpec(ConfigIds.ALL_CLIENT, clientValues);
-		this.serverSpec = buildSpec(ConfigIds.ALL_SERVER, serverValues);
 	}
 
+	public ModConfigSpec commonSpec() { return commonSpec; }
 	public ModConfigSpec clientSpec() { return clientSpec; }
-	public ModConfigSpec serverSpec() { return serverSpec; }
 
 	private static String camelToSnake(String camel) {
 		StringBuilder sb = new StringBuilder();
@@ -74,7 +74,11 @@ public final class NeoForgeConfig implements ConfigStore {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T get(ConfigId<T> id) {
-		ConfigValue<?> cv = (id.category() == ConfigId.Category.SERVER ? serverValues : clientValues).get(id.key());
+		ConfigValue<?> cv = switch (id.category()) {
+			case COMMON -> commonValues.get(id.key());
+			case CLIENT -> clientValues.get(id.key());
+			case SERVER -> null;
+		};
 		if (cv == null) {
 			return id.defaultValue();
 		}
@@ -88,7 +92,11 @@ public final class NeoForgeConfig implements ConfigStore {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void set(ConfigId<T> id, T value) {
-		ConfigValue<?> cv = (id.category() == ConfigId.Category.SERVER ? serverValues : clientValues).get(id.key());
+		ConfigValue<?> cv = switch (id.category()) {
+			case COMMON -> commonValues.get(id.key());
+			case CLIENT -> clientValues.get(id.key());
+			case SERVER -> null;
+		};
 		if (cv != null) {
 			try {
 				((ConfigValue<T>) cv).set(value);
@@ -98,8 +106,8 @@ public final class NeoForgeConfig implements ConfigStore {
 
 	@Override
 	public void save() {
+		saveSpec(commonValues);
 		saveSpec(clientValues);
-		saveSpec(serverValues);
 	}
 
 	private static void saveSpec(Map<String, ConfigValue<?>> values) {

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public final class ConfigId<T> {
 
-	public enum Category { CLIENT, SERVER }
+	public enum Category { CLIENT, SERVER, COMMON }
 
 	public enum Kind { BOOL, DOUBLE_SLIDER, STRING_CYCLE, ENUM_CYCLE }
 
@@ -66,7 +66,6 @@ public final class ConfigId<T> {
 
 	public static <E extends Enum<E>> ConfigId<E> enumCycle(Category category, String key,
 			E defaultValue, Function<E, Component> displayFn) {
-		@SuppressWarnings("unchecked")
 		Function<E, Component> fn = (Function<E, Component>) displayFn;
 		return new ConfigId<>(category, key, Kind.ENUM_CYCLE, defaultValue,
 				0, 0, null, null, false, fn);
@@ -100,7 +99,6 @@ public final class ConfigId<T> {
 			case STRING_CYCLE -> {
 				ConfigId<String> self = (ConfigId<String>) (Object) this;
 				List<String> values = allowedValuesSupplier.get();
-				@SuppressWarnings("unchecked")
 				Function<String, Component> disp = (Function<String, Component>) (Object) displayFn;
 				if (disp == null) {
 					disp = Component::literal;
@@ -122,7 +120,7 @@ public final class ConfigId<T> {
 						Component.translatable("options.off"));
 			}
 			case ENUM_CYCLE -> {
-				@SuppressWarnings({"unchecked", "rawtypes"})
+				@SuppressWarnings({"rawtypes"})
 				ConfigOption opt = ConfigOption.ofEnum(key, (Enum) defaultValue,
 						() -> (Enum) store.get((ConfigId) this),
 						v -> store.set((ConfigId) this, v),

@@ -52,7 +52,7 @@ public abstract class LevelRendererMixin {
 			ChunkSectionsToRender chunkSectionsToRender,
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
+		if (!Config.get(ConfigIds.ENABLED)) {
 			FloatingTextManager.clear();
 			return;
 		}

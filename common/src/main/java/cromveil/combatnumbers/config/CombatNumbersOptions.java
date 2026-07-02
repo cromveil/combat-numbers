@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public final class CombatNumbersOptions {
 
@@ -20,7 +21,7 @@ public final class CombatNumbersOptions {
 	}
 
 	public static List<ConfigOption<?>> clientOptions(ConfigStore store) {
-		return ConfigIds.ALL_CLIENT.stream()
+		return Stream.concat(ConfigIds.ALL_COMMON.stream(), ConfigIds.ALL_CLIENT.stream())
 				.<ConfigOption<?>>map(id -> id.toOption(store))
 				.toList();
 	}

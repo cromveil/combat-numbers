@@ -21,13 +21,14 @@ public sealed interface Playback permits Playback.Forward, Playback.Reverse {
 	public static final Playback FORWARD = new Forward();
 	public static final Playback REVERSE = new Reverse();
 
+	@SuppressWarnings("unused")
 	static com.mojang.serialization.Codec<Playback> CODEC = com.mojang.serialization.Codec.STRING.xmap(
 			name -> switch (name) {
 				case "reverse" -> REVERSE;
 				default -> FORWARD;
 			},
 			p -> switch (p) {
-				case Reverse _ -> "reverse";
+				case Reverse r -> "reverse";
 				default -> "forward";
 			});
 }

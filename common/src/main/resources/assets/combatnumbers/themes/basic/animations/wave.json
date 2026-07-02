@@ -18,7 +18,7 @@
       "scale": {
         "type": "keyframe",
         "times": [0, 0.64, 1],
-        "values": [0, 1.6, 1.2],
+        "values": [0, 1.8, 1.2],
         "easing": ["ease_out_sine", "ease_in_out"]
       }
     }
