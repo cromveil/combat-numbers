@@ -45,7 +45,7 @@ public abstract class LevelRendererMixin {
 			boolean shouldRenderSky,
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
+		if (!Config.get(ConfigIds.ENABLED)) {
 			FloatingTextManager.clear();
 			return;
 		}

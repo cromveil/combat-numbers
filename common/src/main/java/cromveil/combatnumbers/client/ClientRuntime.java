@@ -122,7 +122,7 @@ public final class ClientRuntime {
 	}
 
 	public void onRenderPacket(int entityId, float value, int skinIndex, int animationIndex) {
-		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
+		if (!Config.get(ConfigIds.ENABLED)) {
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();

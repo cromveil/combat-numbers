@@ -49,7 +49,7 @@ public class CombatNumbers {
 		NeoForgeConfig config = NeoForgeConfig.instance();
 		Config.init(config);
 
-		container.registerConfig(ModConfig.Type.SERVER, config.serverSpec());
+		container.registerConfig(ModConfig.Type.COMMON, config.commonSpec());
 
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, e -> {
 			PayloadRegistrar registrar = e.registrar(Constants.MOD_ID);
@@ -111,7 +111,7 @@ public class CombatNumbers {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = Config.get(ConfigIds.SERVER_MAX_RENDER_DISTANCE);
+			double maxDistSq = Config.get(ConfigIds.MAX_RENDER_DISTANCE);
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

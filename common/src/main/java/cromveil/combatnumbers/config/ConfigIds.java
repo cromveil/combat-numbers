@@ -11,8 +11,8 @@ public final class ConfigIds {
 
 	private ConfigIds() {}
 
-	public static final ConfigId<Boolean> CLIENT_ENABLED =
-			ConfigId.bool(ConfigId.Category.CLIENT, "enabled", true);
+	public static final ConfigId<Boolean> ENABLED =
+			ConfigId.bool(ConfigId.Category.COMMON, "enabled", true);
 
 	public static final ConfigId<String> CLIENT_THEME =
 			ConfigId.stringCycle(ConfigId.Category.CLIENT, "theme", "maple",
@@ -31,7 +31,7 @@ public final class ConfigIds {
 					0.0, 64.0, SliderFormat.ONE_DECIMAL);
 
 	public static final ConfigId<Double> MAX_RENDER_DISTANCE =
-			ConfigId.floatSlider(ConfigId.Category.CLIENT, "maxRenderDistance", 32.0,
+			ConfigId.floatSlider(ConfigId.Category.COMMON, "maxRenderDistance", 32.0,
 					0.0, 256.0, SliderFormat.INTEGER);
 
 	public static final ConfigId<Double> DISTANCE_FALLOFF_START =
@@ -46,20 +46,15 @@ public final class ConfigIds {
 			ConfigId.floatSlider(ConfigId.Category.CLIENT, "distanceMinScale", 0.3,
 					0.0, 1.0, SliderFormat.TWO_DECIMALS);
 
-	public static final ConfigId<Boolean> SERVER_ENABLED =
-			ConfigId.bool(ConfigId.Category.SERVER, "enabled", true);
-
-	public static final ConfigId<Double> SERVER_MAX_RENDER_DISTANCE =
-			ConfigId.floatSlider(ConfigId.Category.SERVER, "maxRenderDistance", 32.0,
-					0.0, 256.0, SliderFormat.INTEGER);
+	public static final List<ConfigId<?>> ALL_COMMON = List.of(
+			ENABLED, MAX_RENDER_DISTANCE
+	);
 
 	public static final List<ConfigId<?>> ALL_CLIENT = List.of(
-			CLIENT_ENABLED, CLIENT_THEME, RENDER_MODE,
-			BASE_FONT_SIZE, NEAR_FADE_DISTANCE, MAX_RENDER_DISTANCE,
+			CLIENT_THEME, RENDER_MODE,
+			BASE_FONT_SIZE, NEAR_FADE_DISTANCE,
 			DISTANCE_FALLOFF_START, DISTANCE_FALLOFF_END, DISTANCE_MIN_SCALE
 	);
 
-	public static final List<ConfigId<?>> ALL_SERVER = List.of(
-			SERVER_ENABLED, SERVER_MAX_RENDER_DISTANCE
-	);
+	// public static final List<ConfigId<?>> ALL_SERVER = List.of();
 }
