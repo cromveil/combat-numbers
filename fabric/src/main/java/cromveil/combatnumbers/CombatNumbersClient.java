@@ -83,7 +83,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
 
 		WorldRenderEvents.BEFORE_ENTITIES.register(context -> {
-			if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
+			if (!Config.get(ConfigIds.ENABLED)) {
 				FloatingTextManager.clear();
 				return;
 			}

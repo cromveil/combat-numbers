@@ -19,18 +19,22 @@ public final class FabricConfig implements ConfigStore {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+	private static final Path COMMON_PATH = FabricLoader.getInstance()
+			.getConfigDir().resolve("combatnumbers-common.json");
 	private static final Path CLIENT_PATH = FabricLoader.getInstance()
 			.getConfigDir().resolve("combatnumbers-client.json");
-	private static final Path SERVER_PATH = FabricLoader.getInstance()
-			.getConfigDir().resolve("combatnumbers-server.json");
+	// private static final Path SERVER_PATH = FabricLoader.getInstance()
+	// 		.getConfigDir().resolve("combatnumbers-server.json");
 
+	private final Map<String, Object> commonValues = new LinkedHashMap<>();
 	private final Map<String, Object> clientValues = new LinkedHashMap<>();
-	private final Map<String, Object> serverValues = new LinkedHashMap<>();
+	// private final Map<String, Object> serverValues = new LinkedHashMap<>();
 	private final List<Runnable> changeListeners = new ArrayList<>();
 
 	public FabricConfig() {
+		load(COMMON_PATH, commonValues, ConfigIds.ALL_COMMON);
 		load(CLIENT_PATH, clientValues, ConfigIds.ALL_CLIENT);
-		load(SERVER_PATH, serverValues, ConfigIds.ALL_SERVER);
+		// load(SERVER_PATH, serverValues, ConfigIds.ALL_SERVER);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,7 +73,15 @@ public final class FabricConfig implements ConfigStore {
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public <T> T get(ConfigId<T> id) {
-		Map<String, Object> store = id.category() == ConfigId.Category.SERVER ? serverValues : clientValues;
+		Map<String, Object> store = switch (id.category()) {
+			case COMMON -> commonValues;
+			case CLIENT -> clientValues;
+			// case SERVER -> serverValues;
+			default -> null;
+		};
+		if (store == null) {
+			return id.defaultValue();
+		}
 		Object raw = store.get(id.key());
 		if (raw == null) {
 			return id.defaultValue();
@@ -88,14 +100,22 @@ public final class FabricConfig implements ConfigStore {
 
 	@Override
 	public <T> void set(ConfigId<T> id, T value) {
-		Map<String, Object> store = id.category() == ConfigId.Category.SERVER ? serverValues : clientValues;
-		store.put(id.key(), value);
+		Map<String, Object> store = switch (id.category()) {
+			case COMMON -> commonValues;
+			case CLIENT -> clientValues;
+			// case SERVER -> serverValues;
+			default -> null;
+		};
+		if (store != null) {
+			store.put(id.key(), value);
+		}
 	}
 
 	@Override
 	public void save() {
+		save(COMMON_PATH, commonValues);
 		save(CLIENT_PATH, clientValues);
-		save(SERVER_PATH, serverValues);
+		// save(SERVER_PATH, serverValues);
 		for (Runnable listener : changeListeners) {
 			listener.run();
 		}

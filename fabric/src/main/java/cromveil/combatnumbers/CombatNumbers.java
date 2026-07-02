@@ -93,7 +93,7 @@ public class CombatNumbers implements ModInitializer {
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
 
-			double maxDistSq = Config.get(ConfigIds.SERVER_MAX_RENDER_DISTANCE);
+			double maxDistSq = Config.get(ConfigIds.MAX_RENDER_DISTANCE);
 			maxDistSq *= maxDistSq;
 			for (ServerPlayer player : level.players()) {
 				if (player.distanceToSqr(entityX, entityY, entityZ) > maxDistSq)

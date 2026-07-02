@@ -37,7 +37,7 @@ public abstract class LevelRendererMixin {
 			+ ")V"))
 	private void injectCombatNumbersRender(CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		if (!Config.get(ConfigIds.CLIENT_ENABLED)) {
+		if (!Config.get(ConfigIds.ENABLED)) {
 			FloatingTextManager.clear();
 			return;
 		}

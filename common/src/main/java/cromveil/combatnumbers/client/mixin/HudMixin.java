@@ -20,7 +20,7 @@ public abstract class HudMixin {
 	@Inject(method = "render", at = @At("TAIL"))
 	private void combatnumbers$renderFloatingTextHud(
 			GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		if (!Config.get(ConfigIds.CLIENT_ENABLED) || !Config.get(ConfigIds.RENDER_MODE).isHud()) {
+		if (!Config.get(ConfigIds.ENABLED) || !Config.get(ConfigIds.RENDER_MODE).isHud()) {
 			return;
 		}
 
