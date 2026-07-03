@@ -1,7 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -11,8 +10,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class WorldStrategy extends BillboardStrategy {
 
-	WorldStrategy(PoseStack ps, SubmitNodeCollector collector, RenderCamera cam) {
-		super(ps, collector, cam);
+	WorldStrategy(PoseStack ps, GeometrySubmitter geom, RenderCamera cam) {
+		super(ps, geom, cam);
 	}
 
 	@Override

@@ -1,15 +1,16 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import cromveil.combatnumbers.client.render.CustomGeometryRenderer;
+import cromveil.combatnumbers.client.render.GeometrySubmitter;
 import cromveil.combatnumbers.client.render.HudRenderContext;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 
 public interface SkinRenderer {
-	void render3d(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float alpha, int light);
+	void render3d(PoseStack poseStack, GeometrySubmitter geom, float alpha, int light);
 
-	default void renderChar3d(int index, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	default void renderChar3d(int index, PoseStack poseStack, GeometrySubmitter geom,
 			float alpha, int light) {
-		render3d(poseStack, submitNodeCollector, alpha, light);
+		render3d(poseStack, geom, alpha, light);
 	}
 
 	default void render2d(HudRenderContext ctx, float alpha) {

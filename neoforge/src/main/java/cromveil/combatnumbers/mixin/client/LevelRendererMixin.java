@@ -9,6 +9,7 @@ import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
+import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import net.minecraft.client.DeltaTracker;
@@ -70,7 +71,8 @@ public abstract class LevelRendererMixin {
 
 		PoseStack poseStack = new PoseStack();
 		FloatingTextRenderer.renderAll(
-				BillboardStrategy.create(option, poseStack, submitNodeStorage,
+				BillboardStrategy.create(option, poseStack,
+						new SubmitNodeCollectorAdapter(submitNodeStorage),
 						CameraAdapter.from(cameraState)));
 	}
 }

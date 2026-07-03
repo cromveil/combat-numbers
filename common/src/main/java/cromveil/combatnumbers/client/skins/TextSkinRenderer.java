@@ -1,11 +1,11 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import cromveil.combatnumbers.client.render.GeometrySubmitter;
 import cromveil.combatnumbers.client.render.HudRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.TextRenderable;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -39,22 +39,22 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float alpha, int light) {
+	public void render3d(PoseStack poseStack, GeometrySubmitter geom, float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		float x = -font.width(text) / 2f;
-		submitText(font, fullSequence, x, 0f, alpha, poseStack, submitNodeCollector, light);
+		submitText(font, fullSequence, x, 0f, alpha, poseStack, geom, light);
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	public void renderChar3d(int index, PoseStack poseStack, GeometrySubmitter geom,
 			float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		submitText(font, charSequences[index], charStartX(font, index), 0f, alpha,
-				poseStack, submitNodeCollector, light);
+				poseStack, geom, light);
 	}
 
 	private void submitText(Font font, FormattedCharSequence sequence, float x, float y, float alpha,
-			PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light) {
+			PoseStack poseStack, GeometrySubmitter geom, int light) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -70,7 +70,7 @@ public class TextSkinRenderer implements SkinRenderer {
 			outlines.add(collectGlyphs(font, sequence, x + off[0], y + off[1], oColor));
 		}
 
-		submitNodeCollector.submitCustomGeometry(poseStack, fill.renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, fill.renderType, (pose, vertexConsumer) -> {
 			for (GlyphCollector outline : outlines) {
 				for (TextRenderable glyph : outline.glyphs) {
 					glyph.render(pose.pose(), vertexConsumer, light, false);

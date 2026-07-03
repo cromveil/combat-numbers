@@ -2,8 +2,8 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import cromveil.combatnumbers.client.render.GeometrySubmitter;
 import cromveil.combatnumbers.client.render.HudRenderContext;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.joml.Matrix4fc;
 
@@ -68,7 +68,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float alpha, int light) {
+	public void render3d(PoseStack poseStack, GeometrySubmitter geom, float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
@@ -76,7 +76,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 
 		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
 
-		submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
 			renderChars(vertexConsumer, matrix, startX, 0f, color, light);
 		});
@@ -116,7 +116,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	public void renderChar3d(int index, PoseStack poseStack, GeometrySubmitter geom,
 			float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
@@ -125,7 +125,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 
 		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
 
-		submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
 			renderChar(vertexConsumer, matrix, index, startX, 0f, color, light);
 		});

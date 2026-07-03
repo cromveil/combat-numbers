@@ -1,7 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 
@@ -17,20 +16,20 @@ public abstract sealed class BillboardStrategy implements Strategy
 		permits WorldStrategy, ScreenStrategy {
 
 	protected final PoseStack ps;
-	protected final SubmitNodeCollector collector;
+	protected final GeometrySubmitter geom;
 	protected final RenderCamera cam;
 
-	protected BillboardStrategy(PoseStack ps, SubmitNodeCollector collector, RenderCamera cam) {
+	protected BillboardStrategy(PoseStack ps, GeometrySubmitter geom, RenderCamera cam) {
 		this.ps = ps;
-		this.collector = collector;
+		this.geom = geom;
 		this.cam = cam;
 	}
 
 	public static BillboardStrategy create(RenderOption option, PoseStack ps,
-			SubmitNodeCollector collector, RenderCamera cam) {
+			GeometrySubmitter geom, RenderCamera cam) {
 		return option == RenderOption.SCREEN
-				? new ScreenStrategy(ps, collector, cam)
-				: new WorldStrategy(ps, collector, cam);
+				? new ScreenStrategy(ps, geom, cam)
+				: new WorldStrategy(ps, geom, cam);
 	}
 
 	@Override
@@ -53,9 +52,9 @@ public abstract sealed class BillboardStrategy implements Strategy
 		BillboardHelper.rotateZ(ps, placement.rotation());
 		BillboardHelper.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
 		if (perChar) {
-			text.visual.renderChar3d(charIndex, ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.renderChar3d(charIndex, ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
 		} else {
-			text.visual.render3d(ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.render3d(ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
 		}
 		ps.popPose();
 	}

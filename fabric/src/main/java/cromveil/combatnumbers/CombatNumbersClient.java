@@ -9,6 +9,7 @@ import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
+import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.packets.RenderPacket;
@@ -101,7 +102,7 @@ public class CombatNumbersClient implements ClientModInitializer {
 			FloatingTextRenderer.renderAll(BillboardStrategy.create(
 					option,
 					context.poseStack(),
-					context.submitNodeCollector(),
+					new SubmitNodeCollectorAdapter(context.submitNodeCollector()),
 					CameraAdapter.from(context.levelState().cameraRenderState)));
 		});
 	}
