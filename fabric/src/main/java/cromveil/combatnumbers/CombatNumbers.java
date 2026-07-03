@@ -1,36 +1,40 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
+import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.FabricConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
-import cromveil.combatnumbers.filters.FilterLoader;
+import cromveil.combatnumbers.filters.FilterProcessor;
 import cromveil.combatnumbers.filters.FilterRegistry;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
+import cromveil.combatnumbers.resource.DataConsumer;
+import cromveil.combatnumbers.resource.FabricReloadRegistry;
+import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinRegistry;
 import cromveil.combatnumbers.styles.RuleEngine;
-import cromveil.combatnumbers.styles.RuleLoader;
+import cromveil.combatnumbers.styles.RuleProcessor;
+import cromveil.combatnumbers.styles.RuleSet;
 import cromveil.combatnumbers.styles.Style;
 import cromveil.combatnumbers.styles.StyleTable;
+import cromveil.combatnumbers.styles.WhenCondition;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.resources.Identifier;
 
 public class CombatNumbers implements ModInitializer {
 	private MinecraftServer server;
@@ -56,18 +60,27 @@ public class CombatNumbers implements ModInitializer {
 		var animationRegistry = new AnimationRegistry();
 		var skinRegistry = new SkinRegistry();
 		var ruleEngine = new RuleEngine();
-		var ruleLoader = new RuleLoader(ruleEngine);
+		var ruleProcessor = new RuleProcessor(ruleEngine);
 		var filterRegistry = new FilterRegistry();
-		var filterLoader = new FilterLoader(filterRegistry);
+		var filterProcessor = new FilterProcessor(filterRegistry);
 
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "animations"), animationRegistry);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "styles"), ruleLoader);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "skins"), skinRegistry);
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "filters"), filterLoader);
+		var reloadRegistry = new FabricReloadRegistry();
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				"animations", TimelineCodec.CODEC,
+				DataConsumer.from(animationRegistry::accept));
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "styles"),
+				"styles", RuleSet.CODEC,
+				DataConsumer.from(ruleProcessor::accept));
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				"skins", SkinDefinition.CODEC,
+				skinRegistry::accept);
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "filters"),
+				"filters", WhenCondition.CODEC.listOf(),
+				DataConsumer.from(filterProcessor::accept));
 
 		CombatNumbersEvents.COMBAT.register(event -> {
 			if (!filterRegistry.passes(event))
@@ -76,7 +89,7 @@ public class CombatNumbers implements ModInitializer {
 			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, style));
 		});
 
-		ruleLoader.setOnReload(() -> {
+		ruleProcessor.setOnReload(() -> {
 			this.styleTable = StyleTable.from(ruleEngine);
 			broadcast(new SyncStyleTablePacket(this.styleTable));
 		});
@@ -105,16 +118,18 @@ public class CombatNumbers implements ModInitializer {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, _server) -> {
 			ServerPlayer player = handler.getPlayer();
 			ServerPlayNetworking.send(player, new SyncStyleTablePacket(this.styleTable));
-			ServerPlayNetworking.send(player, new SyncAnimationDataPacket(animationRegistry.getAll()));
+			ServerPlayNetworking.send(player,
+					new SyncAnimationDataPacket(animationRegistry.getAll()));
 			var texPacket = skinRegistry.buildTexturePacket();
 			if (texPacket != null) {
 				ServerPlayNetworking.send(player, texPacket);
 			}
-			ServerPlayNetworking.send(player, new SyncSkinDataPacket(skinRegistry.getAll()));
+			ServerPlayNetworking.send(player,
+					new SyncSkinDataPacket(skinRegistry.getAll()));
 		});
 
-		animationRegistry.setOnReload(() ->
-				broadcast(new SyncAnimationDataPacket(animationRegistry.getAll())));
+		animationRegistry.setOnReload(
+				() -> broadcast(new SyncAnimationDataPacket(animationRegistry.getAll())));
 
 		skinRegistry.setOnReload(() -> {
 			var texPacket = skinRegistry.buildTexturePacket();

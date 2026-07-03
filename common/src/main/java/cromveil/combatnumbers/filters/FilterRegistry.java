@@ -24,8 +24,4 @@ public class FilterRegistry {
 	public void clear() {
 		filters.clear();
 	}
-
-	public int size() {
-		return filters.size();
-	}
 }

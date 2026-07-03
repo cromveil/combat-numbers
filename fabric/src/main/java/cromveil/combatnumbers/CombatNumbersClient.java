@@ -15,21 +15,16 @@ import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
+import cromveil.combatnumbers.resource.DataConsumer;
+import cromveil.combatnumbers.resource.FabricReloadRegistry;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.styles.StyleTable;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
-import java.util.Map;
 
 public class CombatNumbersClient implements ClientModInitializer {
 
@@ -39,48 +34,43 @@ public class CombatNumbersClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Config.store().addChangeListener(runtime::reloadTheme);
 
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
-				new SimpleJsonResourceReloadListener<SkinDefinition>(SkinDefinition.CODEC,
-						FileToIdConverter.json("skins")) {
-					@Override
-					protected void apply(Map<Identifier, SkinDefinition> entries, ResourceManager manager,
-							ProfilerFiller profiler) {
-						runtime.applyResourcePackSkins(entries, manager);
-					}
-				});
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
-				Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
-				new SimpleJsonResourceReloadListener<Timeline>(TimelineCodec.CODEC,
-						FileToIdConverter.json("animations")) {
-					@Override
-					protected void apply(Map<Identifier, Timeline> entries, ResourceManager manager,
-							ProfilerFiller profiler) {
-						runtime.applyResourcePackAnimations(entries);
-					}
-				});
+		var reloadRegistry = new FabricReloadRegistry();
+		reloadRegistry.registerClientResources(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				"skins", SkinDefinition.CODEC,
+				runtime::applyResourcePackSkins);
+		reloadRegistry.registerClientResources(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				"animations", TimelineCodec.CODEC,
+				DataConsumer.from(runtime::applyResourcePackAnimations));
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE, (packet, context) ->
-					context.client().execute(() ->
-							runtime.applyStyleTable(new StyleTable(packet.skinIds(), packet.animationIds()))));
+			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE,
+					(packet, context) -> context.client().execute(
+							() -> runtime.applyStyleTable(
+									new StyleTable(packet.skinIds(), packet.animationIds()))));
 
-			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE, (packet, context) ->
-					context.client().execute(() -> runtime.applyServerAnimations(packet.animations())));
+			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE,
+					(packet, context) -> context.client().execute(
+							() -> runtime.applyServerAnimations(packet.animations())));
 
-			ClientPlayNetworking.registerReceiver(SyncSkinDataPacket.TYPE, (packet, context) ->
-					context.client().execute(() -> runtime.applyServerSkins(packet.skins())));
+			ClientPlayNetworking.registerReceiver(SyncSkinDataPacket.TYPE,
+					(packet, context) -> context.client().execute(
+							() -> runtime.applyServerSkins(packet.skins())));
 
-			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE, (packet, context) ->
-					context.client().execute(() -> runtime.applyServerTextures(packet.textures())));
+			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE,
+					(packet, context) -> context.client().execute(
+							() -> runtime.applyServerTextures(packet.textures())));
 
-			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE, (payload, context) ->
-					context.client().execute(() -> runtime.onRenderPacket(
-							payload.entityId(), payload.value(),
-							payload.skinIndex(), payload.animationIndex())));
+			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE,
+					(payload, context) -> context.client().execute(
+							() -> runtime.onRenderPacket(
+									payload.entityId(), payload.value(),
+									payload.skinIndex(), payload.animationIndex())));
 		});
 
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runtime.onDisconnect());
+		ClientPlayConnectionEvents.DISCONNECT.register(
+				(handler, client) -> runtime.onDisconnect());
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
 			if (!Config.get(ConfigIds.ENABLED)) {

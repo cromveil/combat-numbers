@@ -1,23 +1,29 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
+import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.NeoForgeConfig;
 import cromveil.combatnumbers.events.CombatNumbersEvents;
 import cromveil.combatnumbers.events.RenderEvent;
-import cromveil.combatnumbers.filters.FilterLoader;
+import cromveil.combatnumbers.filters.FilterProcessor;
 import cromveil.combatnumbers.filters.FilterRegistry;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
+import cromveil.combatnumbers.resource.DataConsumer;
+import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
+import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinRegistry;
 import cromveil.combatnumbers.styles.RuleEngine;
-import cromveil.combatnumbers.styles.RuleLoader;
+import cromveil.combatnumbers.styles.RuleProcessor;
+import cromveil.combatnumbers.styles.RuleSet;
 import cromveil.combatnumbers.styles.Style;
 import cromveil.combatnumbers.styles.StyleTable;
+import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -29,7 +35,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -54,37 +59,55 @@ public class CombatNumbers {
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, e -> {
 			PayloadRegistrar registrar = e.registrar(Constants.MOD_ID);
 			registrar.playToClient(RenderPacket.TYPE, RenderPacket.STREAM_CODEC);
-			registrar.playToClient(SyncAnimationDataPacket.TYPE, SyncAnimationDataPacket.STREAM_CODEC);
-			registrar.playToClient(SyncSkinDataPacket.TYPE, SyncSkinDataPacket.STREAM_CODEC);
-			registrar.playToClient(SyncSpriteTexturePacket.TYPE, SyncSpriteTexturePacket.STREAM_CODEC);
-			registrar.playToClient(SyncStyleTablePacket.TYPE, SyncStyleTablePacket.STREAM_CODEC);
+			registrar.playToClient(SyncAnimationDataPacket.TYPE,
+					SyncAnimationDataPacket.STREAM_CODEC);
+			registrar.playToClient(SyncSkinDataPacket.TYPE,
+					SyncSkinDataPacket.STREAM_CODEC);
+			registrar.playToClient(SyncSpriteTexturePacket.TYPE,
+					SyncSpriteTexturePacket.STREAM_CODEC);
+			registrar.playToClient(SyncStyleTablePacket.TYPE,
+					SyncStyleTablePacket.STREAM_CODEC);
 		});
 
-		NeoForge.EVENT_BUS.addListener(AddServerReloadListenersEvent.class, e -> {
-			e.addListener(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"), animationRegistry);
+		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				"animations", TimelineCodec.CODEC,
+				DataConsumer.from(animationRegistry::accept));
 
-			RuleLoader ruleLoader = new RuleLoader(ruleEngine);
-			ruleLoader.setOnReload(() -> {
-				this.styleTable = StyleTable.from(ruleEngine);
-				broadcast(new SyncStyleTablePacket(this.styleTable));
-			});
-			e.addListener(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "styles"), ruleLoader);
-
-			e.addListener(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"), skinRegistry);
-
-			FilterLoader filterLoader = new FilterLoader(filterRegistry);
-			e.addListener(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "filters"), filterLoader);
+		var ruleProcessor = new RuleProcessor(ruleEngine);
+		ruleProcessor.setOnReload(() -> {
+			this.styleTable = StyleTable.from(ruleEngine);
+			broadcast(new SyncStyleTablePacket(this.styleTable));
 		});
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "styles"),
+				"styles", RuleSet.CODEC,
+				DataConsumer.from(ruleProcessor::accept));
 
-		NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, e -> this.server = e.getServer());
-		NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, e -> this.server = null);
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				"skins", SkinDefinition.CODEC,
+				skinRegistry::accept);
+
+		var filterProcessor = new FilterProcessor(filterRegistry);
+		reloadRegistry.registerServerData(
+				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "filters"),
+				"filters", WhenCondition.CODEC.listOf(),
+				DataConsumer.from(filterProcessor::accept));
+
+		NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class,
+				e -> this.server = e.getServer());
+		NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class,
+				e -> this.server = null);
 
 		NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, e -> {
 			if (!(e.getEntity() instanceof ServerPlayer player))
 				return;
 
 			player.connection.send(new SyncStyleTablePacket(this.styleTable));
-			player.connection.send(new SyncAnimationDataPacket(animationRegistry.getAll()));
+			player.connection.send(
+					new SyncAnimationDataPacket(animationRegistry.getAll()));
 			var texPacket = skinRegistry.buildTexturePacket();
 			if (texPacket != null) {
 				player.connection.send(texPacket);
@@ -120,8 +143,8 @@ public class CombatNumbers {
 			}
 		});
 
-		animationRegistry.setOnReload(() ->
-				broadcast(new SyncAnimationDataPacket(animationRegistry.getAll())));
+		animationRegistry.setOnReload(
+				() -> broadcast(new SyncAnimationDataPacket(animationRegistry.getAll())));
 
 		skinRegistry.setOnReload(() -> {
 			var texPacket = skinRegistry.buildTexturePacket();

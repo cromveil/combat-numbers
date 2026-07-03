@@ -2,27 +2,20 @@ package cromveil.combatnumbers.styles;
 
 import cromveil.combatnumbers.Constants;
 import cromveil.combatnumbers.events.CombatEvent;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
-
-	private static final FileToIdConverter LISTER = FileToIdConverter.json("styles");
+public class RuleProcessor {
 
 	private final RuleEngine engine;
 	private Runnable onReload = () -> {
 	};
 
-	public RuleLoader(RuleEngine engine) {
-		super(RuleSet.CODEC, LISTER);
+	public RuleProcessor(RuleEngine engine) {
 		this.engine = engine;
 	}
 
@@ -30,9 +23,7 @@ public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
 		this.onReload = onReload;
 	}
 
-	@Override
-	protected void apply(Map<Identifier, RuleSet> entries,
-			ResourceManager manager, ProfilerFiller profiler) {
+	public void accept(Map<Identifier, RuleSet> entries) {
 		Map<Identifier, List<Rule>> rulesByKind = new HashMap<>();
 
 		for (var entry : entries.entrySet()) {

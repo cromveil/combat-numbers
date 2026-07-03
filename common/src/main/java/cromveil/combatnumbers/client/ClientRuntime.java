@@ -13,11 +13,11 @@ import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.client.theme.ThemeManager;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.resource.ModResourceAccessor;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.styles.StyleTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
@@ -40,7 +40,7 @@ public final class ClientRuntime {
 	private Map<Identifier, SkinDefinition> serverSkinDefs = Map.of();
 
 	private String appliedTheme = null;
-	private ResourceManager lastResourceManager;
+	private ModResourceAccessor lastResources;
 
 	public void applyStyleTable(StyleTable table) {
 		this.styleTable = table;
@@ -64,9 +64,9 @@ public final class ClientRuntime {
 		skinResolver.setServer(serverSkinDefs, logical -> serverTextureBytes.get(logical));
 	}
 
-	public void applyResourcePackSkins(Map<Identifier, SkinDefinition> defs, ResourceManager manager) {
-		this.lastResourceManager = manager;
-		skinResolver.setResourcePack(defs, resourceTextures(manager));
+	public void applyResourcePackSkins(Map<Identifier, SkinDefinition> defs, ModResourceAccessor resources) {
+		this.lastResources = resources;
+		skinResolver.setResourcePack(defs, resourceTextures(resources));
 		reloadTheme();
 	}
 
@@ -74,34 +74,23 @@ public final class ClientRuntime {
 		animationResolver.setResourcePack(animations);
 	}
 
-	private static TextureByteSource resourceTextures(ResourceManager manager) {
+	private static TextureByteSource resourceTextures(ModResourceAccessor resources) {
 		return logical -> {
 			Identifier png = Identifier.fromNamespaceAndPath(
 					logical.getNamespace(), "textures/" + logical.getPath() + ".png");
-			try {
-				var resource = manager.getResource(png);
-				if (resource.isEmpty()) {
-					return null;
-				}
-				try (var in = resource.get().open()) {
-					return in.readAllBytes();
-				}
-			} catch (Exception e) {
-				return null;
-			}
+			return resources.getBytes(png);
 		};
 	}
 
 	public void reloadTheme() {
-		if (lastResourceManager != null) {
-			ThemeManager.discoverThemes(lastResourceManager);
+		if (lastResources != null) {
+			ThemeManager.discoverThemes(lastResources);
 		}
 		appliedTheme = Config.get(ConfigIds.CLIENT_THEME);
-		if (lastResourceManager == null) {
-			// resources not loaded yet
+		if (lastResources == null) {
 			return;
 		}
-		var loaded = themeManager.load(appliedTheme, lastResourceManager);
+		var loaded = themeManager.load(appliedTheme, lastResources);
 		if (loaded.isPresent()) {
 			var theme = loaded.get();
 			skinResolver.setTheme(theme.skins(), theme.textureBytes());
