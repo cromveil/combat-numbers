@@ -2,7 +2,6 @@ package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,16 +18,16 @@ public abstract sealed class BillboardStrategy implements Strategy
 
 	protected final PoseStack ps;
 	protected final SubmitNodeCollector collector;
-	protected final CameraRenderState cam;
+	protected final RenderCamera cam;
 
-	protected BillboardStrategy(PoseStack ps, SubmitNodeCollector collector, CameraRenderState cam) {
+	protected BillboardStrategy(PoseStack ps, SubmitNodeCollector collector, RenderCamera cam) {
 		this.ps = ps;
 		this.collector = collector;
 		this.cam = cam;
 	}
 
 	public static BillboardStrategy create(RenderOption option, PoseStack ps,
-			SubmitNodeCollector collector, CameraRenderState cam) {
+			SubmitNodeCollector collector, RenderCamera cam) {
 		return option == RenderOption.SCREEN
 				? new ScreenStrategy(ps, collector, cam)
 				: new WorldStrategy(ps, collector, cam);
@@ -36,13 +35,12 @@ public abstract sealed class BillboardStrategy implements Strategy
 
 	@Override
 	public Vec3 camPos() {
-		return cam.pos;
+		return cam.position();
 	}
 
 	@Override
 	public boolean cull(FloatingText text) {
-		Vec3 p = text.worldPos;
-		return !cam.cullFrustum.pointInFrustum(p.x, p.y, p.z);
+		return !BillboardHelper.isOnScreen(cam, text.worldPos);
 	}
 
 	@Override

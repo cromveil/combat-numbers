@@ -1,6 +1,8 @@
 package cromveil.combatnumbers.client.mixin;
 
+import cromveil.combatnumbers.client.render.CameraAdapter;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
+import cromveil.combatnumbers.client.render.GuiGraphicsExtractorAdapter;
 import cromveil.combatnumbers.client.render.HudStrategy;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
@@ -8,7 +10,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +34,8 @@ public abstract class HudMixin {
 			return;
 		}
 
-		CameraRenderState cam = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState;
-		FloatingTextRenderer.renderAll(new HudStrategy(graphics, cam));
+		var cam = CameraAdapter.from(mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState);
+		var ctx = new GuiGraphicsExtractorAdapter(graphics);
+		FloatingTextRenderer.renderAll(new HudStrategy(ctx, cam));
 	}
 }

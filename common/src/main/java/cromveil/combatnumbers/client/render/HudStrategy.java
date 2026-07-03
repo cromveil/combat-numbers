@@ -1,9 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -15,34 +12,32 @@ public final class HudStrategy implements Strategy {
 
 	private static final float NDC_MARGIN = 1.1f;
 
-	private final GuiGraphicsExtractor graphics;
-	private final Matrix3x2fStack pose;
-	private final CameraRenderState cam;
+	private final HudRenderContext ctx;
+	private final RenderCamera cam;
 	private final int guiWidth;
 	private final int guiHeight;
 
 	private float screenX;
 	private float screenY;
 
-	public HudStrategy(GuiGraphicsExtractor graphics, CameraRenderState cam) {
-		this.graphics = graphics;
-		this.pose = graphics.pose();
+	public HudStrategy(HudRenderContext ctx, RenderCamera cam) {
+		this.ctx = ctx;
 		this.cam = cam;
-		this.guiWidth = graphics.guiWidth();
-		this.guiHeight = graphics.guiHeight();
+		this.guiWidth = ctx.guiWidth();
+		this.guiHeight = ctx.guiHeight();
 	}
 
 	@Override
 	public Vec3 camPos() {
-		return cam.pos;
+		return cam.position();
 	}
 
 	@Override
 	public boolean cull(FloatingText text) {
 		Vec3 worldPos = text.worldPos;
-		Vec3 camPos = cam.pos;
-		Matrix4f projection = cam.projectionMatrix;
-		Matrix4f viewRotation = cam.viewRotationMatrix;
+		Vec3 camPos = cam.position();
+		Matrix4f projection = cam.projection();
+		Matrix4f viewRotation = cam.viewRotation();
 
 		Vector4f clip = new Vector4f(
 				(float) (worldPos.x - camPos.x),
@@ -69,19 +64,19 @@ public final class HudStrategy implements Strategy {
 	@Override
 	public void draw(FloatingText text, int charIndex, boolean perChar, GlyphPlacement placement) {
 		float s = placement.scale() * placement.perceivedScale() / BillboardHelper.fontReferenceHeight();
-		pose.pushMatrix();
-		pose.translate(screenX, screenY);
-		pose.translate(placement.offX() * placement.perceivedScale(),
+		ctx.pushMatrix();
+		ctx.translate(screenX, screenY);
+		ctx.translate(placement.offX() * placement.perceivedScale(),
 				-placement.offY() * placement.perceivedScale());
 		if (placement.rotation() != 0f) {
-			pose.rotate((float) Math.toRadians(placement.rotation()));
+			ctx.rotate((float) Math.toRadians(placement.rotation()));
 		}
-		pose.scale(s, s);
+		ctx.scale(s, s);
 		if (perChar) {
-			text.visual.renderChar2d(charIndex, graphics, placement.alpha());
+			text.visual.renderChar2d(charIndex, ctx, placement.alpha());
 		} else {
-			text.visual.render2d(graphics, placement.alpha());
+			text.visual.render2d(ctx, placement.alpha());
 		}
-		pose.popMatrix();
+		ctx.popMatrix();
 	}
 }

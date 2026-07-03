@@ -4,6 +4,7 @@ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
+import cromveil.combatnumbers.client.render.CameraAdapter;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
@@ -69,6 +70,7 @@ public abstract class LevelRendererMixin {
 
 		PoseStack poseStack = new PoseStack();
 		FloatingTextRenderer.renderAll(
-				BillboardStrategy.create(option, poseStack, submitNodeStorage, cameraState));
+				BillboardStrategy.create(option, poseStack, submitNodeStorage,
+						CameraAdapter.from(cameraState)));
 	}
 }

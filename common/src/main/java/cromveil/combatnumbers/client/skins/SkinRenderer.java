@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import cromveil.combatnumbers.client.render.HudRenderContext;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 
 public interface SkinRenderer {
@@ -12,10 +12,10 @@ public interface SkinRenderer {
 		render3d(poseStack, submitNodeCollector, alpha, light);
 	}
 
-	default void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	default void render2d(HudRenderContext ctx, float alpha) {
 	}
 
-	default void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
-		render2d(graphics, alpha);
+	default void renderChar2d(int index, HudRenderContext ctx, float alpha) {
+		render2d(ctx, alpha);
 	}
 }

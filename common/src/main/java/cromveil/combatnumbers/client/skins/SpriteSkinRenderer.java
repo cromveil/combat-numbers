@@ -2,8 +2,7 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import cromveil.combatnumbers.client.render.HudRenderContext;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.joml.Matrix4fc;
@@ -133,24 +132,24 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	public void render2d(HudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(graphics, -totalWidth / 2f, color, 0, text.length());
+		blitChars(ctx, -totalWidth / 2f, color, 0, text.length());
 	}
 
 	@Override
-	public void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
+	public void renderChar2d(int index, HudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0 || index < 0 || index >= charInfos.length)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(graphics, -totalWidth / 2f, color, index, index + 1);
+		blitChars(ctx, -totalWidth / 2f, color, index, index + 1);
 	}
 
-	private void blitChars(GuiGraphicsExtractor graphics, float startX, int color, int from, int to) {
+	private void blitChars(HudRenderContext ctx, float startX, int color, int from, int to) {
 		int texWidth = spriteSheet.columns() * spriteSheet.cellWidth();
 		int texHeight = spriteSheet.rows() * spriteSheet.cellHeight();
 		for (int i = from; i < to; i++) {
@@ -163,7 +162,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 			int y = -(height / 2);
 			float u = info.minU * texWidth;
 			float v = info.minV * texHeight;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, spriteSheet.textureId(),
+			ctx.blitSprite(spriteSheet.textureId(),
 					x, y, u, v, width, height, texWidth, texHeight, color);
 		}
 	}
