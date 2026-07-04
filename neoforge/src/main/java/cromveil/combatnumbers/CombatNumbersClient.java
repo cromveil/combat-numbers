@@ -13,8 +13,9 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
+import cromveil.combatnumbers.core.styles.StyleTable;
+import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.styles.StyleTable;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -43,7 +44,9 @@ public class CombatNumbersClient {
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
 			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(
 					() -> runtime.applyStyleTable(
-							new StyleTable(payload.skinIds(), payload.animationIds()))));
+							new StyleTable(
+									payload.skinIds().stream().map(ResourceIds::from).toList(),
+									payload.animationIds().stream().map(ResourceIds::from).toList()))));
 
 			e.register(SyncAnimationDataPacket.TYPE, (payload, context) -> context.enqueueWork(
 					() -> runtime.applyServerAnimations(payload.animations())));

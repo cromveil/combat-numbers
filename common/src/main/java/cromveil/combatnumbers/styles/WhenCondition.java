@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.styles.ConditionMatcher;
 import cromveil.combatnumbers.resource.ResourceIds;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
@@ -22,7 +23,7 @@ public record WhenCondition(
 	@Nullable EntityPredicate attacker,
 	@Nullable EntityPredicate target,
 	@Nullable ItemPredicate weapon
-) {
+) implements ConditionMatcher {
 	public static final Codec<WhenCondition> CODEC = RecordCodecBuilder.create(instance ->
 		instance.group(
 			Identifier.CODEC.optionalFieldOf("type").forGetter(w -> Optional.ofNullable(w.type)),
@@ -37,7 +38,10 @@ public record WhenCondition(
 				attacker.orElse(null), target.orElse(null), weapon.orElse(null)))
 	);
 
-	public boolean matches(CombatEvent event, ServerLevel level) {
+	@Override
+	public boolean matches(CombatEvent event, Object context) {
+		ServerLevel level = (ServerLevel) context;
+
 		if (type != null) {
 			ResourceId expected = ResourceIds.from(type);
 			if (event.typeKey().isEmpty() || !event.typeKey().get().equals(expected))
@@ -96,6 +100,7 @@ public record WhenCondition(
 		return true;
 	}
 
+	@Override
 	public int specificity() {
 		int count = 0;
 		if (type != null) count++;

@@ -1,6 +1,8 @@
 package cromveil.combatnumbers.packets;
 
-import cromveil.combatnumbers.styles.StyleTable;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.styles.StyleTable;
+import cromveil.combatnumbers.resource.ResourceIds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -25,7 +27,8 @@ public record SyncStyleTablePacket(
 			SyncStyleTablePacket::new);
 
 	public SyncStyleTablePacket(StyleTable table) {
-		this(table.skinIds(), table.animationIds());
+		this(table.skinIds().stream().map(ResourceIds::to).toList(),
+			 table.animationIds().stream().map(ResourceIds::to).toList());
 	}
 
 	@Override

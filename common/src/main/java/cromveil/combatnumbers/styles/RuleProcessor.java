@@ -3,6 +3,7 @@ package cromveil.combatnumbers.styles;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.styles.RuleEngine;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class RuleProcessor {
 	}
 
 	public void accept(Map<Identifier, RuleSet> entries) {
-		Map<ResourceId, List<Rule>> rulesByKind = new HashMap<>();
+		Map<ResourceId, List<RuleEngine.Rule>> rulesByKind = new HashMap<>();
 
 		for (var entry : entries.entrySet()) {
 			var path = entry.getKey().getPath();
@@ -39,7 +40,10 @@ public class RuleProcessor {
 			}
 
 			var set = entry.getValue();
-			rulesByKind.computeIfAbsent(kind, k -> new ArrayList<>()).addAll(set.rules());
+			var coreRules = set.rules().stream()
+					.map(r -> new RuleEngine.Rule(r.when(), r.then()))
+					.toList();
+			rulesByKind.computeIfAbsent(kind, k -> new ArrayList<>()).addAll(coreRules);
 		}
 
 		engine.load(rulesByKind);

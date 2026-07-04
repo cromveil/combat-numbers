@@ -5,12 +5,13 @@ import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.NeoForgeConfig;
-import cromveil.combatnumbers.core.ResourceId;
-import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.RenderEvent;
+import cromveil.combatnumbers.core.filters.FilterRegistry;
+import cromveil.combatnumbers.core.styles.RuleEngine;
+import cromveil.combatnumbers.core.styles.Style;
+import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.filters.FilterProcessor;
-import cromveil.combatnumbers.filters.FilterRegistry;
 import cromveil.combatnumbers.packets.RenderPacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -18,14 +19,10 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
-import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinRegistry;
-import cromveil.combatnumbers.styles.RuleEngine;
 import cromveil.combatnumbers.styles.RuleProcessor;
 import cromveil.combatnumbers.styles.RuleSet;
-import cromveil.combatnumbers.styles.Style;
-import cromveil.combatnumbers.styles.StyleTable;
 import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -127,10 +124,8 @@ public class CombatNumbers {
 				return;
 			Style style = ruleEngine.resolve(event, entityLevel);
 
-			ResourceId skinId = style.skinId() != null ? ResourceIds.from(style.skinId()) : null;
-			ResourceId animationId = style.animationId() != null ? ResourceIds.from(style.animationId()) : null;
 			CombatNumbersEvents.RENDER.invoker().onEvent(
-					new RenderEvent(event.entityId(), event.value(), skinId, animationId));
+					new RenderEvent(event.entityId(), event.value(), style.skinId(), style.animationId()));
 		});
 
 		CombatNumbersEvents.RENDER.register(instance -> {
@@ -145,8 +140,8 @@ public class CombatNumbers {
 
 			RenderPacket packet = new RenderPacket(
 					entityId, instance.value(),
-					this.styleTable.skinIndex(instance.skinId() != null ? ResourceIds.to(instance.skinId()) : null),
-					this.styleTable.animationIndex(instance.animationId() != null ? ResourceIds.to(instance.animationId()) : null));
+					this.styleTable.skinIndex(instance.skinId()),
+					this.styleTable.animationIndex(instance.animationId()));
 
 			double entityX = entity.getX();
 			double entityY = entity.getY();

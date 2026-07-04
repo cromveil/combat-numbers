@@ -20,8 +20,9 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.FabricReloadRegistry;
+import cromveil.combatnumbers.core.styles.StyleTable;
+import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.styles.StyleTable;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -51,7 +52,9 @@ public class CombatNumbersClient implements ClientModInitializer {
 			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE,
 					(packet, context) -> context.client().execute(
 							() -> runtime.applyStyleTable(
-									new StyleTable(packet.skinIds(), packet.animationIds()))));
+									new StyleTable(
+											packet.skinIds().stream().map(ResourceIds::from).toList(),
+											packet.animationIds().stream().map(ResourceIds::from).toList()))));
 
 			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE,
 					(packet, context) -> context.client().execute(

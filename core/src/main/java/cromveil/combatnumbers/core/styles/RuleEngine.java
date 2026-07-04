@@ -1,31 +1,32 @@
-package cromveil.combatnumbers.styles;
+package cromveil.combatnumbers.core.styles;
 
 import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.events.CombatEvent;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerLevel;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class RuleEngine {
+
+	public record Rule(ConditionMatcher when, Style then) {}
+
 	private Map<ResourceId, KindState> kindStates = Map.of();
 
-	private record KindState(List<Rule> rules) {
-	}
+	private record KindState(List<Rule> rules) {}
 
 	public void load(Map<ResourceId, List<Rule>> rulesByKind) {
 		Map<ResourceId, KindState> map = new HashMap<>();
 		for (var entry : rulesByKind.entrySet()) {
-			var rules = List.copyOf(entry.getValue());
-			map.put(entry.getKey(), new KindState(rules));
+			map.put(entry.getKey(), new KindState(List.copyOf(entry.getValue())));
 		}
 		kindStates = Map.copyOf(map);
 	}
 
-	public Style resolve(CombatEvent event, ServerLevel level) {
+	public Style resolve(CombatEvent event, Object context) {
 		var state = kindStates.get(event.kind());
 		if (state == null)
 			return new Style(null, null);
@@ -33,7 +34,7 @@ public class RuleEngine {
 		Style info = new Style(null, null);
 
 		var matching = state.rules().stream()
-				.filter(r -> r.when().matches(event, level))
+				.filter(r -> r.when().matches(event, context))
 				.sorted(Comparator.comparingInt((Rule r) -> r.when().specificity())
 						.thenComparingInt(state.rules()::indexOf))
 				.toList();
@@ -45,7 +46,7 @@ public class RuleEngine {
 		return info;
 	}
 
-	public List<Identifier> emittableSkinIds() {
+	public List<ResourceId> emittableSkinIds() {
 		return kindStates.values().stream()
 				.flatMap(s -> s.rules().stream())
 				.map(r -> r.then().skinId())
@@ -55,7 +56,7 @@ public class RuleEngine {
 				.toList();
 	}
 
-	public List<Identifier> emittableAnimationIds() {
+	public List<ResourceId> emittableAnimationIds() {
 		return kindStates.values().stream()
 				.flatMap(s -> s.rules().stream())
 				.map(r -> r.then().animationId())

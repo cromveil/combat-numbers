@@ -1,9 +1,11 @@
 package cromveil.combatnumbers.client;
 
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.client.animation.AnimationCompiler;
 import cromveil.combatnumbers.core.client.animation.AnimationEvaluator;
 import cromveil.combatnumbers.core.client.animation.AnimationInstance;
+import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
@@ -14,8 +16,8 @@ import cromveil.combatnumbers.client.theme.ThemeManager;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
+import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.styles.StyleTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
@@ -136,8 +138,10 @@ public final class ClientRuntime {
 			return;
 		}
 
-		Skin skin = skinResolver.resolve(styleTable.skinAt(skinIndex));
-		Timeline timeline = animationResolver.resolve(styleTable.animationAt(animationIndex));
+		ResourceId skinId = styleTable.skinAt(skinIndex);
+		ResourceId animId = styleTable.animationAt(animationIndex);
+		Skin skin = skinResolver.resolve(skinId != null ? ResourceIds.to(skinId) : null);
+		Timeline timeline = animationResolver.resolve(animId != null ? ResourceIds.to(animId) : null);
 
 		String formattedValue = String.valueOf(Math.round(value));
 		var visual = skin.createVisual(formattedValue);
