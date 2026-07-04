@@ -1,8 +1,8 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.animation.Channel;
-import cromveil.combatnumbers.client.animation.AnimationInstance;
-import cromveil.combatnumbers.client.animation.ChannelBuffer;
+import cromveil.combatnumbers.core.animation.Channel;
+import cromveil.combatnumbers.core.client.animation.AnimationInstance;
+import cromveil.combatnumbers.core.client.animation.ChannelBuffer;
 import cromveil.combatnumbers.client.skins.SkinRenderer;
 import net.minecraft.world.phys.Vec3;
 

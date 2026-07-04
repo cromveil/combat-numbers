@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.client;
 
-import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.client.animation.AnimationCompiler;
-import cromveil.combatnumbers.client.animation.AnimationEvaluator;
-import cromveil.combatnumbers.client.animation.AnimationInstance;
+import cromveil.combatnumbers.core.animation.Timeline;
+import cromveil.combatnumbers.core.client.animation.AnimationCompiler;
+import cromveil.combatnumbers.core.client.animation.AnimationEvaluator;
+import cromveil.combatnumbers.core.client.animation.AnimationInstance;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;

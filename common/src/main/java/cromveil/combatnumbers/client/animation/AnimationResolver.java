@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.animation;
 
-import cromveil.combatnumbers.animation.Timeline;
+import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.client.resolver.LayeredResolver;
 import cromveil.combatnumbers.client.resolver.MapLayer;
 import net.minecraft.resources.Identifier;

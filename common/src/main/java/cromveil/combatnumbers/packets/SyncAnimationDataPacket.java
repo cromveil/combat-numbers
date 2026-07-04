@@ -3,8 +3,8 @@ package cromveil.combatnumbers.packets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.animation.codec.TimelineCodec;
+import cromveil.combatnumbers.core.animation.Timeline;
+import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

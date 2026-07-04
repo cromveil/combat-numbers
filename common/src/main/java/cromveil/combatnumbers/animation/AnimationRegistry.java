@@ -1,6 +1,7 @@
 package cromveil.combatnumbers.animation;
 
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.animation.Timeline;
 import net.minecraft.resources.Identifier;
 
 import java.util.LinkedHashMap;
