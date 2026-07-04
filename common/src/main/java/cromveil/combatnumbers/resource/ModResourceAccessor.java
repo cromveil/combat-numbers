@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import cromveil.combatnumbers.core.Constants;
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.ResourceId;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -18,22 +18,21 @@ import java.util.function.Predicate;
 
 public interface ModResourceAccessor {
 
-	byte @Nullable [] getBytes(Identifier location);
+	byte @Nullable [] getBytes(ResourceId location);
 
-	List<Identifier> findResources(String directory, Predicate<String> pathPredicate);
+	List<ResourceId> findResources(String directory, Predicate<String> pathPredicate);
 
-	default <T> Map<Identifier, T> loadJsonDirectory(String directory, Codec<T> codec) {
-		Map<Identifier, T> result = new LinkedHashMap<>();
-		for (Identifier fileId : findResources(directory, path -> path.endsWith(".json"))) {
+	default <T> Map<ResourceId, T> loadJsonDirectory(String directory, Codec<T> codec) {
+		Map<ResourceId, T> result = new LinkedHashMap<>();
+		for (ResourceId fileId : findResources(directory, path -> path.endsWith(".json"))) {
 			byte[] bytes = getBytes(fileId);
 			if (bytes == null) {
 				continue;
 			}
 			try {
-				String path = fileId.getPath();
-				String name = path.substring(path.lastIndexOf('/') + 1,
-						path.length() - ".json".length());
-				Identifier id = Identifier.fromNamespaceAndPath(fileId.getNamespace(), name);
+				String name = fileId.path().substring(fileId.path().lastIndexOf('/') + 1,
+						fileId.path().length() - ".json".length());
+				ResourceId id = ResourceId.of(fileId.namespace(), name);
 				JsonElement json = JsonParser.parseString(
 						new String(bytes, StandardCharsets.UTF_8));
 				DataResult<T> parsed = codec.parse(JsonOps.INSTANCE, json);

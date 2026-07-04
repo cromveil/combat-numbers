@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.theme.ThemeInfo;
@@ -11,7 +12,6 @@ import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -95,9 +95,9 @@ public class ThemeManager {
 
 	private static void loadResourcePackThemes(List<ThemeInfo> out, ModResourceAccessor resources) {
 		String prefix = "themes";
-		for (Identifier file : resources.findResources(prefix,
+		for (ResourceId file : resources.findResources(prefix,
 				path -> path.endsWith("/theme.json"))) {
-			String path = file.getPath();
+			String path = file.path();
 			String dir = path.substring(prefix.length() + 1,
 					path.length() - "/theme.json".length());
 			if (dir.isEmpty()) {
@@ -162,9 +162,9 @@ public class ThemeManager {
 		}
 
 		String base = "themes/" + themeId;
-		Map<Identifier, SkinDefinition> skins = resources.loadJsonDirectory(
+		Map<ResourceId, SkinDefinition> skins = resources.loadJsonDirectory(
 				base + "/skins", SkinDefinition.CODEC);
-		Map<Identifier, Timeline> animations = resources.loadJsonDirectory(
+		Map<ResourceId, Timeline> animations = resources.loadJsonDirectory(
 				base + "/animations", TimelineCodec.CODEC);
 
 		if (skins.isEmpty() && animations.isEmpty()) {
@@ -175,8 +175,8 @@ public class ThemeManager {
 
 		String textureBase = base + "/textures/";
 		TextureByteSource textureBytes = logical -> resources.getBytes(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID,
-						textureBase + logical.getPath() + ".png"));
+				ResourceId.of(Constants.MOD_ID,
+						textureBase + logical.path() + ".png"));
 
 		Constants.LOG.info("Loaded theme '{}': {} skins, {} animations",
 				themeId, skins.size(), animations.size());
@@ -184,8 +184,8 @@ public class ThemeManager {
 	}
 
 	public record LoadedTheme(
-			Map<Identifier, SkinDefinition> skins,
-			Map<Identifier, Timeline> animations,
+			Map<ResourceId, SkinDefinition> skins,
+			Map<ResourceId, Timeline> animations,
 			TextureByteSource textureBytes) {
 	}
 }

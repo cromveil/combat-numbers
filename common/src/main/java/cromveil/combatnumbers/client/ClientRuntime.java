@@ -8,18 +8,16 @@ import cromveil.combatnumbers.core.client.animation.AnimationInstance;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.FloatingText;
-import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.skins.Skin;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.client.theme.ThemeManager;
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
-import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
@@ -38,8 +36,8 @@ public final class ClientRuntime {
 
 	private StyleTable styleTable = StyleTable.EMPTY;
 
-	private Map<Identifier, byte[]> serverTextureBytes = new LinkedHashMap<>();
-	private Map<Identifier, SkinDefinition> serverSkinDefs = Map.of();
+	private Map<ResourceId, byte[]> serverTextureBytes = new LinkedHashMap<>();
+	private Map<ResourceId, SkinDefinition> serverSkinDefs = Map.of();
 
 	private String appliedTheme = null;
 	private ModResourceAccessor lastResources;
@@ -48,17 +46,17 @@ public final class ClientRuntime {
 		this.styleTable = table;
 	}
 
-	public void applyServerSkins(Map<Identifier, SkinDefinition> defs) {
+	public void applyServerSkins(Map<ResourceId, SkinDefinition> defs) {
 		this.serverSkinDefs = Map.copyOf(defs);
 		rebuildServerSkins();
 	}
 
-	public void applyServerTextures(Map<Identifier, byte[]> textures) {
+	public void applyServerTextures(Map<ResourceId, byte[]> textures) {
 		this.serverTextureBytes = new LinkedHashMap<>(textures);
 		rebuildServerSkins();
 	}
 
-	public void applyServerAnimations(Map<Identifier, Timeline> animations) {
+	public void applyServerAnimations(Map<ResourceId, Timeline> animations) {
 		animationResolver.setServer(animations);
 	}
 
@@ -66,20 +64,20 @@ public final class ClientRuntime {
 		skinResolver.setServer(serverSkinDefs, logical -> serverTextureBytes.get(logical));
 	}
 
-	public void applyResourcePackSkins(Map<Identifier, SkinDefinition> defs, ModResourceAccessor resources) {
+	public void applyResourcePackSkins(Map<ResourceId, SkinDefinition> defs, ModResourceAccessor resources) {
 		this.lastResources = resources;
 		skinResolver.setResourcePack(defs, resourceTextures(resources));
 		reloadTheme();
 	}
 
-	public void applyResourcePackAnimations(Map<Identifier, Timeline> animations) {
+	public void applyResourcePackAnimations(Map<ResourceId, Timeline> animations) {
 		animationResolver.setResourcePack(animations);
 	}
 
 	private static TextureByteSource resourceTextures(ModResourceAccessor resources) {
 		return logical -> {
-			Identifier png = Identifier.fromNamespaceAndPath(
-					logical.getNamespace(), "textures/" + logical.getPath() + ".png");
+			ResourceId png = ResourceId.of(
+					logical.namespace(), "textures/" + logical.path() + ".png");
 			return resources.getBytes(png);
 		};
 	}
@@ -109,7 +107,7 @@ public final class ClientRuntime {
 		serverTextureBytes.clear();
 		serverSkinDefs = Map.of();
 		styleTable = StyleTable.EMPTY;
-		FloatingTextManager.clear();
+		Systems.client().textManager().clear();
 	}
 
 	public void onRenderPacket(int entityId, float value, int skinIndex, int animationIndex) {
@@ -140,8 +138,8 @@ public final class ClientRuntime {
 
 		ResourceId skinId = styleTable.skinAt(skinIndex);
 		ResourceId animId = styleTable.animationAt(animationIndex);
-		Skin skin = skinResolver.resolve(skinId != null ? ResourceIds.to(skinId) : null);
-		Timeline timeline = animationResolver.resolve(animId != null ? ResourceIds.to(animId) : null);
+		Skin skin = skinResolver.resolve(skinId);
+		Timeline timeline = animationResolver.resolve(animId);
 
 		String formattedValue = String.valueOf(Math.round(value));
 		var visual = skin.createVisual(formattedValue);
@@ -153,7 +151,7 @@ public final class ClientRuntime {
 		AnimationEvaluator eval = animationCompiler.compile(timeline, formattedValue.length(), seed);
 		AnimationInstance anim = new AnimationInstance(eval);
 
-		FloatingTextManager.add(new FloatingText(
+		Systems.client().textManager().add(new FloatingText(
 				worldPos, formattedValue, visual, anim, skin.getScale(), gameTime));
 	}
 }

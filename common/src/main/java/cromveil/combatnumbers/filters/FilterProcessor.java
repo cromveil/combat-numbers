@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.filters;
 
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.styles.WhenCondition;
-import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class FilterProcessor {
 		this.registry = registry;
 	}
 
-	public void accept(Map<Identifier, List<WhenCondition>> entries) {
+	public void accept(Map<ResourceId, List<WhenCondition>> entries) {
 		registry.clear();
 		int count = 0;
 		for (var entry : entries.entrySet()) {

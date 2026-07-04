@@ -1,15 +1,12 @@
 package cromveil.combatnumbers.client.render;
 
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.resource.ResourceIds;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
-/**
- * Bridges 26.2's {@code GuiGraphicsExtractor} to the version-agnostic
- * {@link HudRenderContext}.
- */
 public final class GuiGraphicsExtractorAdapter implements HudRenderContext {
 
 	private final GuiGraphicsExtractor graphics;
@@ -50,9 +47,9 @@ public final class GuiGraphicsExtractorAdapter implements HudRenderContext {
 	}
 
 	@Override
-	public void blitSprite(Identifier texture, int x, int y, float u, float v, int width,
+	public void blitSprite(ResourceId texture, int x, int y, float u, float v, int width,
 			int height, int textureWidth, int textureHeight, int color) {
-		graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, width, height,
+		graphics.blit(RenderPipelines.GUI_TEXTURED, ResourceIds.to(texture), x, y, u, v, width, height,
 				textureWidth, textureHeight, color);
 	}
 

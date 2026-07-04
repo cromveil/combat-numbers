@@ -1,10 +1,10 @@
 package cromveil.combatnumbers.client.skins;
 
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SpriteSkinDefinition;
 import cromveil.combatnumbers.skins.TextSkinDefinition;
-import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 
@@ -26,9 +26,9 @@ public final class SkinCompiler {
 
 	private static Skin compileSprite(SpriteSkinDefinition s, String layerPrefix, ManagedTextureSet textures,
 			TextureByteSource byteSource) {
-		Identifier logical = s.texture();
-		Identifier renderId = Identifier.fromNamespaceAndPath(
-				Constants.MOD_ID, layerPrefix + "/" + logical.getNamespace() + "/" + logical.getPath());
+		ResourceId logical = s.texture();
+		ResourceId renderId = ResourceId.of(
+				Constants.MOD_ID, layerPrefix + "/" + logical.namespace() + "/" + logical.path());
 
 		if (!textures.has(renderId)) {
 			byte[] png = byteSource.get(logical);

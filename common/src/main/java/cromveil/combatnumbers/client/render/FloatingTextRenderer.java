@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +22,7 @@ public final class FloatingTextRenderer {
 		float fontRef = BillboardHelper.fontReferenceHeight();
 		Vec3 camPos = strategy.camPos();
 
-		for (FloatingText text : FloatingTextManager.getActive()) {
+		for (FloatingText text : Systems.client().textManager().getActive()) {
 			Vec3 worldPos = text.worldPos;
 
 			float alpha = text.getAlpha();

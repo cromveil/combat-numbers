@@ -2,6 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.ClientRuntime;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
@@ -23,6 +24,7 @@ import cromveil.combatnumbers.resource.FabricReloadRegistry;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
+import cromveil.combatnumbers.Systems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -37,14 +39,15 @@ public class CombatNumbersClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		Config.store().addChangeListener(runtime::reloadTheme);
+		Systems.initClient(new Systems.Client(Config.store(), new FloatingTextManager()));
 
 		var reloadRegistry = new FabricReloadRegistry();
 		reloadRegistry.registerClientResources(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				ResourceId.of(Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				runtime::applyResourcePackSkins);
 		reloadRegistry.registerClientResources(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				ResourceId.of(Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(runtime::applyResourcePackAnimations));
 
@@ -80,23 +83,23 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
 			if (!Config.get(ConfigIds.ENABLED)) {
-				FloatingTextManager.clear();
+				Systems.client().textManager().clear();
 				return;
 			}
 
 			Minecraft mc = Minecraft.getInstance();
 			var level = mc.level;
 			if (level == null) {
-				FloatingTextManager.clear();
+				Systems.client().textManager().clear();
 				return;
 			}
 			double gameTime = level.getGameTime()
 					+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-			for (FloatingText text : FloatingTextManager.getActive()) {
+			for (FloatingText text : Systems.client().textManager().getActive()) {
 				text.setGameTime(gameTime);
 			}
-			FloatingTextManager.cleanupExpired();
+			Systems.client().textManager().cleanupExpired();
 
 			RenderOption option = Config.get(ConfigIds.RENDER_MODE);
 			if (option.isHud()) {

@@ -1,6 +1,8 @@
 package cromveil.combatnumbers;
 
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.animation.AnimationRegistry;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
@@ -53,6 +55,7 @@ public class CombatNumbers {
 	public CombatNumbers(IEventBus modEventBus, ModContainer container) {
 		NeoForgeConfig config = NeoForgeConfig.instance();
 		Config.init(config);
+		Systems.initServer(new Systems.Server(Config.store(), CombatNumbersEvents.COMBAT, CombatNumbersEvents.RENDER));
 
 		container.registerConfig(ModConfig.Type.COMMON, config.commonSpec());
 
@@ -71,7 +74,7 @@ public class CombatNumbers {
 
 		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(animationRegistry::accept));
 
@@ -81,18 +84,18 @@ public class CombatNumbers {
 			broadcast(new SyncStyleTablePacket(this.styleTable));
 		});
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
 				"styles", RuleSet.CODEC,
 				DataConsumer.from(ruleProcessor::accept));
 
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				skinRegistry::accept);
 
 		var filterProcessor = new FilterProcessor(filterRegistry);
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
 				"filters", WhenCondition.CODEC.listOf(),
 				DataConsumer.from(filterProcessor::accept));
 

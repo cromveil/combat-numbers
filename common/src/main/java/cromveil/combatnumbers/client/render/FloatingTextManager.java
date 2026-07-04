@@ -7,26 +7,23 @@ import java.util.List;
 public final class FloatingTextManager {
 
 	private static final int MAX_ACTIVE = 256;
-	private static final List<FloatingText> active = new ArrayList<>();
+	private final List<FloatingText> active = new ArrayList<>();
 
-	private FloatingTextManager() {
-	}
-
-	public static void add(FloatingText text) {
+	public void add(FloatingText text) {
 		if (active.size() >= MAX_ACTIVE)
 			active.removeFirst();
 		active.add(text);
 	}
 
-	public static List<FloatingText> getActive() {
+	public List<FloatingText> getActive() {
 		return Collections.unmodifiableList(active);
 	}
 
-	public static void cleanupExpired() {
+	public void cleanupExpired() {
 		active.removeIf(FloatingText::isExpired);
 	}
 
-	public static void clear() {
+	public void clear() {
 		active.clear();
 	}
 }

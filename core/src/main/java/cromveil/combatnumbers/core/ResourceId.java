@@ -1,8 +1,12 @@
 package cromveil.combatnumbers.core;
 
+import com.mojang.serialization.Codec;
+
 import java.util.Objects;
 
 public record ResourceId(String namespace, String path) implements Comparable<ResourceId> {
+
+	public static final Codec<ResourceId> CODEC = Codec.STRING.xmap(ResourceId::parse, ResourceId::toString);
 
 	public ResourceId {
 		Objects.requireNonNull(namespace, "namespace");

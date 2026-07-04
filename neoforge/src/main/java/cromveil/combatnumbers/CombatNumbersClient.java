@@ -2,7 +2,10 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.client.ClientRuntime;
+import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.config.CombatNumbersOptions;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.NeoForgeConfig;
@@ -36,6 +39,7 @@ public class CombatNumbersClient {
 	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
 		NeoForgeConfig config = NeoForgeConfig.instance();
 		Config.init(config);
+		Systems.initClient(new Systems.Client(Config.store(), new FloatingTextManager()));
 
 		container.registerConfig(ModConfig.Type.CLIENT, config.clientSpec());
 		container.registerExtensionPoint(IConfigScreenFactory.class,
@@ -65,11 +69,11 @@ public class CombatNumbersClient {
 
 		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
 		reloadRegistry.registerClientResources(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				ResourceId.of(Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				runtime::applyResourcePackSkins);
 		reloadRegistry.registerClientResources(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				ResourceId.of(Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(runtime::applyResourcePackAnimations));
 

@@ -1,10 +1,12 @@
 package cromveil.combatnumbers;
 
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.FabricConfig;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.RenderEvent;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
@@ -43,6 +45,7 @@ public class CombatNumbers implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init(new FabricConfig());
+		Systems.initServer(new Systems.Server(Config.store(), CombatNumbersEvents.COMBAT, CombatNumbersEvents.RENDER));
 		PayloadTypeRegistry.clientboundPlay()
 				.register(RenderPacket.TYPE, RenderPacket.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay()
@@ -66,19 +69,19 @@ public class CombatNumbers implements ModInitializer {
 
 		var reloadRegistry = new FabricReloadRegistry();
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(animationRegistry::accept));
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
 				"styles", RuleSet.CODEC,
 				DataConsumer.from(ruleProcessor::accept));
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				skinRegistry::accept);
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
+				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
 				"filters", WhenCondition.CODEC.listOf(),
 				DataConsumer.from(filterProcessor::accept));
 

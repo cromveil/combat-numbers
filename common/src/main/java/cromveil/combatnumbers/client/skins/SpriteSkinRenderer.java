@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import cromveil.combatnumbers.client.render.GeometrySubmitter;
 import cromveil.combatnumbers.client.render.HudRenderContext;
+import cromveil.combatnumbers.resource.ResourceIds;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.joml.Matrix4fc;
 
@@ -74,7 +75,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 
 		float startX = -totalWidth / 2f;
 
-		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
+		var renderType = RenderTypes.textSeeThrough(ResourceIds.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
@@ -123,7 +124,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 
 		float startX = -totalWidth / 2f;
 
-		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
+		var renderType = RenderTypes.textSeeThrough(ResourceIds.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();

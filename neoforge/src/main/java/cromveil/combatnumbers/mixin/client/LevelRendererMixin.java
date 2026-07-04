@@ -3,10 +3,10 @@ package cromveil.combatnumbers.mixin.client;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
+import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
 import cromveil.combatnumbers.client.render.CameraAdapter;
 import cromveil.combatnumbers.client.render.FloatingText;
-import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
@@ -48,21 +48,21 @@ public abstract class LevelRendererMixin {
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
 		if (!Config.get(ConfigIds.ENABLED)) {
-			FloatingTextManager.clear();
+			Systems.client().textManager().clear();
 			return;
 		}
 
 		Level level = mc.level;
 		if (level == null) {
-			FloatingTextManager.clear();
+			Systems.client().textManager().clear();
 			return;
 		}
 
 		double gameTime = level.getGameTime() + deltaTracker.getGameTimeDeltaPartialTick(false);
-		for (FloatingText text : FloatingTextManager.getActive()) {
+		for (FloatingText text : Systems.client().textManager().getActive()) {
 			text.setGameTime(gameTime);
 		}
-		FloatingTextManager.cleanupExpired();
+		Systems.client().textManager().cleanupExpired();
 
 		RenderOption option = Config.get(ConfigIds.RENDER_MODE);
 		if (option.isHud()) {

@@ -1,30 +1,29 @@
 package cromveil.combatnumbers.skins;
 
 import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.ResourceId;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
-import net.minecraft.resources.Identifier;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SkinRegistry {
 
-	private final Map<Identifier, SkinDefinition> definitions = new LinkedHashMap<>();
-	private Map<Identifier, byte[]> textureCache = null;
+	private final Map<ResourceId, SkinDefinition> definitions = new LinkedHashMap<>();
+	private Map<ResourceId, byte[]> textureCache = null;
 	private Runnable onReload = () -> {
 	};
 
-	public void accept(Map<Identifier, SkinDefinition> entries, ModResourceAccessor resources) {
+	public void accept(Map<ResourceId, SkinDefinition> entries, ModResourceAccessor resources) {
 		definitions.clear();
 		definitions.putAll(entries);
 
-		var textures = new LinkedHashMap<Identifier, byte[]>();
+		var textures = new LinkedHashMap<ResourceId, byte[]>();
 		for (var entry : entries.entrySet()) {
 			if (entry.getValue() instanceof SpriteSkinDefinition sprite) {
-				Identifier texture = sprite.texture();
-				Identifier png = Identifier.fromNamespaceAndPath(
-						texture.getNamespace(), "textures/" + texture.getPath() + ".png");
+				ResourceId texture = sprite.texture();
+				ResourceId png = ResourceId.of(texture.namespace(), "textures/" + texture.path() + ".png");
 				byte[] bytes = resources.getBytes(png);
 				if (bytes != null) {
 					textures.put(texture, bytes);
@@ -40,7 +39,7 @@ public class SkinRegistry {
 		onReload.run();
 	}
 
-	public Map<Identifier, SkinDefinition> getAll() {
+	public Map<ResourceId, SkinDefinition> getAll() {
 		return new LinkedHashMap<>(definitions);
 	}
 
