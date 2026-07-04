@@ -2,7 +2,7 @@ package cromveil.combatnumbers.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;

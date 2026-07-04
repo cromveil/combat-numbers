@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SpriteSkinDefinition;
 import cromveil.combatnumbers.skins.TextSkinDefinition;

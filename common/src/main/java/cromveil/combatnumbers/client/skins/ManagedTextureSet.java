@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;

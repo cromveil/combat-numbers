@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.styles;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.events.CombatEvent;
 import net.minecraft.resources.Identifier;
 

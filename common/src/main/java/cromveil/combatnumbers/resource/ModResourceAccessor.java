@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 

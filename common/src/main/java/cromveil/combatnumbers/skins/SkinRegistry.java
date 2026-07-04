@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.skins;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
 import net.minecraft.resources.Identifier;

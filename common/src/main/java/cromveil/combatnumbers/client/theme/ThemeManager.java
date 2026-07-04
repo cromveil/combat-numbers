@@ -3,7 +3,7 @@ package cromveil.combatnumbers.client.theme;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.animation.Timeline;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.skins.TextureByteSource;

@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.filters;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.resources.Identifier;
 

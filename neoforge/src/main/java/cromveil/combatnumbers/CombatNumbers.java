@@ -1,6 +1,7 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;

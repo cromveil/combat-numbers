@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.platform;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;

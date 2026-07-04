@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'org.slf4j:slf4j-api:2.0.17'
     compileOnly 'org.joml:joml:1.10.8'
     compileOnly 'com.mojang:datafixerupper:10.0.21'
 }

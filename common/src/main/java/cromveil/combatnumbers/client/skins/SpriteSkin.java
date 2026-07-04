@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 
 import org.jspecify.annotations.Nullable;
 

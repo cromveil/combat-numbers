@@ -1,6 +1,7 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.Timeline;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.ClientRuntime;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
