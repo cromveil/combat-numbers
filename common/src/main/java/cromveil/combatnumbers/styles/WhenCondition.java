@@ -3,13 +3,13 @@ package cromveil.combatnumbers.styles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import cromveil.combatnumbers.events.CombatEvent;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.resource.ResourceIds;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 import java.util.List;
@@ -37,9 +37,10 @@ public record WhenCondition(
 				attacker.orElse(null), target.orElse(null), weapon.orElse(null)))
 	);
 
-	public boolean matches(CombatEvent event) {
+	public boolean matches(CombatEvent event, ServerLevel level) {
 		if (type != null) {
-			if (event.typeKey().isEmpty() || !event.typeKey().get().equals(type))
+			ResourceId expected = ResourceIds.from(type);
+			if (event.typeKey().isEmpty() || !event.typeKey().get().equals(expected))
 				return false;
 		}
 
@@ -47,44 +48,48 @@ public record WhenCondition(
 			if (!(event instanceof CombatEvent.Damage dmg))
 				return false;
 
-			for (var tagId : tags) {
-				var tagKey = TagKey.create(Registries.DAMAGE_TYPE, tagId);
-				if (!dmg.source().is(tagKey))
+			for (Identifier tagId : tags) {
+				ResourceId expectedTag = ResourceIds.from(tagId);
+				if (!dmg.tags().contains(expectedTag))
 					return false;
 			}
 
 			if (weapon != null) {
-				var attackerEntity = dmg.source().getEntity();
-				if (!(attackerEntity instanceof LivingEntity living))
+				var attackerId = dmg.attackerEntityId();
+				if (attackerId.isEmpty())
+					return false;
+				var entity = level.getEntity(attackerId.get());
+				if (!(entity instanceof LivingEntity living))
 					return false;
 				if (!weapon.test(living.getMainHandItem()))
 					return false;
 			}
 		}
 
-		for (var flag : flags) {
-			if (!event.flags().contains(flag))
+		for (Identifier flag : flags) {
+			ResourceId expectedFlag = ResourceIds.from(flag);
+			if (!event.flags().contains(expectedFlag))
 				return false;
 		}
 
 		if (attacker != null) {
 			if (!(event instanceof CombatEvent.Damage dmg))
 				return false;
-			var attackerEntity = dmg.source().getEntity();
+			var attackerId = dmg.attackerEntityId();
+			if (attackerId.isEmpty())
+				return false;
+			var attackerEntity = level.getEntity(attackerId.get());
 			if (attackerEntity == null)
 				return false;
-			var level = event.entity().level();
-			if (!(level instanceof ServerLevel serverLevel))
-				return false;
-			if (!attacker.matches(serverLevel, attackerEntity.position(), attackerEntity))
+			if (!attacker.matches(level, attackerEntity.position(), attackerEntity))
 				return false;
 		}
 
 		if (target != null) {
-			var level = event.entity().level();
-			if (!(level instanceof ServerLevel serverLevel))
+			var entity = level.getEntity(event.entityId());
+			if (entity == null)
 				return false;
-			if (!target.matches(serverLevel, event.entity().position(), event.entity()))
+			if (!target.matches(level, entity.position(), entity))
 				return false;
 		}
 

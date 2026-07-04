@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.detector;
 
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.ResourceId;
 import org.jspecify.annotations.Nullable;
 
 public interface HealTypeTracker {
-	void combatNumbers$setHealType(@Nullable Identifier type);
-	@Nullable Identifier combatNumbers$getAndClearHealType();
+	void combatNumbers$setHealType(@Nullable ResourceId type);
+	@Nullable ResourceId combatNumbers$getAndClearHealType();
 }

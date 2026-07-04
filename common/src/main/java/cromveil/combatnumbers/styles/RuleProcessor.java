@@ -1,7 +1,8 @@
 package cromveil.combatnumbers.styles;
 
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.events.CombatEvent;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.events.CombatEvent;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
@@ -24,14 +25,14 @@ public class RuleProcessor {
 	}
 
 	public void accept(Map<Identifier, RuleSet> entries) {
-		Map<Identifier, List<Rule>> rulesByKind = new HashMap<>();
+		Map<ResourceId, List<Rule>> rulesByKind = new HashMap<>();
 
 		for (var entry : entries.entrySet()) {
 			var path = entry.getKey().getPath();
 			var slashIdx = path.indexOf('/');
-			Identifier kind;
+			ResourceId kind;
 			if (slashIdx >= 0) {
-				kind = Identifier.fromNamespaceAndPath(
+				kind = ResourceId.of(
 						entry.getKey().getNamespace(), path.substring(0, slashIdx));
 			} else {
 				kind = CombatEvent.DAMAGE_KIND;

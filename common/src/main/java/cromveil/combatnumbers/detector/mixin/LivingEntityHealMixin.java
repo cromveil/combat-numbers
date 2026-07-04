@@ -2,13 +2,14 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.HealTypeTracker;
-import cromveil.combatnumbers.events.CombatEvent;
-import cromveil.combatnumbers.events.CombatNumbersEvents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,17 +25,17 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 
 	@Unique
 	@Nullable
-	private Identifier combatNumbers$healType;
+	private ResourceId combatNumbers$healType;
 
 	@Override
-	public void combatNumbers$setHealType(@Nullable Identifier type) {
+	public void combatNumbers$setHealType(@Nullable ResourceId type) {
 		this.combatNumbers$healType = type;
 	}
 
 	@Override
 	@Nullable
-	public Identifier combatNumbers$getAndClearHealType() {
-		Identifier t = this.combatNumbers$healType;
+	public ResourceId combatNumbers$getAndClearHealType() {
+		ResourceId t = this.combatNumbers$healType;
 		this.combatNumbers$healType = null;
 		return t;
 	}
@@ -71,10 +72,10 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 		if (actualHeal <= 0f)
 			return;
 
-		Identifier healType = this.combatNumbers$getAndClearHealType();
+		ResourceId healType = this.combatNumbers$getAndClearHealType();
 		if (healType == null) healType = CombatEvent.GENERIC_HEAL;
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(
-			new CombatEvent.Heal(self, actualHeal, healType, new HashSet<>()));
+			new CombatEvent.Heal(self.getId(), actualHeal, Optional.of(healType), new LinkedHashSet<>()));
 	}
 }

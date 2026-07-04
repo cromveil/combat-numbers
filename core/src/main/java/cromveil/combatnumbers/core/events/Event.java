@@ -1,10 +1,9 @@
-package cromveil.combatnumbers.events;
+package cromveil.combatnumbers.core.events;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-// Simple event bus
 public class Event<T> {
 
 	public static <T> Event<T> create(Class<T> type) {

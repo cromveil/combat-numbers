@@ -1,13 +1,14 @@
 package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.NeoForgeConfig;
-import cromveil.combatnumbers.events.CombatNumbersEvents;
-import cromveil.combatnumbers.events.RenderEvent;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatNumbersEvents;
+import cromveil.combatnumbers.core.events.RenderEvent;
 import cromveil.combatnumbers.filters.FilterProcessor;
 import cromveil.combatnumbers.filters.FilterRegistry;
 import cromveil.combatnumbers.packets.RenderPacket;
@@ -17,6 +18,7 @@ import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
+import cromveil.combatnumbers.resource.ResourceIds;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinRegistry;
 import cromveil.combatnumbers.styles.RuleEngine;
@@ -42,7 +44,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@Mod(Constants.MOD_ID)
+@Mod(cromveil.combatnumbers.core.Constants.MOD_ID)
 public class CombatNumbers {
 	private MinecraftServer server;
 	private StyleTable styleTable = StyleTable.EMPTY;
@@ -58,7 +60,7 @@ public class CombatNumbers {
 		container.registerConfig(ModConfig.Type.COMMON, config.commonSpec());
 
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, e -> {
-			PayloadRegistrar registrar = e.registrar(Constants.MOD_ID);
+			PayloadRegistrar registrar = e.registrar(cromveil.combatnumbers.core.Constants.MOD_ID);
 			registrar.playToClient(RenderPacket.TYPE, RenderPacket.STREAM_CODEC);
 			registrar.playToClient(SyncAnimationDataPacket.TYPE,
 					SyncAnimationDataPacket.STREAM_CODEC);
@@ -72,7 +74,7 @@ public class CombatNumbers {
 
 		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "animations"),
+				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(animationRegistry::accept));
 
@@ -82,18 +84,18 @@ public class CombatNumbers {
 			broadcast(new SyncStyleTablePacket(this.styleTable));
 		});
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "styles"),
+				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
 				"styles", RuleSet.CODEC,
 				DataConsumer.from(ruleProcessor::accept));
 
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "skins"),
+				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				skinRegistry::accept);
 
 		var filterProcessor = new FilterProcessor(filterRegistry);
 		reloadRegistry.registerServerData(
-				Identifier.fromNamespaceAndPath(Constants.MOD_ID, "filters"),
+				Identifier.fromNamespaceAndPath(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
 				"filters", WhenCondition.CODEC.listOf(),
 				DataConsumer.from(filterProcessor::accept));
 
@@ -117,20 +119,35 @@ public class CombatNumbers {
 		});
 
 		CombatNumbersEvents.COMBAT.register(event -> {
-			if (!filterRegistry.passes(event))
+			ServerLevel entityLevel = findEntityLevel(event.entityId());
+			if (entityLevel == null)
 				return;
-			Style style = ruleEngine.resolve(event);
-			CombatNumbersEvents.RENDER.invoker().onEvent(RenderEvent.from(event, style));
+
+			if (!filterRegistry.passes(event, entityLevel))
+				return;
+			Style style = ruleEngine.resolve(event, entityLevel);
+
+			ResourceId skinId = style.skinId() != null ? ResourceIds.from(style.skinId()) : null;
+			ResourceId animationId = style.animationId() != null ? ResourceIds.from(style.animationId()) : null;
+			CombatNumbersEvents.RENDER.invoker().onEvent(
+					new RenderEvent(event.entityId(), event.value(), skinId, animationId));
 		});
 
-		CombatNumbersEvents.RENDER.register((instance) -> {
-			LivingEntity entity = instance.entity();
-			RenderPacket packet = new RenderPacket(
-					entity.getId(), instance.value(),
-					this.styleTable.skinIndex(instance.skinId()),
-					this.styleTable.animationIndex(instance.animationId()));
+		CombatNumbersEvents.RENDER.register(instance -> {
+			int entityId = instance.entityId();
+			ServerLevel level = findEntityLevel(entityId);
+			if (level == null)
+				return;
 
-			ServerLevel level = (ServerLevel) entity.level();
+			var entity = level.getEntity(entityId);
+			if (!(entity instanceof LivingEntity livingEntity))
+				return;
+
+			RenderPacket packet = new RenderPacket(
+					entityId, instance.value(),
+					this.styleTable.skinIndex(instance.skinId() != null ? ResourceIds.to(instance.skinId()) : null),
+					this.styleTable.animationIndex(instance.animationId() != null ? ResourceIds.to(instance.animationId()) : null));
+
 			double entityX = entity.getX();
 			double entityY = entity.getY();
 			double entityZ = entity.getZ();
@@ -154,6 +171,16 @@ public class CombatNumbers {
 			}
 			broadcast(new SyncSkinDataPacket(skinRegistry.getAll()));
 		});
+	}
+
+	private ServerLevel findEntityLevel(int entityId) {
+		if (this.server == null)
+			return null;
+		for (ServerLevel level : this.server.getAllLevels()) {
+			if (level.getEntity(entityId) != null)
+				return level;
+		}
+		return null;
 	}
 
 	private void broadcast(CustomPacketPayload packet) {

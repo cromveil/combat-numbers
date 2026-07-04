@@ -1,7 +1,8 @@
 package cromveil.combatnumbers.filters;
 
-import cromveil.combatnumbers.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.styles.WhenCondition;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,9 @@ public class FilterRegistry {
 		filters.add(condition);
 	}
 
-	public boolean passes(CombatEvent event) {
+	public boolean passes(CombatEvent event, ServerLevel level) {
 		for (var filter : filters) {
-			if (filter.matches(event))
+			if (filter.matches(event, level))
 				return false;
 		}
 		return true;

@@ -2,15 +2,17 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.CritTracker;
 import cromveil.combatnumbers.detector.PoisonTickTracker;
-import cromveil.combatnumbers.events.CombatEvent;
-import cromveil.combatnumbers.events.CombatNumbersEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -96,15 +98,28 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 		if (finalDamage <= 0f)
 			return;
 
-		Set<Identifier> flags = new HashSet<>();
+		Set<ResourceId> flags = new LinkedHashSet<>();
 		if (this.combatNumbers$consumeCritAttack()) {
-			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "crit"));
+			flags.add(ResourceId.of("combatnumbers", "crit"));
 		}
 		if (this.combatNumbers$getAndClearPoisonTick()) {
-			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "poison_tick"));
+			flags.add(ResourceId.of("combatnumbers", "poison_tick"));
+		}
+
+		Optional<ResourceId> typeKey = source.typeHolder().unwrapKey()
+				.map(k -> ResourceId.of(k.identifier().getNamespace(), k.identifier().getPath()));
+
+		Set<ResourceId> tags = source.typeHolder().tags()
+				.map(t -> ResourceId.of(t.location().getNamespace(), t.location().getPath()))
+				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+
+		Optional<Integer> attackerId = Optional.empty();
+		var attacker = source.getEntity();
+		if (attacker != null) {
+			attackerId = Optional.of(attacker.getId());
 		}
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(
-			new CombatEvent.Damage(self, source, amount, finalDamage, flags));
+			new CombatEvent.Damage(self.getId(), typeKey, tags, amount, finalDamage, flags, attackerId));
 	}
 }
