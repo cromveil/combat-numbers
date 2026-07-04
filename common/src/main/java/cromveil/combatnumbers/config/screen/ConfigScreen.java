@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.config.screen;
 
-import cromveil.combatnumbers.config.ConfigStore;
+import cromveil.combatnumbers.core.config.ConfigStore;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;

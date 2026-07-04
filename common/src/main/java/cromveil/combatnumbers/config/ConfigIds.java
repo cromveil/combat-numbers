@@ -2,8 +2,8 @@ package cromveil.combatnumbers.config;
 
 import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.client.theme.ThemeManager;
-import cromveil.combatnumbers.config.screen.SliderFormat;
-import net.minecraft.network.chat.Component;
+import cromveil.combatnumbers.core.config.ConfigId;
+import cromveil.combatnumbers.core.config.SliderFormat;
 
 import java.util.List;
 
@@ -16,11 +16,10 @@ public final class ConfigIds {
 
 	public static final ConfigId<String> CLIENT_THEME =
 			ConfigId.stringCycle(ConfigId.Category.CLIENT, "theme", "maple",
-					ThemeManager::themeIds, ThemeManager::displayName, true);
+					ThemeManager::themeIds, true);
 
 	public static final ConfigId<RenderOption> RENDER_MODE =
-			ConfigId.enumCycle(ConfigId.Category.CLIENT, "renderMode", RenderOption.HUD,
-					m -> Component.translatable("config.combatnumbers.renderOption." + m.name()));
+			ConfigId.enumCycle(ConfigId.Category.CLIENT, "renderMode", RenderOption.HUD);
 
 	public static final ConfigId<Double> BASE_FONT_SIZE =
 			ConfigId.floatSlider(ConfigId.Category.CLIENT, "baseFontSize", 9.0,
@@ -55,6 +54,4 @@ public final class ConfigIds {
 			BASE_FONT_SIZE, NEAR_FADE_DISTANCE,
 			DISTANCE_FALLOFF_START, DISTANCE_FALLOFF_END, DISTANCE_MIN_SCALE
 	);
-
-	// public static final List<ConfigId<?>> ALL_SERVER = List.of();
 }

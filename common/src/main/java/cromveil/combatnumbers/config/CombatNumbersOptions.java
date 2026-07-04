@@ -2,6 +2,7 @@ package cromveil.combatnumbers.config;
 
 import cromveil.combatnumbers.config.screen.ConfigOption;
 import cromveil.combatnumbers.config.screen.ConfigScreen;
+import cromveil.combatnumbers.core.config.ConfigStore;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -22,7 +23,7 @@ public final class CombatNumbersOptions {
 
 	public static List<ConfigOption<?>> clientOptions(ConfigStore store) {
 		return Stream.concat(ConfigIds.ALL_COMMON.stream(), ConfigIds.ALL_CLIENT.stream())
-				.<ConfigOption<?>>map(id -> id.toOption(store))
+				.<ConfigOption<?>>map(id -> ConfigWidgetFactory.toWidget(id, store))
 				.toList();
 	}
 }

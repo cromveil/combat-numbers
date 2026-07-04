@@ -1,5 +1,7 @@
 package cromveil.combatnumbers.config;
 
+import cromveil.combatnumbers.core.config.ConfigId;
+import cromveil.combatnumbers.core.config.ConfigStore;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 

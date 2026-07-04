@@ -1,4 +1,4 @@
-package cromveil.combatnumbers.config.screen;
+package cromveil.combatnumbers.core.config;
 
 import java.util.Locale;
 

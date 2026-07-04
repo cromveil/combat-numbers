@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.config.screen;
 
+import cromveil.combatnumbers.core.config.SliderFormat;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;

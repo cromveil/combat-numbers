@@ -1,4 +1,4 @@
-package cromveil.combatnumbers.config;
+package cromveil.combatnumbers.core.config;
 
 public interface ConfigStore {
 
