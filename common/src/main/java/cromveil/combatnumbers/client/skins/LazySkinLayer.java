@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.client.resolver.Source;
+import cromveil.combatnumbers.core.resolver.Source;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;

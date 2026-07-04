@@ -1,4 +1,4 @@
-package cromveil.combatnumbers.client.theme;
+package cromveil.combatnumbers.core.theme;
 
 public record ThemeInfo(String id, String name, boolean builtIn, String description) {
 }

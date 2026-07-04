@@ -1,4 +1,4 @@
-package cromveil.combatnumbers.client.resolver;
+package cromveil.combatnumbers.core.resolver;
 
 import org.jspecify.annotations.Nullable;
 

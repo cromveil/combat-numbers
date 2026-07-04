@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.client.resolver.LayeredResolver;
+import cromveil.combatnumbers.core.resolver.LayeredResolver;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.resources.Identifier;
 

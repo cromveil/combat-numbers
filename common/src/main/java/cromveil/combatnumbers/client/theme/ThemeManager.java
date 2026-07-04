@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
+import cromveil.combatnumbers.core.theme.ThemeInfo;
 import cromveil.combatnumbers.client.skins.TextureByteSource;
 import cromveil.combatnumbers.resource.ModResourceAccessor;
 import cromveil.combatnumbers.skins.SkinDefinition;
