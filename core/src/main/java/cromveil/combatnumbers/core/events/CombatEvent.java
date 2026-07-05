@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.core.events;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import java.util.Optional;
 import java.util.Set;
@@ -11,9 +12,9 @@ public sealed interface CombatEvent {
 	Set<StableId> flags();
 	Optional<StableId> typeKey();
 
-	StableId DAMAGE_KIND = StableId.of("combatnumbers", "damage");
-	StableId HEAL_KIND = StableId.of("combatnumbers", "heal");
-	StableId GENERIC_HEAL = StableId.of("combatnumbers", "generic_heal");
+	StableId DAMAGE_KIND = StableId.of(Constants.MOD_ID, "damage");
+	StableId HEAL_KIND = StableId.of(Constants.MOD_ID, "heal");
+	StableId GENERIC_HEAL = StableId.of(Constants.MOD_ID, "generic_heal");
 
 	record Damage(int entityId, Optional<StableId> typeKey, Set<StableId> tags,
 			float rawDamage, float finalDamage, Set<StableId> flags,

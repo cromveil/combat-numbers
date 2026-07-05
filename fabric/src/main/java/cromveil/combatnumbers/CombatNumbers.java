@@ -1,6 +1,5 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
@@ -32,7 +31,6 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -110,7 +108,7 @@ public class CombatNumbers implements ModInitializer {
 				return;
 
 			var entity = level.getEntity(entityId);
-			if (!(entity instanceof LivingEntity livingEntity))
+			if (!(entity instanceof LivingEntity))
 				return;
 
 			RenderPacket packet = new RenderPacket(

@@ -3,6 +3,7 @@ package cromveil.combatnumbers.packets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.resource.StableIdMapper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -15,7 +16,7 @@ public record SyncSpriteTexturePacket(
 ) implements CustomPacketPayload {
 
 	public static final Type<SyncSpriteTexturePacket> TYPE =
-		new Type<>(Identifier.fromNamespaceAndPath("combatnumbers", "sync_sprite_texture"));
+		new Type<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_sprite_texture"));
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, byte[]> BYTE_ARRAY_CODEC =
 		new StreamCodec<>() {

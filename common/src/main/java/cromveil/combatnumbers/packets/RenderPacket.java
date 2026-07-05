@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.packets;
 
+import cromveil.combatnumbers.core.Constants;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -14,7 +15,7 @@ public record RenderPacket(
 	// respective registries.
 
 	public static final Type<RenderPacket> TYPE = new Type<>(
-			Identifier.fromNamespaceAndPath("combatnumbers", "render"));
+			Identifier.fromNamespaceAndPath(Constants.MOD_ID, "render"));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RenderPacket> STREAM_CODEC = CustomPacketPayload
 			.codec(RenderPacket::write, RenderPacket::new);

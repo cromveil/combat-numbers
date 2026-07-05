@@ -3,6 +3,7 @@ package cromveil.combatnumbers.packets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.resource.StableIdMapper;
 import cromveil.combatnumbers.skins.SkinDefinition;
@@ -17,7 +18,7 @@ public record SyncSkinDataPacket(
 ) implements CustomPacketPayload {
 
 	public static final Type<SyncSkinDataPacket> TYPE =
-		new Type<>(Identifier.fromNamespaceAndPath("combatnumbers", "sync_skin_data"));
+		new Type<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_skin_data"));
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, SkinDefinition>> RAW_CODEC =
 		ByteBufCodecs.map(

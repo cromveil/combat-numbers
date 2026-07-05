@@ -1,6 +1,5 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
@@ -27,7 +26,6 @@ import cromveil.combatnumbers.styles.RuleProcessor;
 import cromveil.combatnumbers.styles.RuleSet;
 import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -138,7 +136,7 @@ public class CombatNumbers {
 				return;
 
 			var entity = level.getEntity(entityId);
-			if (!(entity instanceof LivingEntity livingEntity))
+			if (!(entity instanceof LivingEntity))
 				return;
 
 			RenderPacket packet = new RenderPacket(

@@ -2,12 +2,12 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.CritTracker;
 import cromveil.combatnumbers.detector.PoisonTickTracker;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -100,10 +100,10 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 
 		Set<StableId> flags = new LinkedHashSet<>();
 		if (this.combatNumbers$consumeCritAttack()) {
-			flags.add(StableId.of("combatnumbers", "crit"));
+			flags.add(StableId.of(Constants.MOD_ID, "crit"));
 		}
 		if (this.combatNumbers$getAndClearPoisonTick()) {
-			flags.add(StableId.of("combatnumbers", "poison_tick"));
+			flags.add(StableId.of(Constants.MOD_ID, "poison_tick"));
 		}
 
 		Optional<StableId> typeKey = source.typeHolder().unwrapKey()

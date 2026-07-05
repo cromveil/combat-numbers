@@ -1,6 +1,5 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
@@ -24,13 +23,11 @@ import cromveil.combatnumbers.resource.FabricReloadRegistry;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.resource.StableIdMapper;
 import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.Systems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 
 public class CombatNumbersClient implements ClientModInitializer {
 

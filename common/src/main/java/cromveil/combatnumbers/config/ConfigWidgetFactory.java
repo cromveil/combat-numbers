@@ -49,7 +49,6 @@ public final class ConfigWidgetFactory {
 						Component.translatable("options.off"));
 			}
 			case ENUM_CYCLE -> {
-				@SuppressWarnings({"rawtypes", "unchecked"})
 				ConfigOption<?> opt = ConfigOption.ofEnum(id.key(), (Enum) id.defaultValue(),
 						() -> (Enum) store.get((ConfigId) (Object) id),
 						v -> store.set((ConfigId) (Object) id, v),

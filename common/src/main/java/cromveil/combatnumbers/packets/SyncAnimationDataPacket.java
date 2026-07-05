@@ -3,6 +3,7 @@ package cromveil.combatnumbers.packets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
@@ -17,7 +18,7 @@ public record SyncAnimationDataPacket(
 		Map<StableId, Timeline> animations) implements CustomPacketPayload {
 
 	public static final Type<SyncAnimationDataPacket> TYPE = new Type<>(
-			Identifier.fromNamespaceAndPath("combatnumbers", "sync_animation_data"));
+			Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_animation_data"));
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, Timeline>> RAW_CODEC = ByteBufCodecs
 			.map(

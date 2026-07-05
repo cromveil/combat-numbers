@@ -3,7 +3,6 @@ package cromveil.combatnumbers.styles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.styles.Style;
 import cromveil.combatnumbers.resource.StableIdMapper;
 import net.minecraft.resources.Identifier;

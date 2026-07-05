@@ -3,7 +3,6 @@ package cromveil.combatnumbers.resource;
 import com.mojang.serialization.Codec;
 import cromveil.combatnumbers.core.StableId;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
 public class FabricReloadRegistry implements ReloadListenerRegistry {

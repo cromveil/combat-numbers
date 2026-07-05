@@ -1,7 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import cromveil.combatnumbers.client.render.CustomGeometryRenderer;
 import cromveil.combatnumbers.client.render.GeometrySubmitter;
 import cromveil.combatnumbers.client.render.HudRenderContext;
 
