@@ -2,7 +2,7 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.CritTracker;
@@ -98,19 +98,19 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 		if (finalDamage <= 0f)
 			return;
 
-		Set<ResourceId> flags = new LinkedHashSet<>();
+		Set<StableId> flags = new LinkedHashSet<>();
 		if (this.combatNumbers$consumeCritAttack()) {
-			flags.add(ResourceId.of("combatnumbers", "crit"));
+			flags.add(StableId.of("combatnumbers", "crit"));
 		}
 		if (this.combatNumbers$getAndClearPoisonTick()) {
-			flags.add(ResourceId.of("combatnumbers", "poison_tick"));
+			flags.add(StableId.of("combatnumbers", "poison_tick"));
 		}
 
-		Optional<ResourceId> typeKey = source.typeHolder().unwrapKey()
-				.map(k -> ResourceId.of(k.identifier().getNamespace(), k.identifier().getPath()));
+		Optional<StableId> typeKey = source.typeHolder().unwrapKey()
+				.map(k -> StableId.of(k.identifier().getNamespace(), k.identifier().getPath()));
 
-		Set<ResourceId> tags = source.typeHolder().tags()
-				.map(t -> ResourceId.of(t.location().getNamespace(), t.location().getPath()))
+		Set<StableId> tags = source.typeHolder().tags()
+				.map(t -> StableId.of(t.location().getNamespace(), t.location().getPath()))
 				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
 
 		Optional<Integer> attackerId = Optional.empty();

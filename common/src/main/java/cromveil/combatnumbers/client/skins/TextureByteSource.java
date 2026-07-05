@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 
 import org.jspecify.annotations.Nullable;
 
@@ -13,5 +13,5 @@ public interface TextureByteSource {
 
 	/** @return the PNG bytes or null. */
 	@Nullable
-	byte[] get(ResourceId logicalTexture);
+	byte[] get(StableId logicalTexture);
 }

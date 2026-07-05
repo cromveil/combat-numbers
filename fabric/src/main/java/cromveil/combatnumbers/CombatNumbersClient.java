@@ -2,7 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.client.ClientRuntime;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
@@ -22,7 +22,7 @@ import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.FabricReloadRegistry;
 import cromveil.combatnumbers.core.styles.StyleTable;
-import cromveil.combatnumbers.resource.ResourceIds;
+import cromveil.combatnumbers.resource.StableIdMapper;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.Systems;
 import net.fabricmc.api.ClientModInitializer;
@@ -43,11 +43,11 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		var reloadRegistry = new FabricReloadRegistry();
 		reloadRegistry.registerClientResources(
-				ResourceId.of(Constants.MOD_ID, "skins"),
+				StableId.of(Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				runtime::applyResourcePackSkins);
 		reloadRegistry.registerClientResources(
-				ResourceId.of(Constants.MOD_ID, "animations"),
+				StableId.of(Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(runtime::applyResourcePackAnimations));
 
@@ -56,8 +56,8 @@ public class CombatNumbersClient implements ClientModInitializer {
 					(packet, context) -> context.client().execute(
 							() -> runtime.applyStyleTable(
 									new StyleTable(
-											packet.skinIds().stream().map(ResourceIds::from).toList(),
-											packet.animationIds().stream().map(ResourceIds::from).toList()))));
+											packet.skinIds().stream().map(StableIdMapper::from).toList(),
+											packet.animationIds().stream().map(StableIdMapper::from).toList()))));
 
 			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE,
 					(packet, context) -> context.client().execute(

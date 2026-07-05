@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.client.animation.AnimationCompiler;
 import cromveil.combatnumbers.core.client.animation.AnimationEvaluator;
@@ -36,8 +36,8 @@ public final class ClientRuntime {
 
 	private StyleTable styleTable = StyleTable.EMPTY;
 
-	private Map<ResourceId, byte[]> serverTextureBytes = new LinkedHashMap<>();
-	private Map<ResourceId, SkinDefinition> serverSkinDefs = Map.of();
+	private Map<StableId, byte[]> serverTextureBytes = new LinkedHashMap<>();
+	private Map<StableId, SkinDefinition> serverSkinDefs = Map.of();
 
 	private String appliedTheme = null;
 	private ModResourceAccessor lastResources;
@@ -46,17 +46,17 @@ public final class ClientRuntime {
 		this.styleTable = table;
 	}
 
-	public void applyServerSkins(Map<ResourceId, SkinDefinition> defs) {
+	public void applyServerSkins(Map<StableId, SkinDefinition> defs) {
 		this.serverSkinDefs = Map.copyOf(defs);
 		rebuildServerSkins();
 	}
 
-	public void applyServerTextures(Map<ResourceId, byte[]> textures) {
+	public void applyServerTextures(Map<StableId, byte[]> textures) {
 		this.serverTextureBytes = new LinkedHashMap<>(textures);
 		rebuildServerSkins();
 	}
 
-	public void applyServerAnimations(Map<ResourceId, Timeline> animations) {
+	public void applyServerAnimations(Map<StableId, Timeline> animations) {
 		animationResolver.setServer(animations);
 	}
 
@@ -64,19 +64,19 @@ public final class ClientRuntime {
 		skinResolver.setServer(serverSkinDefs, logical -> serverTextureBytes.get(logical));
 	}
 
-	public void applyResourcePackSkins(Map<ResourceId, SkinDefinition> defs, ModResourceAccessor resources) {
+	public void applyResourcePackSkins(Map<StableId, SkinDefinition> defs, ModResourceAccessor resources) {
 		this.lastResources = resources;
 		skinResolver.setResourcePack(defs, resourceTextures(resources));
 		reloadTheme();
 	}
 
-	public void applyResourcePackAnimations(Map<ResourceId, Timeline> animations) {
+	public void applyResourcePackAnimations(Map<StableId, Timeline> animations) {
 		animationResolver.setResourcePack(animations);
 	}
 
 	private static TextureByteSource resourceTextures(ModResourceAccessor resources) {
 		return logical -> {
-			ResourceId png = ResourceId.of(
+			StableId png = StableId.of(
 					logical.namespace(), "textures/" + logical.path() + ".png");
 			return resources.getBytes(png);
 		};
@@ -136,8 +136,8 @@ public final class ClientRuntime {
 			return;
 		}
 
-		ResourceId skinId = styleTable.skinAt(skinIndex);
-		ResourceId animId = styleTable.animationAt(animationIndex);
+		StableId skinId = styleTable.skinAt(skinIndex);
+		StableId animId = styleTable.animationAt(animationIndex);
 		Skin skin = skinResolver.resolve(skinId);
 		Timeline timeline = animationResolver.resolve(animId);
 

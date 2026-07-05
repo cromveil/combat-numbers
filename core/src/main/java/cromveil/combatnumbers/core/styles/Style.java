@@ -1,11 +1,11 @@
 package cromveil.combatnumbers.core.styles;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import org.jspecify.annotations.Nullable;
 
 public record Style(
-	@Nullable ResourceId skinId,
-	@Nullable ResourceId animationId
+	@Nullable StableId skinId,
+	@Nullable StableId animationId
 ) {
 	public Style merge(Style override) {
 		return new Style(

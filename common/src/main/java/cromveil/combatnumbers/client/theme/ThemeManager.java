@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.theme.ThemeInfo;
@@ -95,7 +95,7 @@ public class ThemeManager {
 
 	private static void loadResourcePackThemes(List<ThemeInfo> out, ModResourceAccessor resources) {
 		String prefix = "themes";
-		for (ResourceId file : resources.findResources(prefix,
+		for (StableId file : resources.findResources(prefix,
 				path -> path.endsWith("/theme.json"))) {
 			String path = file.path();
 			String dir = path.substring(prefix.length() + 1,
@@ -162,9 +162,9 @@ public class ThemeManager {
 		}
 
 		String base = "themes/" + themeId;
-		Map<ResourceId, SkinDefinition> skins = resources.loadJsonDirectory(
+		Map<StableId, SkinDefinition> skins = resources.loadJsonDirectory(
 				base + "/skins", SkinDefinition.CODEC);
-		Map<ResourceId, Timeline> animations = resources.loadJsonDirectory(
+		Map<StableId, Timeline> animations = resources.loadJsonDirectory(
 				base + "/animations", TimelineCodec.CODEC);
 
 		if (skins.isEmpty() && animations.isEmpty()) {
@@ -175,7 +175,7 @@ public class ThemeManager {
 
 		String textureBase = base + "/textures/";
 		TextureByteSource textureBytes = logical -> resources.getBytes(
-				ResourceId.of(Constants.MOD_ID,
+				StableId.of(Constants.MOD_ID,
 						textureBase + logical.path() + ".png"));
 
 		Constants.LOG.info("Loaded theme '{}': {} skins, {} animations",
@@ -184,8 +184,8 @@ public class ThemeManager {
 	}
 
 	public record LoadedTheme(
-			Map<ResourceId, SkinDefinition> skins,
-			Map<ResourceId, Timeline> animations,
+			Map<StableId, SkinDefinition> skins,
+			Map<StableId, Timeline> animations,
 			TextureByteSource textureBytes) {
 	}
 }

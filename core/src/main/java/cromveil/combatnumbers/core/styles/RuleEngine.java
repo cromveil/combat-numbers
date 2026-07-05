@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.core.styles;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 
 import java.util.Comparator;
@@ -14,12 +14,12 @@ public class RuleEngine {
 
 	public record Rule(ConditionMatcher when, Style then) {}
 
-	private Map<ResourceId, KindState> kindStates = Map.of();
+	private Map<StableId, KindState> kindStates = Map.of();
 
 	private record KindState(List<Rule> rules) {}
 
-	public void load(Map<ResourceId, List<Rule>> rulesByKind) {
-		Map<ResourceId, KindState> map = new HashMap<>();
+	public void load(Map<StableId, List<Rule>> rulesByKind) {
+		Map<StableId, KindState> map = new HashMap<>();
 		for (var entry : rulesByKind.entrySet()) {
 			map.put(entry.getKey(), new KindState(List.copyOf(entry.getValue())));
 		}
@@ -46,7 +46,7 @@ public class RuleEngine {
 		return info;
 	}
 
-	public List<ResourceId> emittableSkinIds() {
+	public List<StableId> emittableSkinIds() {
 		return kindStates.values().stream()
 				.flatMap(s -> s.rules().stream())
 				.map(r -> r.then().skinId())
@@ -56,7 +56,7 @@ public class RuleEngine {
 				.toList();
 	}
 
-	public List<ResourceId> emittableAnimationIds() {
+	public List<StableId> emittableAnimationIds() {
 		return kindStates.values().stream()
 				.flatMap(s -> s.rules().stream())
 				.map(r -> r.then().animationId())

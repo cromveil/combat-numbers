@@ -1,13 +1,13 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SpriteSheet {
 
-	private final ResourceId textureId;
+	private final StableId textureId;
 	private final int columns;
 	private final int rows;
 	private final int cellWidth;
@@ -15,7 +15,7 @@ public class SpriteSheet {
 	private final Map<Character, Integer> charToIndex;
 	private final float[] advances;
 
-	private SpriteSheet(ResourceId textureId, int columns, int cellWidth, int cellHeight, String charOrder,
+	private SpriteSheet(StableId textureId, int columns, int cellWidth, int cellHeight, String charOrder,
 			Map<Character, Float> advanceOverrides) {
 		this.textureId = textureId;
 		this.columns = columns;
@@ -31,12 +31,12 @@ public class SpriteSheet {
 		}
 	}
 
-	public static SpriteSheet create(ResourceId renderTextureId, int columns, int cellWidth, int cellHeight,
+	public static SpriteSheet create(StableId renderTextureId, int columns, int cellWidth, int cellHeight,
 			String charOrder, Map<Character, Float> advanceOverrides) {
 		return new SpriteSheet(renderTextureId, columns, cellWidth, cellHeight, charOrder, advanceOverrides);
 	}
 
-	public ResourceId textureId() {
+	public StableId textureId() {
 		return textureId;
 	}
 

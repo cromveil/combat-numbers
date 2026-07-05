@@ -2,8 +2,8 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
-import cromveil.combatnumbers.resource.ResourceIds;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.resource.StableIdMapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
@@ -18,20 +18,20 @@ import java.util.Set;
  */
 public class ManagedTextureSet {
 
-	private final Set<ResourceId> registered = new LinkedHashSet<>();
+	private final Set<StableId> registered = new LinkedHashSet<>();
 
-	public boolean has(ResourceId id) {
+	public boolean has(StableId id) {
 		return registered.contains(id);
 	}
 
-	public void register(ResourceId id, byte[] pngData) {
+	public void register(StableId id, byte[] pngData) {
 		if (registered.contains(id)) {
 			return;
 		}
 		try {
 			NativeImage image = NativeImage.read(new ByteArrayInputStream(pngData));
 			DynamicTexture texture = new DynamicTexture(() -> "CombatNumbers: " + id, image);
-			Minecraft.getInstance().getTextureManager().register(ResourceIds.to(id), texture);
+			Minecraft.getInstance().getTextureManager().register(StableIdMapper.to(id), texture);
 			registered.add(id);
 		} catch (Exception e) {
 			Constants.LOG.warn("Failed to register texture '{}'", id, e);
@@ -40,8 +40,8 @@ public class ManagedTextureSet {
 
 	public void releaseAll() {
 		var textureManager = Minecraft.getInstance().getTextureManager();
-		for (ResourceId id : registered) {
-			textureManager.release(ResourceIds.to(id));
+		for (StableId id : registered) {
+			textureManager.release(StableIdMapper.to(id));
 		}
 		registered.clear();
 	}

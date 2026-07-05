@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.resource;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jspecify.annotations.Nullable;
 
@@ -18,8 +18,8 @@ class MinecraftResourceAccessor implements ModResourceAccessor {
 	}
 
 	@Override
-	public byte @Nullable [] getBytes(ResourceId location) {
-		var id = ResourceIds.to(location);
+	public byte @Nullable [] getBytes(StableId location) {
+		var id = StableIdMapper.to(location);
 		Optional<net.minecraft.server.packs.resources.Resource> resource = manager.getResource(id);
 		if (resource.isEmpty()) {
 			return null;
@@ -32,11 +32,11 @@ class MinecraftResourceAccessor implements ModResourceAccessor {
 	}
 
 	@Override
-	public List<ResourceId> findResources(String directory, Predicate<String> pathPredicate) {
-		List<ResourceId> result = new ArrayList<>();
+	public List<StableId> findResources(String directory, Predicate<String> pathPredicate) {
+		List<StableId> result = new ArrayList<>();
 		for (var id : manager.listResources(directory,
 				mcId -> pathPredicate.test(mcId.getPath())).keySet()) {
-			result.add(ResourceIds.from(id));
+			result.add(StableIdMapper.from(id));
 		}
 		return result;
 	}

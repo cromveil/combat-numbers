@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.resource;
 
 import com.mojang.serialization.Codec;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -22,9 +22,9 @@ class MinecraftReloadListener<T> extends SimpleJsonResourceReloadListener<T> {
 
 	@Override
 	protected void apply(Map<Identifier, T> entries, ResourceManager manager, ProfilerFiller profiler) {
-		Map<ResourceId, T> converted = new LinkedHashMap<>();
+		Map<StableId, T> converted = new LinkedHashMap<>();
 		for (var entry : entries.entrySet()) {
-			converted.put(ResourceIds.from(entry.getKey()), entry.getValue());
+			converted.put(StableIdMapper.from(entry.getKey()), entry.getValue());
 		}
 		consumer.accept(converted, new MinecraftResourceAccessor(manager));
 	}

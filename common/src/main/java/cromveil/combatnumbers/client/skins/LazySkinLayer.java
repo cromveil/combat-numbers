@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.resolver.Source;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import org.jspecify.annotations.Nullable;
@@ -13,12 +13,12 @@ import java.util.Map;
  * 
  * NOTE: Must be used on the render thread.
  */
-public final class LazySkinLayer implements Source<ResourceId, Skin> {
+public final class LazySkinLayer implements Source<StableId, Skin> {
 
 	private final String layerPrefix;
 	private final ManagedTextureSet textures = new ManagedTextureSet();
-	private final Map<ResourceId, Skin> cache = new HashMap<>();
-	private Map<ResourceId, SkinDefinition> defs = Map.of();
+	private final Map<StableId, Skin> cache = new HashMap<>();
+	private Map<StableId, SkinDefinition> defs = Map.of();
 	private TextureByteSource byteSource = id -> null;
 
 	public LazySkinLayer(String layerPrefix) {
@@ -26,7 +26,7 @@ public final class LazySkinLayer implements Source<ResourceId, Skin> {
 	}
 
 	/** Replaces this layer's skins, releasing the previously compiled textures. */
-	public void set(Map<ResourceId, SkinDefinition> defs, TextureByteSource byteSource) {
+	public void set(Map<StableId, SkinDefinition> defs, TextureByteSource byteSource) {
 		textures.releaseAll();
 		cache.clear();
 		this.defs = Map.copyOf(defs);
@@ -42,7 +42,7 @@ public final class LazySkinLayer implements Source<ResourceId, Skin> {
 
 	@Override
 	@Nullable
-	public Skin get(ResourceId id) {
+	public Skin get(StableId id) {
 		SkinDefinition def = defs.get(id);
 		if (def == null) {
 			return null;

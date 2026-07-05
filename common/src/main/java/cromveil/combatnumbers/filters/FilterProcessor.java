@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.filters;
 
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.styles.WhenCondition;
 
@@ -15,7 +15,7 @@ public class FilterProcessor {
 		this.registry = registry;
 	}
 
-	public void accept(Map<ResourceId, List<WhenCondition>> entries) {
+	public void accept(Map<StableId, List<WhenCondition>> entries) {
 		registry.clear();
 		int count = 0;
 		for (var entry : entries.entrySet()) {

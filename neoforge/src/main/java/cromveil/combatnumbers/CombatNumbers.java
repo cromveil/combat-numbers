@@ -2,7 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
@@ -74,7 +74,7 @@ public class CombatNumbers {
 
 		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(animationRegistry::accept));
 
@@ -84,18 +84,18 @@ public class CombatNumbers {
 			broadcast(new SyncStyleTablePacket(this.styleTable));
 		});
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
 				"styles", RuleSet.CODEC,
 				DataConsumer.from(ruleProcessor::accept));
 
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				skinRegistry::accept);
 
 		var filterProcessor = new FilterProcessor(filterRegistry);
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
 				"filters", WhenCondition.CODEC.listOf(),
 				DataConsumer.from(filterProcessor::accept));
 

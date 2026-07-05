@@ -6,7 +6,7 @@ import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.config.FabricConfig;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.RenderEvent;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
@@ -69,19 +69,19 @@ public class CombatNumbers implements ModInitializer {
 
 		var reloadRegistry = new FabricReloadRegistry();
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(animationRegistry::accept));
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "styles"),
 				"styles", RuleSet.CODEC,
 				DataConsumer.from(ruleProcessor::accept));
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				skinRegistry::accept);
 		reloadRegistry.registerServerData(
-				ResourceId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
+				StableId.of(cromveil.combatnumbers.core.Constants.MOD_ID, "filters"),
 				"filters", WhenCondition.CODEC.listOf(),
 				DataConsumer.from(filterProcessor::accept));
 

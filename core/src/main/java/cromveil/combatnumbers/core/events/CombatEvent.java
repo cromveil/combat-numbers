@@ -1,31 +1,31 @@
 package cromveil.combatnumbers.core.events;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import java.util.Optional;
 import java.util.Set;
 
 public sealed interface CombatEvent {
-	ResourceId kind();
+	StableId kind();
 	int entityId();
 	float value();
-	Set<ResourceId> flags();
-	Optional<ResourceId> typeKey();
+	Set<StableId> flags();
+	Optional<StableId> typeKey();
 
-	ResourceId DAMAGE_KIND = ResourceId.of("combatnumbers", "damage");
-	ResourceId HEAL_KIND = ResourceId.of("combatnumbers", "heal");
-	ResourceId GENERIC_HEAL = ResourceId.of("combatnumbers", "generic_heal");
+	StableId DAMAGE_KIND = StableId.of("combatnumbers", "damage");
+	StableId HEAL_KIND = StableId.of("combatnumbers", "heal");
+	StableId GENERIC_HEAL = StableId.of("combatnumbers", "generic_heal");
 
-	record Damage(int entityId, Optional<ResourceId> typeKey, Set<ResourceId> tags,
-			float rawDamage, float finalDamage, Set<ResourceId> flags,
+	record Damage(int entityId, Optional<StableId> typeKey, Set<StableId> tags,
+			float rawDamage, float finalDamage, Set<StableId> flags,
 			Optional<Integer> attackerEntityId) implements CombatEvent {
-		@Override public ResourceId kind() { return DAMAGE_KIND; }
+		@Override public StableId kind() { return DAMAGE_KIND; }
 		@Override public float value() { return finalDamage; }
 	}
 
-	record Heal(int entityId, float amount, Optional<ResourceId> type,
-			Set<ResourceId> flags) implements CombatEvent {
-		@Override public ResourceId kind() { return HEAL_KIND; }
+	record Heal(int entityId, float amount, Optional<StableId> type,
+			Set<StableId> flags) implements CombatEvent {
+		@Override public StableId kind() { return HEAL_KIND; }
 		@Override public float value() { return amount; }
-		@Override public Optional<ResourceId> typeKey() { return type; }
+		@Override public Optional<StableId> typeKey() { return type; }
 	}
 }

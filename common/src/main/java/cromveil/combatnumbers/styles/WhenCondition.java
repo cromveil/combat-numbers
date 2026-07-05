@@ -3,10 +3,10 @@ package cromveil.combatnumbers.styles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.styles.ConditionMatcher;
-import cromveil.combatnumbers.resource.ResourceIds;
+import cromveil.combatnumbers.resource.StableIdMapper;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.resources.Identifier;
@@ -43,7 +43,7 @@ public record WhenCondition(
 		ServerLevel level = (ServerLevel) context;
 
 		if (type != null) {
-			ResourceId expected = ResourceIds.from(type);
+			StableId expected = StableIdMapper.from(type);
 			if (event.typeKey().isEmpty() || !event.typeKey().get().equals(expected))
 				return false;
 		}
@@ -53,7 +53,7 @@ public record WhenCondition(
 				return false;
 
 			for (Identifier tagId : tags) {
-				ResourceId expectedTag = ResourceIds.from(tagId);
+				StableId expectedTag = StableIdMapper.from(tagId);
 				if (!dmg.tags().contains(expectedTag))
 					return false;
 			}
@@ -71,7 +71,7 @@ public record WhenCondition(
 		}
 
 		for (Identifier flag : flags) {
-			ResourceId expectedFlag = ResourceIds.from(flag);
+			StableId expectedFlag = StableIdMapper.from(flag);
 			if (!event.flags().contains(expectedFlag))
 				return false;
 		}

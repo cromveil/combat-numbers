@@ -3,14 +3,14 @@ package cromveil.combatnumbers.skins;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
 
 public record SpriteSkinDefinition(
-	ResourceId texture,
+	StableId texture,
 	int columns,
 	int cellWidth,
 	int cellHeight,
@@ -27,7 +27,7 @@ public record SpriteSkinDefinition(
 
 	static final MapCodec<SpriteSkinDefinition> CODEC = RecordCodecBuilder.mapCodec(instance ->
 		instance.group(
-			ResourceId.CODEC.fieldOf("texture").forGetter(SpriteSkinDefinition::texture),
+			StableId.CODEC.fieldOf("texture").forGetter(SpriteSkinDefinition::texture),
 			Codec.INT.fieldOf("columns").forGetter(SpriteSkinDefinition::columns),
 			Codec.INT.fieldOf("cell_width").forGetter(SpriteSkinDefinition::cellWidth),
 			Codec.INT.optionalFieldOf("cell_height", -1).forGetter(SpriteSkinDefinition::cellHeight),

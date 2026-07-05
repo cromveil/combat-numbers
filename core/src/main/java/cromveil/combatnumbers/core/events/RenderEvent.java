@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.core.events;
 
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 
-public record RenderEvent(int entityId, float value, ResourceId skinId, ResourceId animationId) {
+public record RenderEvent(int entityId, float value, StableId skinId, StableId animationId) {
 }

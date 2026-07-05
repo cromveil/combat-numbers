@@ -3,15 +3,15 @@ package cromveil.combatnumbers.packets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import cromveil.combatnumbers.core.ResourceId;
-import cromveil.combatnumbers.resource.ResourceIds;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.resource.StableIdMapper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 public record SyncSpriteTexturePacket(
-	Map<ResourceId, byte[]> textures
+	Map<StableId, byte[]> textures
 ) implements CustomPacketPayload {
 
 	public static final Type<SyncSpriteTexturePacket> TYPE =
@@ -56,13 +56,13 @@ public record SyncSpriteTexturePacket(
 		StreamCodec.of(
 			(buf, packet) -> {
 				Map<Identifier, byte[]> raw = new LinkedHashMap<>();
-				packet.textures().forEach((k, v) -> raw.put(ResourceIds.to(k), v));
+				packet.textures().forEach((k, v) -> raw.put(StableIdMapper.to(k), v));
 				RAW_CODEC.encode(buf, raw);
 			},
 			buf -> {
 				Map<Identifier, byte[]> raw = RAW_CODEC.decode(buf);
-				Map<ResourceId, byte[]> map = new LinkedHashMap<>();
-				raw.forEach((k, v) -> map.put(ResourceIds.from(k), v));
+				Map<StableId, byte[]> map = new LinkedHashMap<>();
+				raw.forEach((k, v) -> map.put(StableIdMapper.from(k), v));
 				return new SyncSpriteTexturePacket(map);
 			});
 

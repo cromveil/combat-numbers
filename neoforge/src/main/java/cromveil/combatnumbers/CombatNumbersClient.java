@@ -2,7 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.Systems;
 import cromveil.combatnumbers.client.ClientRuntime;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
@@ -17,7 +17,7 @@ import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import cromveil.combatnumbers.resource.DataConsumer;
 import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
 import cromveil.combatnumbers.core.styles.StyleTable;
-import cromveil.combatnumbers.resource.ResourceIds;
+import cromveil.combatnumbers.resource.StableIdMapper;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -49,8 +49,8 @@ public class CombatNumbersClient {
 			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(
 					() -> runtime.applyStyleTable(
 							new StyleTable(
-									payload.skinIds().stream().map(ResourceIds::from).toList(),
-									payload.animationIds().stream().map(ResourceIds::from).toList()))));
+									payload.skinIds().stream().map(StableIdMapper::from).toList(),
+									payload.animationIds().stream().map(StableIdMapper::from).toList()))));
 
 			e.register(SyncAnimationDataPacket.TYPE, (payload, context) -> context.enqueueWork(
 					() -> runtime.applyServerAnimations(payload.animations())));
@@ -69,11 +69,11 @@ public class CombatNumbersClient {
 
 		var reloadRegistry = new NeoForgeReloadRegistry(modEventBus);
 		reloadRegistry.registerClientResources(
-				ResourceId.of(Constants.MOD_ID, "skins"),
+				StableId.of(Constants.MOD_ID, "skins"),
 				"skins", SkinDefinition.CODEC,
 				runtime::applyResourcePackSkins);
 		reloadRegistry.registerClientResources(
-				ResourceId.of(Constants.MOD_ID, "animations"),
+				StableId.of(Constants.MOD_ID, "animations"),
 				"animations", TimelineCodec.CODEC,
 				DataConsumer.from(runtime::applyResourcePackAnimations));
 

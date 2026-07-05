@@ -2,7 +2,7 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.config.Config;
 import cromveil.combatnumbers.config.ConfigIds;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.HealTypeTracker;
@@ -25,17 +25,17 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 
 	@Unique
 	@Nullable
-	private ResourceId combatNumbers$healType;
+	private StableId combatNumbers$healType;
 
 	@Override
-	public void combatNumbers$setHealType(@Nullable ResourceId type) {
+	public void combatNumbers$setHealType(@Nullable StableId type) {
 		this.combatNumbers$healType = type;
 	}
 
 	@Override
 	@Nullable
-	public ResourceId combatNumbers$getAndClearHealType() {
-		ResourceId t = this.combatNumbers$healType;
+	public StableId combatNumbers$getAndClearHealType() {
+		StableId t = this.combatNumbers$healType;
 		this.combatNumbers$healType = null;
 		return t;
 	}
@@ -72,7 +72,7 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 		if (actualHeal <= 0f)
 			return;
 
-		ResourceId healType = this.combatNumbers$getAndClearHealType();
+		StableId healType = this.combatNumbers$getAndClearHealType();
 		if (healType == null) healType = CombatEvent.GENERIC_HEAL;
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(

@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.skins;
 
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SpriteSkinDefinition;
 import cromveil.combatnumbers.skins.TextSkinDefinition;
@@ -26,8 +26,8 @@ public final class SkinCompiler {
 
 	private static Skin compileSprite(SpriteSkinDefinition s, String layerPrefix, ManagedTextureSet textures,
 			TextureByteSource byteSource) {
-		ResourceId logical = s.texture();
-		ResourceId renderId = ResourceId.of(
+		StableId logical = s.texture();
+		StableId renderId = StableId.of(
 				Constants.MOD_ID, layerPrefix + "/" + logical.namespace() + "/" + logical.path());
 
 		if (!textures.has(renderId)) {

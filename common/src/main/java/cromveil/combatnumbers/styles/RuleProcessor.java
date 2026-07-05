@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.styles;
 
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ResourceId;
+import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.styles.RuleEngine;
 
@@ -24,15 +24,15 @@ public class RuleProcessor {
 		this.onReload = onReload;
 	}
 
-	public void accept(Map<ResourceId, RuleSet> entries) {
-		Map<ResourceId, List<RuleEngine.Rule>> rulesByKind = new HashMap<>();
+	public void accept(Map<StableId, RuleSet> entries) {
+		Map<StableId, List<RuleEngine.Rule>> rulesByKind = new HashMap<>();
 
 		for (var entry : entries.entrySet()) {
 			var path = entry.getKey().path();
 			var slashIdx = path.indexOf('/');
-			ResourceId kind;
+			StableId kind;
 			if (slashIdx >= 0) {
-				kind = ResourceId.of(
+				kind = StableId.of(
 						entry.getKey().namespace(), path.substring(0, slashIdx));
 			} else {
 				kind = CombatEvent.DAMAGE_KIND;
