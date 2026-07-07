@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.config;
 
+import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.client.theme.ThemeDiscoverer;
 import cromveil.combatnumbers.config.screen.ConfigOption;
 import cromveil.combatnumbers.core.config.ConfigDef;
@@ -13,6 +14,7 @@ public final class ConfigWidgetFactory {
 
 	private ConfigWidgetFactory() {}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static ConfigOption<?> toWidget(ConfigDef<?> id, IConfigState state) {
 		return switch (id.valueType()) {
 			case BOOL -> {
@@ -46,13 +48,25 @@ public final class ConfigWidgetFactory {
 						Component.translatable("options.off"));
 			}
 			case ENUM -> {
-				@SuppressWarnings("rawtypes")
 				ConfigDef raw = id.asEnum();
-				@SuppressWarnings({"rawtypes", "unchecked"})
-				ConfigOption<?> opt = ConfigOption.ofEnum(raw,
-						() -> (Enum) state.get(raw),
-						e -> Component.translatable(
-								"config.combatnumbers.renderOption." + e.name()));
+				ConfigOption<?> opt;
+				if (id == Configs.RENDER_MODE) {
+					Function<Object, Component> renderDescFn = current -> {
+						RenderOption r = (RenderOption) current;
+						return Component.translatable(
+								"config.combatnumbers.renderOption." + r.name() + ".tooltip");
+					};
+					opt = ConfigOption.ofEnum(raw,
+							() -> (Enum) state.get(raw),
+							e -> Component.translatable(
+									"config.combatnumbers.renderOption." + e.name()),
+							renderDescFn);
+				} else {
+					opt = ConfigOption.ofEnum(raw,
+							() -> (Enum) state.get(raw),
+							e -> Component.translatable(
+									"config.combatnumbers.renderOption." + e.name()));
+				}
 				yield opt;
 			}
 		};

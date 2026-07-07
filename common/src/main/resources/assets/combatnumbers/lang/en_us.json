@@ -25,7 +25,10 @@
   "config.combatnumbers.resetAll.tooltip": "Reset all options to their default values.",
   "config.combatnumbers.save": "Save",
 
-  "config.combatnumbers.renderOption.WORLD": "In World",
-  "config.combatnumbers.renderOption.SCREEN": "On Screen",
-  "config.combatnumbers.renderOption.HUD": "HUD"
+  "config.combatnumbers.renderOption.WORLD": "World",
+  "config.combatnumbers.renderOption.WORLD.tooltip": "Renders floating text in the world. Legacy mode. May render behind entities, water and translucent objects. May not work well with shaders.",
+  "config.combatnumbers.renderOption.SCREEN": "Camera Front",
+  "config.combatnumbers.renderOption.SCREEN.tooltip": "Renders floating text in the world, directly in front of the camera. Deprecated. May render behind entities, water and translucent objects. May not work well with shaders. Unusable due to view bobbing.",
+  "config.combatnumbers.renderOption.HUD": "Screen",
+  "config.combatnumbers.renderOption.HUD.tooltip": "Renders floating text on the HUD. Recommended to leave this option selected. Only consider other options if you are having issues with this one."
 }

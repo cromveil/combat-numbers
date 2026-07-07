@@ -55,12 +55,18 @@ public final class ConfigOption<T> {
 				null, null, null, null, null, 0, 0, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <E extends Enum<E>> ConfigOption<E> ofEnum(ConfigDef<E> def,
 			Supplier<E> reader, Function<E, Component> displayFn) {
+		return ofEnum(def, reader, displayFn, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E extends Enum<E>> ConfigOption<E> ofEnum(ConfigDef<E> def,
+			Supplier<E> reader, Function<E, Component> displayFn,
+			Function<Object, Component> descriptionFn) {
 		E[] constants = (E[]) def.defaultValue().getClass().getEnumConstants();
 		return new ConfigOption<>(def, Type.CYCLE, reader,
-				List.of(constants), displayFn, null, null, null, 0, 0, null);
+				List.of(constants), displayFn, null, null, descriptionFn, 0, 0, null);
 	}
 
 	public static ConfigOption<String> ofStringCycle(ConfigDef<String> def,
