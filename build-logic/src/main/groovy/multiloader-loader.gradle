@@ -23,6 +23,19 @@ dependencies {
     implementation(project(':core'))
 }
 
+afterEvaluate {
+    project.plugins.withId('net.fabricmc.fabric-loom') {
+        project.dependencies {
+            include(project(':core'))
+        }
+    }
+    project.plugins.withId('net.neoforged.moddev') {
+        project.dependencies {
+            jarJar(project(':core'))
+        }
+    }
+}
+
 tasks.named('compileJava', JavaCompile) {
     dependsOn(configurations.commonJava)
     source(configurations.commonJava)
