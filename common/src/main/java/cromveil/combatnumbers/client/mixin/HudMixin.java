@@ -10,7 +10,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,7 +31,7 @@ public abstract class HudMixin {
 			return;
 		}
 
-		var cam = CameraAdapter.from(mc.gameRenderer.getLevelRenderState().cameraRenderState);
+		var cam = CameraAdapter.from(mc.gameRenderer.getMainCamera());
 		var gfx = new GuiGraphicsAdapter(graphics);
 		FloatingTextRenderer.renderAll(new HudStrategy(gfx, cam), ctx.config(), ctx.textManager());
 	}

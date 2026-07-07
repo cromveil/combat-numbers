@@ -1,4 +1,4 @@
-package cromveil.combatnumbers.forge;
+package cromveil.combatnumbers;
 
 import java.util.function.Supplier;
 

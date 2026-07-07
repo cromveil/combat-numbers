@@ -6,7 +6,7 @@ import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public record SyncSpriteTexturePacket(
 ) implements CustomPacketPayload {
 
 	public static final Type<SyncSpriteTexturePacket> TYPE =
-		new Type<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_sprite_texture"));
+		new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "sync_sprite_texture"));
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, byte[]> BYTE_ARRAY_CODEC =
 		new StreamCodec<>() {
@@ -32,20 +32,20 @@ public record SyncSpriteTexturePacket(
 			}
 		};
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, byte[]>> RAW_CODEC =
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map<ResourceLocation, byte[]>> RAW_CODEC =
 		StreamCodec.of(
 			(buf, map) -> {
 				buf.writeVarInt(map.size());
 				for (var entry : map.entrySet()) {
-					Identifier.STREAM_CODEC.encode(buf, entry.getKey());
+					ResourceLocation.STREAM_CODEC.encode(buf, entry.getKey());
 					BYTE_ARRAY_CODEC.encode(buf, entry.getValue());
 				}
 			},
 			buf -> {
 				int size = buf.readVarInt();
-				Map<Identifier, byte[]> map = new LinkedHashMap<>();
+				Map<ResourceLocation, byte[]> map = new LinkedHashMap<>();
 				for (int i = 0; i < size; i++) {
-					Identifier key = Identifier.STREAM_CODEC.decode(buf);
+					ResourceLocation key = ResourceLocation.STREAM_CODEC.decode(buf);
 					byte[] value = BYTE_ARRAY_CODEC.decode(buf);
 					map.put(key, value);
 				}

@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
  * Callback that receives a pre-transformed pose and a vertex consumer
  * ready for custom geometry emission.
  * <p>
- * Mirrors the Minecraft {@code SubmitNodeCollector.ICustomGeometryRenderer}
+ * Mirrors the Minecraft {@code CustomGeometryRenderer}
  * contract but lives in our namespace so that skin renderers never
  * has to import a version-varying class.
  */

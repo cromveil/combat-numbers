@@ -49,8 +49,10 @@ public class CombatNumbersClient {
 		var theme = new ThemeModule(config, new ThemeLoader(), skinResolver, animationResolver,
 				resourcePacks::resources);
 		resourcePacks.setOnComplete(theme::reload);
-		var serverStyles = new SyncReceiver(modEventBus, animationResolver, skinResolver);
-		var renderer = new FloatingTextRendererModule(modEventBus, config, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
+		var serverStyles = new SyncReceiver(animationResolver, skinResolver);
+		var renderer = new FloatingTextRendererModule(config, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
+
+		ClientPayloadHandlers.init(animationResolver, skinResolver, renderer.factory());
 
 		MixinBridge.init(new RenderContext(config, textManager));
 

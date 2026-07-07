@@ -30,7 +30,7 @@ public class ManagedTextureSet {
 		}
 		try {
 			NativeImage image = NativeImage.read(new ByteArrayInputStream(pngData));
-			DynamicTexture texture = new DynamicTexture(() -> "CombatNumbers: " + id, image);
+			DynamicTexture texture = new DynamicTexture(image);
 			Minecraft.getInstance().getTextureManager().register(StableIdMapper.to(id), texture);
 			registered.add(id);
 		} catch (Exception e) {

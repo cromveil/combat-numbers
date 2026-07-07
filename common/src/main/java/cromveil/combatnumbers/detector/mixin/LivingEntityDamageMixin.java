@@ -6,7 +6,6 @@ import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.detector.ICritTracker;
 import cromveil.combatnumbers.detector.IPoisonTickTracker;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import java.util.LinkedHashSet;
@@ -57,8 +56,8 @@ public class LivingEntityDamageMixin implements ICritTracker, IPoisonTickTracker
 		return value;
 	}
 
-	@Inject(method = "hurtServer", at = @At("HEAD"))
-	private void onHurtServerHead(ServerLevel level, DamageSource source, float amount,
+	@Inject(method = "hurt", at = @At("HEAD"))
+	private void onHurtHead(DamageSource source, float amount,
 			CallbackInfoReturnable<Boolean> cir) {
 		this.combatNumbers$actualDamage = 0f;
 	}
@@ -77,8 +76,8 @@ public class LivingEntityDamageMixin implements ICritTracker, IPoisonTickTracker
 		return newHealth;
 	}
 
-	@Inject(method = "hurtServer", at = @At("RETURN"))
-	private void onHurtServerReturn(ServerLevel level, DamageSource source, float amount,
+	@Inject(method = "hurt", at = @At("RETURN"))
+	private void onHurtReturn(DamageSource source, float amount,
 			CallbackInfoReturnable<Boolean> cir) {
 		if (!cir.getReturnValue()) {
 			this.combatNumbers$critCount = 0;
@@ -103,7 +102,7 @@ public class LivingEntityDamageMixin implements ICritTracker, IPoisonTickTracker
 		}
 
 		Optional<StableId> typeKey = source.typeHolder().unwrapKey()
-				.map(k -> StableId.of(k.identifier().getNamespace(), k.identifier().getPath()));
+				.map(k -> StableId.of(k.location().getNamespace(), k.location().getPath()));
 
 		Set<StableId> tags = source.typeHolder().tags()
 				.map(t -> StableId.of(t.location().getNamespace(), t.location().getPath()))

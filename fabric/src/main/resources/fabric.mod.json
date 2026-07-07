@@ -24,9 +24,6 @@
 		],
 		"modmenu": [
 			"cromveil.combatnumbers.fabric.CombatNumbersModMenu"
-		],
-		"fabric-gametest": [
-			"cromveil.combatnumbers.fabric.gametest.CombatNumbersGameTest"
 		]
     },
     "mixins": [

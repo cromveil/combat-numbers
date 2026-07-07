@@ -2,21 +2,22 @@ package cromveil.combatnumbers.fabric.modules.client;
 
 import java.util.function.Supplier;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 import cromveil.combatnumbers.client.RenderContext;
 import cromveil.combatnumbers.client.FloatingTextFactory;
 import cromveil.combatnumbers.client.MixinBridge;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.BillboardStrategy;
+import cromveil.combatnumbers.client.render.BufferSourceAdapter;
 import cromveil.combatnumbers.client.render.CameraAdapter;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
-import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
@@ -56,7 +57,7 @@ public final class FloatingTextRendererModule implements IClientSetup {
 			}
 
 			double gameTime = mc.level.getGameTime()
-					+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+					+ mc.getTimer().getGameTimeDeltaPartialTick(false);
 			ctx.tickTexts(gameTime);
 
 			if (!ctx.shouldRenderWorld()) {
@@ -67,9 +68,9 @@ public final class FloatingTextRendererModule implements IClientSetup {
 
 			FloatingTextRenderer.renderAll(BillboardStrategy.create(
 					option,
-					context.matrices(),
-					new SubmitNodeCollectorAdapter(context.commandQueue()),
-					CameraAdapter.from(context.worldState().cameraRenderState)),
+					new PoseStack(), // < 1.21.11: Can't use context.matrixStack() because it's null
+					new BufferSourceAdapter(mc.renderBuffers().bufferSource()),
+					CameraAdapter.from(mc.gameRenderer.getMainCamera())),
 					ctx.config(), ctx.textManager());
 		});
 	}

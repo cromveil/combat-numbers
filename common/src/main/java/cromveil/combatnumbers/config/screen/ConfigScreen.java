@@ -6,7 +6,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -24,7 +23,7 @@ public class ConfigScreen extends Screen {
 	private List<ConfigOption<?>> options;
 
 	private final ScrollTracker scroll = new ScrollTracker();
-	private final WidgetFactory widgetFactory;
+	private WidgetFactory widgetFactory;
 	private final List<AbstractWidget> rowWidgets = new ArrayList<>();
 	private final List<Button> resetButtons = new ArrayList<>();
 	private final List<FormattedCharSequence> rowLabels = new ArrayList<>();
@@ -39,7 +38,6 @@ public class ConfigScreen extends Screen {
 		this.prefix = prefix;
 		this.optionsSupplier = optionsSupplier;
 		this.writer = writer;
-		this.widgetFactory = new WidgetFactory(font);
 	}
 
 	@Override
@@ -60,6 +58,7 @@ public class ConfigScreen extends Screen {
 			rowLabels.add(opt.label(prefix).getVisualOrderText());
 		}
 
+		widgetFactory = new WidgetFactory(font); // < 1.21.11: font is null during constructor, need to defer to init() to avoid NPE
 		buildWidgets();
 	}
 
@@ -143,23 +142,22 @@ public class ConfigScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent event, boolean isDuplicatePress) {
-		double mx = event.x();
-		double my = event.y();
-		if (saveBtn != null && saveBtn.isMouseOver(mx, my)) {
-			return saveBtn.mouseClicked(event, isDuplicatePress);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (saveBtn != null && saveBtn.isMouseOver(mouseX, mouseY)) {
+			return saveBtn.mouseClicked(mouseX, mouseY, button);
 		}
-		if (cancelBtn != null && cancelBtn.isMouseOver(mx, my)) {
-			return cancelBtn.mouseClicked(event, isDuplicatePress);
+		if (cancelBtn != null && cancelBtn.isMouseOver(mouseX, mouseY)) {
+			return cancelBtn.mouseClicked(mouseX, mouseY, button);
 		}
-		if (resetAllBtn != null && resetAllBtn.isMouseOver(mx, my)) {
-			return resetAllBtn.mouseClicked(event, isDuplicatePress);
+		if (resetAllBtn != null && resetAllBtn.isMouseOver(mouseX, mouseY)) {
+			return resetAllBtn.mouseClicked(mouseX, mouseY, button);
 		}
-		return super.mouseClicked(event, isDuplicatePress);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		renderBackground(graphics, mouseX, mouseY, partialTick); // < 1.21.11: renderBackground not automatically called
 		graphics.drawCenteredString(font, title, width / 2, Layout.titleY(), 0xFFFFFFFF);
 
 		int contentTop = Layout.scissorTop();
@@ -239,6 +237,6 @@ public class ConfigScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreenAndShow(parent);
+		minecraft.setScreen(parent);
 	}
 }

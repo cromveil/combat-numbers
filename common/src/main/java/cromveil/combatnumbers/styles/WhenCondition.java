@@ -7,9 +7,9 @@ import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.styles.IConditionMatcher;
 import cromveil.combatnumbers.StableIdMapper;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.resources.Identifier;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
@@ -17,18 +17,18 @@ import java.util.List;
 import java.util.Optional;
 
 public record WhenCondition(
-	@Nullable Identifier type,
-	List<Identifier> tags,
-	List<Identifier> flags,
+	@Nullable ResourceLocation type,
+	List<ResourceLocation> tags,
+	List<ResourceLocation> flags,
 	@Nullable EntityPredicate attacker,
 	@Nullable EntityPredicate target,
 	@Nullable ItemPredicate weapon
 ) implements IConditionMatcher<ServerLevel> {
 	public static final Codec<WhenCondition> CODEC = RecordCodecBuilder.create(instance ->
 		instance.group(
-			Identifier.CODEC.optionalFieldOf("type").forGetter(w -> Optional.ofNullable(w.type)),
-			Identifier.CODEC.listOf().optionalFieldOf("tags", List.of()).forGetter(WhenCondition::tags),
-			Identifier.CODEC.listOf().optionalFieldOf("flags", List.of()).forGetter(WhenCondition::flags),
+			ResourceLocation.CODEC.optionalFieldOf("type").forGetter(w -> Optional.ofNullable(w.type)),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("tags", List.of()).forGetter(WhenCondition::tags),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("flags", List.of()).forGetter(WhenCondition::flags),
 			EntityPredicate.CODEC.optionalFieldOf("attacker").forGetter(w -> Optional.ofNullable(w.attacker)),
 			EntityPredicate.CODEC.optionalFieldOf("target").forGetter(w -> Optional.ofNullable(w.target)),
 			ItemPredicate.CODEC.optionalFieldOf("weapon").forGetter(w -> Optional.ofNullable(w.weapon))
@@ -51,7 +51,7 @@ public record WhenCondition(
 			if (!(event instanceof CombatEvent.Damage dmg))
 				return false;
 
-			for (Identifier tagId : tags) {
+			for (ResourceLocation tagId : tags) {
 				StableId expectedTag = StableIdMapper.from(tagId);
 				if (!dmg.tags().contains(expectedTag))
 					return false;
@@ -69,7 +69,7 @@ public record WhenCondition(
 			}
 		}
 
-		for (Identifier flag : flags) {
+		for (ResourceLocation flag : flags) {
 			StableId expectedFlag = StableIdMapper.from(flag);
 			if (!event.flags().contains(expectedFlag))
 				return false;

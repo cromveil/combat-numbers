@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import cromveil.combatnumbers.client.render.IGeometrySubmitter;
 import cromveil.combatnumbers.client.render.IHudRenderContext;
 import cromveil.combatnumbers.StableIdMapper;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import org.joml.Matrix4fc;
+import net.minecraft.client.renderer.RenderType;
+import org.joml.Matrix4f;
 
 public class SpriteSkinRenderer implements ISkinRenderer {
 
@@ -80,15 +80,15 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 
 		float startX = -totalWidth / 2f + xOffset;
 
-		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
+		var renderType = RenderType.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
-			Matrix4fc matrix = pose.pose();
+			Matrix4f matrix = pose.pose();
 			renderChars(vertexConsumer, matrix, startX, yOffset, color, light);
 		});
 	}
 
-	private void renderChars(VertexConsumer buffer, Matrix4fc pose, float startX, float y, int color, int light) {
+	private void renderChars(VertexConsumer buffer, Matrix4f pose, float startX, float y, int color, int light) {
 		for (int i = 0; i < text.length(); i++) {
 			CharInfo info = charInfos[i];
 			if (info == null)
@@ -104,7 +104,7 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 		}
 	}
 
-	private void renderChar(VertexConsumer buffer, Matrix4fc pose, int index, float startX, float y, int color,
+	private void renderChar(VertexConsumer buffer, Matrix4f pose, int index, float startX, float y, int color,
 			int light) {
 		if (index < 0 || index >= charInfos.length)
 			return;
@@ -129,10 +129,10 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 
 		float startX = -totalWidth / 2f + xOffset;
 
-		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
+		var renderType = RenderType.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
-			Matrix4fc matrix = pose.pose();
+			Matrix4f matrix = pose.pose();
 			renderChar(vertexConsumer, matrix, index, startX, yOffset, color, light);
 		});
 	}

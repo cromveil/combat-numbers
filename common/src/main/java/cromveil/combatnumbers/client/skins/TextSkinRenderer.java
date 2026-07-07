@@ -5,13 +5,9 @@ import cromveil.combatnumbers.client.render.IGeometrySubmitter;
 import cromveil.combatnumbers.client.render.IHudRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.TextRenderable;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TextSkinRenderer implements ISkinRenderer {
 	private static final int[][] OUTLINE_OFFSETS = {
@@ -40,46 +36,37 @@ public class TextSkinRenderer implements ISkinRenderer {
 
 	@Override
 	public void render3d(PoseStack poseStack, IGeometrySubmitter geom, float alpha, int light) {
+		if (alpha <= 0f)
+			return;
+		int a = (int) (alpha * 255f);
+		int fColor = (a << 24) | (fillColor & 0x00FFFFFF);
+		int oColor = (a << 24) | (outlineColor & 0x00FFFFFF);
+
 		Font font = Minecraft.getInstance().font;
 		float x = -font.width(text) / 2f;
-		submitText(font, fullSequence, x, 0f, alpha, poseStack, geom, light);
+
+		if (geom instanceof MultiBufferSource mbs) {
+			font.drawInBatch8xOutline(fullSequence, x, 0f, fColor, oColor,
+					poseStack.last().pose(), mbs, light);
+		}
 	}
 
 	@Override
 	public void renderChar3d(int index, PoseStack poseStack, IGeometrySubmitter geom,
 			float alpha, int light) {
-		Font font = Minecraft.getInstance().font;
-		submitText(font, charSequences[index], charStartX(font, index), 0f, alpha,
-				poseStack, geom, light);
-	}
-
-	private void submitText(Font font, FormattedCharSequence sequence, float x, float y, float alpha,
-			PoseStack poseStack, IGeometrySubmitter geom, int light) {
-		int a = (int) (alpha * 255f);
-		if (a <= 0)
+		if (alpha <= 0f || index < 0 || index >= text.length())
 			return;
+		int a = (int) (alpha * 255f);
 		int fColor = (a << 24) | (fillColor & 0x00FFFFFF);
 		int oColor = (a << 24) | (outlineColor & 0x00FFFFFF);
 
-		GlyphCollector fill = collectGlyphs(font, sequence, x, y, fColor);
-		if (fill.isEmpty())
-			return;
+		Font font = Minecraft.getInstance().font;
+		float x = charStartX(font, index);
 
-		List<GlyphCollector> outlines = new ArrayList<>(OUTLINE_OFFSETS.length);
-		for (int[] off : OUTLINE_OFFSETS) {
-			outlines.add(collectGlyphs(font, sequence, x + off[0], y + off[1], oColor));
+		if (geom instanceof MultiBufferSource mbs) {
+			font.drawInBatch8xOutline(charSequences[index], x, 0f, fColor, oColor,
+					poseStack.last().pose(), mbs, light);
 		}
-
-		geom.submitGeometry(poseStack, fill.renderType, (pose, vertexConsumer) -> {
-			for (GlyphCollector outline : outlines) {
-				for (TextRenderable glyph : outline.glyphs) {
-					glyph.render(pose.pose(), vertexConsumer, light, false);
-				}
-			}
-			for (TextRenderable glyph : fill.glyphs) {
-				glyph.render(pose.pose(), vertexConsumer, light, false);
-			}
-		});
 	}
 
 	@Override
@@ -116,29 +103,5 @@ public class TextSkinRenderer implements ISkinRenderer {
 
 	private float charStartX(Font font, int index) {
 		return -font.width(text) / 2f + font.width(text.substring(0, index));
-	}
-
-	private static GlyphCollector collectGlyphs(Font font, FormattedCharSequence sequence,
-			float x, float y, int color) {
-		var pt = font.prepareText(sequence, x, y, color, false, true, 0);
-		var renderables = new ArrayList<TextRenderable>();
-		pt.visit(new Font.GlyphVisitor() {
-			@Override
-			public void acceptGlyph(TextRenderable.Styled glyph) {
-				renderables.add(glyph);
-			}
-		});
-
-		if (renderables.isEmpty())
-			return new GlyphCollector(List.of(), null);
-
-		RenderType renderType = renderables.getFirst().renderType(Font.DisplayMode.SEE_THROUGH);
-		return new GlyphCollector(renderables, renderType);
-	}
-
-	private record GlyphCollector(List<TextRenderable> glyphs, RenderType renderType) {
-		boolean isEmpty() {
-			return glyphs.isEmpty();
-		}
 	}
 }

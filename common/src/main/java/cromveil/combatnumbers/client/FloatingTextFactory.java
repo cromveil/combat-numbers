@@ -56,7 +56,7 @@ public final class FloatingTextFactory {
 			return;
 		}
 
-		Vec3 camPos = mc.gameRenderer.getMainCamera().position();
+		Vec3 camPos = mc.gameRenderer.getMainCamera().getPosition();
 		Vec3 worldPos = livingEntity.getEyePosition();
 
 		if (!config.get(Configs.SHOW_THROUGH_WALLS)) {
@@ -80,7 +80,7 @@ public final class FloatingTextFactory {
 		var visual = skin.createVisual(formattedValue);
 
 		double gameTime = level.getGameTime()
-				+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+				+ mc.getTimer().getGameTimeDeltaPartialTick(false);
 
 		long seed = ThreadLocalRandom.current().nextLong();
 		IAnimationEvaluator eval = animationCompiler.compile(timeline, formattedValue.length(), seed);

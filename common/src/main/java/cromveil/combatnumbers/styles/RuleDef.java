@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import cromveil.combatnumbers.core.styles.Style;
 import cromveil.combatnumbers.StableIdMapper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -20,8 +20,8 @@ public record RuleDef(WhenCondition when, Style then) {
 	static final class StyleCodec {
 		static final Codec<Style> CODEC = RecordCodecBuilder.<Style>create(instance ->
 			instance.group(
-				Identifier.CODEC.optionalFieldOf("skin").forGetter(s -> Optional.ofNullable(s.skinId() != null ? StableIdMapper.to(s.skinId()) : null)),
-				Identifier.CODEC.optionalFieldOf("animation").forGetter(s -> Optional.ofNullable(s.animationId() != null ? StableIdMapper.to(s.animationId()) : null))
+				ResourceLocation.CODEC.optionalFieldOf("skin").forGetter(s -> Optional.ofNullable(s.skinId() != null ? StableIdMapper.to(s.skinId()) : null)),
+				ResourceLocation.CODEC.optionalFieldOf("animation").forGetter(s -> Optional.ofNullable(s.animationId() != null ? StableIdMapper.to(s.animationId()) : null))
 			).apply(instance, (skin, animation) ->
 				new Style(
 					skin.map(StableIdMapper::from).orElse(null),

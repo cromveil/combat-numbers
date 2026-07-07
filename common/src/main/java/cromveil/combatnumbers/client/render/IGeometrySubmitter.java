@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.RenderType;
 
 /**
  * Abstracts the mechanism for submitting 3D geometry so that
@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.rendertype.RenderType;
  * <p>
  * Each Minecraft version supplies its own adapter:
  * <ul>
- *   <li>26.2 / 1.21.11 – {@code SubmitNodeCollectorAdapter}</li>
  *   <li>1.21.1 – {@code BufferSourceAdapter} (wrapping
  *       {@code MultiBufferSource.BufferSource})</li>
  * </ul>

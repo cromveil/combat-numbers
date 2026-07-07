@@ -8,7 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,12 +18,12 @@ public record SyncSkinDataPacket(
 ) implements CustomPacketPayload {
 
 	public static final Type<SyncSkinDataPacket> TYPE =
-		new Type<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_skin_data"));
+		new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "sync_skin_data"));
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map<Identifier, SkinDefinition>> RAW_CODEC =
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map<ResourceLocation, SkinDefinition>> RAW_CODEC =
 		ByteBufCodecs.map(
 			LinkedHashMap::new,
-			Identifier.STREAM_CODEC,
+			ResourceLocation.STREAM_CODEC,
 			ByteBufCodecs.fromCodecWithRegistriesTrusted(SkinDefinition.CODEC)
 		);
 

@@ -54,8 +54,9 @@ final class WidgetFactory {
 		Object current = opt.get();
 		List values = opt.cycleValues;
 
-		return (AbstractWidget) CycleButton.builder(display, current)
+		return (AbstractWidget) CycleButton.builder(display)
 				.withValues(values)
+				.withInitialValue(current) // < 1.21.11: CycleButton defaults to first value in list without this
 				.displayOnlyValue()
 				.create(x, y, width, Layout.WIDGET_HEIGHT, Component.empty(),
 						(btn, val) -> {

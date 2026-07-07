@@ -1,36 +1,36 @@
 package cromveil.combatnumbers.client.mixin;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-
 import cromveil.combatnumbers.client.render.RenderStateCache;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Captures the view-rotation and projection matrices from
+ * {@code LevelRenderer.renderLevel()} so that {@link RenderStateCache}
+ * and {@code CameraAdapter} can construct a {@code RenderCamera}
+ * without a {@code CameraRenderState} (which does not exist in 1.21.1).
+ */
 @Mixin(LevelRenderer.class)
 public class LevelRenderStateCaptureMixin {
 
 	@Inject(method = "renderLevel", at = @At("HEAD"))
 	private void captureLevelRenderState(
-			GraphicsResourceAllocator graphicsResourceAllocator,
 			DeltaTracker deltaTracker,
-			boolean bl,
+			boolean renderBlockOutline,
 			Camera camera,
-			Matrix4f matrix4f,
-			Matrix4f matrix4f2,
-			Matrix4f matrix4f3,
-			GpuBufferSlice gpuBufferSlice,
-			Vector4f vector4f,
-			boolean bl2,
+			GameRenderer gameRenderer,
+			LightTexture lightTexture,
+			Matrix4f viewRotation,
+			Matrix4f projection, // < 1.21.11: viewRotation and projection args are swapped
 			CallbackInfo ci) {
-		RenderStateCache.capture(
-				matrix4f3, matrix4f, camera.position());
+		RenderStateCache.capture(projection, viewRotation, camera.getPosition());
 	}
 }

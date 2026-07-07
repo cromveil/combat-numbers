@@ -4,7 +4,7 @@ import cromveil.combatnumbers.core.Constants;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public record RenderPacket(
 		int entityId, float value,
@@ -15,7 +15,7 @@ public record RenderPacket(
 	// respective registries.
 
 	public static final Type<RenderPacket> TYPE = new Type<>(
-			Identifier.fromNamespaceAndPath(Constants.MOD_ID, "render"));
+			ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "render"));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RenderPacket> STREAM_CODEC = CustomPacketPayload
 			.codec(RenderPacket::write, RenderPacket::new);
