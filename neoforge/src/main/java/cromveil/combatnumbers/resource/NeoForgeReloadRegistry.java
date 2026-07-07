@@ -1,6 +1,7 @@
 package cromveil.combatnumbers.resource;
 
 import com.mojang.serialization.Codec;
+import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.core.StableId;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -16,7 +17,7 @@ public class NeoForgeReloadRegistry implements ReloadListenerRegistry {
 	private final List<Entry> clientEntries = new ArrayList<>();
 
 	private record Entry(StableId name, String directory,
-			Codec<?> codec, DataConsumer<?> consumer) {
+			Codec<?> codec, ResourceLoadCallback<?> consumer) {
 	}
 
 	public NeoForgeReloadRegistry(IEventBus modEventBus) {
@@ -46,13 +47,13 @@ public class NeoForgeReloadRegistry implements ReloadListenerRegistry {
 
 	@Override
 	public <T> void registerServerData(StableId name, String directory,
-			Codec<T> codec, DataConsumer<T> consumer) {
+			Codec<T> codec, ResourceLoadCallback<T> consumer) {
 		serverEntries.add(new Entry(name, directory, codec, consumer));
 	}
 
 	@Override
 	public <T> void registerClientResources(StableId name, String directory,
-			Codec<T> codec, DataConsumer<T> consumer) {
+			Codec<T> codec, ResourceLoadCallback<T> consumer) {
 		clientEntries.add(new Entry(name, directory, codec, consumer));
 	}
 }

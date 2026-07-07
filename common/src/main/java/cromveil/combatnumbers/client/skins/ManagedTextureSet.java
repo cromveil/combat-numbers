@@ -3,7 +3,7 @@ package cromveil.combatnumbers.client.skins;
 import com.mojang.blaze3d.platform.NativeImage;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
-import cromveil.combatnumbers.resource.StableIdMapper;
+import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 

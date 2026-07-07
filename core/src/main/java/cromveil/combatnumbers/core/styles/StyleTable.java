@@ -14,7 +14,7 @@ public record StyleTable(List<StableId> skinIds, List<StableId> animationIds) {
 		animationIds = List.copyOf(animationIds);
 	}
 
-	public static StyleTable from(RuleEngine engine) {
+	public static StyleTable from(RuleEngine<?> engine) {
 		return new StyleTable(engine.emittableSkinIds(), engine.emittableAnimationIds());
 	}
 

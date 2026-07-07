@@ -1,17 +1,17 @@
 package cromveil.combatnumbers.packets;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
-import cromveil.combatnumbers.resource.StableIdMapper;
+import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public record SyncSkinDataPacket(
 		Map<StableId, SkinDefinition> skins
@@ -28,18 +28,7 @@ public record SyncSkinDataPacket(
 		);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncSkinDataPacket> STREAM_CODEC =
-		StreamCodec.of(
-			(buf, packet) -> {
-				Map<Identifier, SkinDefinition> raw = new LinkedHashMap<>();
-				packet.skins().forEach((k, v) -> raw.put(StableIdMapper.to(k), v));
-				RAW_CODEC.encode(buf, raw);
-			},
-			buf -> {
-				Map<Identifier, SkinDefinition> raw = RAW_CODEC.decode(buf);
-				Map<StableId, SkinDefinition> map = new LinkedHashMap<>();
-				raw.forEach((k, v) -> map.put(StableIdMapper.from(k), v));
-				return new SyncSkinDataPacket(map);
-			});
+		StableIdMapper.stableIdMapCodec(RAW_CODEC, SyncSkinDataPacket::skins, SyncSkinDataPacket::new);
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {

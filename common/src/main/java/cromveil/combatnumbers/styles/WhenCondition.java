@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.styles.ConditionMatcher;
-import cromveil.combatnumbers.resource.StableIdMapper;
+import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.resources.Identifier;
@@ -23,7 +23,7 @@ public record WhenCondition(
 	@Nullable EntityPredicate attacker,
 	@Nullable EntityPredicate target,
 	@Nullable ItemPredicate weapon
-) implements ConditionMatcher {
+) implements ConditionMatcher<ServerLevel> {
 	public static final Codec<WhenCondition> CODEC = RecordCodecBuilder.create(instance ->
 		instance.group(
 			Identifier.CODEC.optionalFieldOf("type").forGetter(w -> Optional.ofNullable(w.type)),
@@ -39,8 +39,7 @@ public record WhenCondition(
 	);
 
 	@Override
-	public boolean matches(CombatEvent event, Object context) {
-		ServerLevel level = (ServerLevel) context;
+	public boolean matches(CombatEvent event, ServerLevel level) {
 
 		if (type != null) {
 			StableId expected = StableIdMapper.from(type);

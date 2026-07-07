@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
 import cromveil.combatnumbers.core.StableId;
-import cromveil.combatnumbers.resource.StableIdMapper;
+import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;

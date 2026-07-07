@@ -2,7 +2,7 @@ package cromveil.combatnumbers.packets;
 
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.styles.StyleTable;
-import cromveil.combatnumbers.resource.StableIdMapper;
+import cromveil.combatnumbers.StableIdMapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

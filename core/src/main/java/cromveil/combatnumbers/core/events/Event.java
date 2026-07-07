@@ -23,6 +23,10 @@ public class Event<T> {
 		listeners.add(listener);
 	}
 
+	public void unregister(T listener) {
+		listeners.remove(listener);
+	}
+
 	@SuppressWarnings("unchecked")
 	public T invoker() {
 		if (invoker == null) {

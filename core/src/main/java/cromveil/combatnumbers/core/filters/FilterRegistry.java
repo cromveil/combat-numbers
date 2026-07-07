@@ -6,14 +6,14 @@ import cromveil.combatnumbers.core.styles.ConditionMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterRegistry {
-	private final List<ConditionMatcher> filters = new ArrayList<>();
+public class FilterRegistry<C> {
+	private final List<ConditionMatcher<C>> filters = new ArrayList<>();
 
-	public void register(ConditionMatcher condition) {
+	public void register(ConditionMatcher<C> condition) {
 		filters.add(condition);
 	}
 
-	public boolean passes(CombatEvent event, Object context) {
+	public boolean passes(CombatEvent event, C context) {
 		for (var filter : filters) {
 			if (filter.matches(event, context))
 				return false;

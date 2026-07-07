@@ -9,23 +9,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class RuleEngine {
+public class RuleEngine<C> {
 
-	public record Rule(ConditionMatcher when, Style then) {}
+	public record Rule<C>(ConditionMatcher<C> when, Style then) {}
 
-	private Map<StableId, KindState> kindStates = Map.of();
+	private Map<StableId, KindState<C>> kindStates = Map.of();
 
-	private record KindState(List<Rule> rules) {}
+	private record KindState<C>(List<Rule<C>> rules) {}
 
-	public void load(Map<StableId, List<Rule>> rulesByKind) {
-		Map<StableId, KindState> map = new HashMap<>();
+	public void load(Map<StableId, List<Rule<C>>> rulesByKind) {
+		Map<StableId, KindState<C>> map = new HashMap<>();
 		for (var entry : rulesByKind.entrySet()) {
-			map.put(entry.getKey(), new KindState(List.copyOf(entry.getValue())));
+			map.put(entry.getKey(), new KindState<>(List.copyOf(entry.getValue())));
 		}
 		kindStates = Map.copyOf(map);
 	}
 
-	public Style resolve(CombatEvent event, Object context) {
+	public Style resolve(CombatEvent event, C context) {
 		var state = kindStates.get(event.kind());
 		if (state == null)
 			return new Style(null, null);
@@ -34,7 +34,7 @@ public class RuleEngine {
 
 		var matching = state.rules().stream()
 				.filter(r -> r.when().matches(event, context))
-				.sorted(Comparator.comparingInt((Rule r) -> r.when().specificity())
+				.sorted(Comparator.comparingInt((Rule<C> r) -> r.when().specificity())
 						.thenComparingInt(state.rules()::indexOf))
 				.toList();
 

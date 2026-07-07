@@ -1,33 +1,36 @@
 package cromveil.combatnumbers.config;
 
-import cromveil.combatnumbers.core.config.ConfigId;
-import cromveil.combatnumbers.core.config.ConfigStore;
+import cromveil.combatnumbers.core.config.ConfigDef;
+import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.ConfigWriter;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public final class NeoForgeConfig implements ConfigStore {
+public final class NeoForgeConfig implements ConfigState, ConfigWriter {
 
-	private static final NeoForgeConfig INSTANCE = new NeoForgeConfig();
+	private final ModConfigSpec spec;
+	private final Map<String, ConfigValue<?>> values = new HashMap<>();
+	private final List<Runnable> changeListeners = new ArrayList<>();
+	private final List<DeferredKeyListener> pendingKeyListeners = new ArrayList<>();
+	private Map<String, Object> previousValues;
+	private IEventBus eventBus;
 
-	public static NeoForgeConfig instance() { return INSTANCE; }
-
-	private final ModConfigSpec commonSpec;
-	private final ModConfigSpec clientSpec;
-	private final Map<String, ConfigValue<?>> commonValues = new HashMap<>();
-	private final Map<String, ConfigValue<?>> clientValues = new HashMap<>();
-
-	private NeoForgeConfig() {
-		this.commonSpec = buildSpec(ConfigIds.ALL_COMMON, commonValues);
-		this.clientSpec = buildSpec(ConfigIds.ALL_CLIENT, clientValues);
+	public NeoForgeConfig(List<ConfigDef<?>> defs) {
+		this.spec = buildSpec(defs, values);
 	}
 
-	public ModConfigSpec commonSpec() { return commonSpec; }
-	public ModConfigSpec clientSpec() { return clientSpec; }
+	public ModConfigSpec spec() {
+		return spec;
+	}
 
 	private static String camelToSnake(String camel) {
 		StringBuilder sb = new StringBuilder();
@@ -44,18 +47,18 @@ public final class NeoForgeConfig implements ConfigStore {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	private static ModConfigSpec buildSpec(List<ConfigId<?>> ids, Map<String, ConfigValue<?>> out) {
+	private static ModConfigSpec buildSpec(List<ConfigDef<?>> ids, Map<String, ConfigValue<?>> out) {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-		for (ConfigId<?> id : ids) {
-			ConfigValue<?> cv = switch (id.kind()) {
+		for (ConfigDef<?> id : ids) {
+			ConfigValue<?> cv = switch (id.valueType()) {
 				case BOOL ->
 						builder.define(camelToSnake(id.key()), (Boolean) id.defaultValue());
-				case DOUBLE_SLIDER -> {
+				case NUMBER -> {
 					double def = ((Number) id.defaultValue()).doubleValue();
 					yield builder.defineInRange(camelToSnake(id.key()), def,
 							(double) id.min(), (double) id.max());
 				}
-				case STRING_CYCLE -> {
+				case STRING_LIST -> {
 					List<String> vals = new ArrayList<>();
 					if (id.allowEmpty()) vals.add("");
 					for (String v : id.allowedValuesSupplier().get()) {
@@ -65,7 +68,7 @@ public final class NeoForgeConfig implements ConfigStore {
 					yield builder.defineInList(camelToSnake(id.key()),
 							(String) id.defaultValue(), vals);
 				}
-				case ENUM_CYCLE ->
+				case ENUM ->
 						builder.defineEnum(camelToSnake(id.key()), (Enum) id.defaultValue());
 			};
 			out.put(id.key(), cv);
@@ -75,12 +78,8 @@ public final class NeoForgeConfig implements ConfigStore {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(ConfigId<T> id) {
-		ConfigValue<?> cv = switch (id.category()) {
-			case COMMON -> commonValues.get(id.key());
-			case CLIENT -> clientValues.get(id.key());
-			case SERVER -> null;
-		};
+	public <T> T get(ConfigDef<T> id) {
+		ConfigValue<?> cv = values.get(id.key());
 		if (cv == null) {
 			return id.defaultValue();
 		}
@@ -93,26 +92,18 @@ public final class NeoForgeConfig implements ConfigStore {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> void set(ConfigId<T> id, T value) {
-		ConfigValue<?> cv = switch (id.category()) {
-			case COMMON -> commonValues.get(id.key());
-			case CLIENT -> clientValues.get(id.key());
-			case SERVER -> null;
-		};
+	public <T> void setValue(ConfigDef<T> id, T value) {
+		ConfigValue<?> cv = values.get(id.key());
 		if (cv != null) {
 			try {
 				((ConfigValue<T>) cv).set(value);
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 	}
 
 	@Override
-	public void save() {
-		saveSpec(commonValues);
-		saveSpec(clientValues);
-	}
-
-	private static void saveSpec(Map<String, ConfigValue<?>> values) {
+	public void commit() {
 		var iter = values.values().iterator();
 		if (iter.hasNext()) {
 			try {
@@ -122,6 +113,71 @@ public final class NeoForgeConfig implements ConfigStore {
 		}
 	}
 
+	public void init(IEventBus eventBus) {
+		this.eventBus = eventBus;
+		previousValues = snapshotValues();
+		for (Runnable listener : changeListeners) {
+			registerReloadListener(listener);
+		}
+		changeListeners.clear();
+		for (DeferredKeyListener dkl : pendingKeyListeners) {
+			registerKeyReloadListener(dkl.key, dkl.listener);
+		}
+		pendingKeyListeners.clear();
+	}
+
 	@Override
-	public void addChangeListener(Runnable listener) {}
+	public void onChanged(Runnable listener) {
+		if (eventBus != null) {
+			registerReloadListener(listener);
+		} else {
+			changeListeners.add(listener);
+		}
+	}
+
+	@Override
+	public <T> void onChanged(ConfigDef<T> key, Runnable listener) {
+		if (eventBus != null) {
+			registerKeyReloadListener(key.key(), listener);
+		} else {
+			pendingKeyListeners.add(new DeferredKeyListener(key.key(), listener));
+		}
+	}
+
+	private void registerReloadListener(Runnable listener) {
+		eventBus.addListener(ModConfigEvent.Reloading.class, event -> {
+			if (event.getConfig().getSpec() == spec) {
+				listener.run();
+			}
+		});
+	}
+
+	private void registerKeyReloadListener(String key, Runnable listener) {
+		eventBus.addListener(ModConfigEvent.Reloading.class, event -> {
+			if (event.getConfig().getSpec() == spec) {
+				ConfigValue<?> cv = values.get(key);
+				Object newVal = cv != null ? cv.get() : null;
+				Object oldVal = previousValues != null ? previousValues.get(key) : null;
+				if (!Objects.equals(oldVal, newVal)) {
+					listener.run();
+					if (previousValues != null) {
+						previousValues.put(key, newVal);
+					}
+				}
+			}
+		});
+	}
+
+	private Map<String, Object> snapshotValues() {
+		Map<String, Object> snap = new LinkedHashMap<>();
+		for (var entry : values.entrySet()) {
+			try {
+				snap.put(entry.getKey(), entry.getValue().get());
+			} catch (IllegalStateException ignored) {
+			}
+		}
+		return snap;
+	}
+
+	private record DeferredKeyListener(String key, Runnable listener) {}
 }

@@ -1,7 +1,5 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
@@ -87,8 +85,6 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 			this.combatNumbers$poisonTick = false;
 			return;
 		}
-		if (!Config.get(ConfigIds.ENABLED))
-			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;
 		if (self.isRemoved())

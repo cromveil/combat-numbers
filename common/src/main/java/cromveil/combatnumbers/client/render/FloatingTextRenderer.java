@@ -1,8 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.Systems;
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
+import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.config.Configs;
 import net.minecraft.world.phys.Vec3;
 
 public final class FloatingTextRenderer {
@@ -12,17 +11,17 @@ public final class FloatingTextRenderer {
 
 	private static final float MIN_FADE_DISTANCE = 0.5f;
 
-	public static void renderAll(Strategy strategy) {
-		float baseFontSize = Config.get(ConfigIds.BASE_FONT_SIZE).floatValue();
-		float nearFadeDistance = Config.get(ConfigIds.NEAR_FADE_DISTANCE).floatValue();
-		float maxRenderDistance = Config.get(ConfigIds.MAX_RENDER_DISTANCE).floatValue();
-		float falloffStart = Config.get(ConfigIds.DISTANCE_FALLOFF_START).floatValue();
-		float falloffEnd = Config.get(ConfigIds.DISTANCE_FALLOFF_END).floatValue();
-		float minScale = Config.get(ConfigIds.DISTANCE_MIN_SCALE).floatValue();
+	public static void renderAll(Strategy strategy, ConfigState config, FloatingTextManager textManager) {
+		float baseFontSize = config.get(Configs.BASE_FONT_SIZE).floatValue();
+		float nearFadeDistance = config.get(Configs.NEAR_FADE_DISTANCE).floatValue();
+		float maxRenderDistance = config.get(Configs.MAX_RENDER_DISTANCE).floatValue();
+		float falloffStart = config.get(Configs.DISTANCE_FALLOFF_START).floatValue();
+		float falloffEnd = config.get(Configs.DISTANCE_FALLOFF_END).floatValue();
+		float minScale = config.get(Configs.DISTANCE_MIN_SCALE).floatValue();
 		float fontRef = BillboardHelper.fontReferenceHeight();
 		Vec3 camPos = strategy.camPos();
 
-		for (FloatingText text : Systems.client().textManager().getActive()) {
+		for (FloatingText text : textManager.getActive()) {
 			Vec3 worldPos = text.worldPos;
 
 			float alpha = text.getAlpha();

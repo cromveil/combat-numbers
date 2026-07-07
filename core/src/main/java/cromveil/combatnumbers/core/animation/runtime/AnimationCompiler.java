@@ -1,0 +1,183 @@
+package cromveil.combatnumbers.core.animation.runtime;
+
+import cromveil.combatnumbers.core.animation.Channel;
+import cromveil.combatnumbers.core.animation.ConstantInterpolator;
+import cromveil.combatnumbers.core.animation.Interpolator;
+import cromveil.combatnumbers.core.animation.KeyframeDef;
+import cromveil.combatnumbers.core.animation.KeyframeInterpolator;
+import cromveil.combatnumbers.core.animation.SpringInterpolator;
+import cromveil.combatnumbers.core.animation.Step;
+import cromveil.combatnumbers.core.animation.Timeline;
+import cromveil.combatnumbers.core.animation.TweenInterpolator;
+import cromveil.combatnumbers.core.animation.runtime.eval.Eval;
+import cromveil.combatnumbers.core.animation.runtime.eval.EvalConstant;
+import cromveil.combatnumbers.core.animation.runtime.eval.EvalKeyframe;
+import cromveil.combatnumbers.core.animation.runtime.eval.EvalSpring;
+import cromveil.combatnumbers.core.animation.runtime.eval.EvalTween;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class AnimationCompiler {
+
+	public AnimationEvaluator compile(Timeline timeline, int charCount, long seed) {
+		return build(timeline, charCount, seed);
+	}
+
+	private AnimationEvaluator build(Timeline timeline, int charCount, long seed) {
+		List<Step> steps = timeline.steps();
+		var sharedRng = new Random(seed);
+
+		float[][] staggerDelays = new float[steps.size()][charCount];
+		boolean anyStagger = false;
+		for (int si = 0; si < steps.size(); si++) {
+			Step step = steps.get(si);
+			if (step.hasStagger() && charCount > 0) {
+				anyStagger = true;
+				float[] delays = step.stagger().computeDelays(charCount);
+				System.arraycopy(delays, 0, staggerDelays[si], 0, charCount);
+			}
+		}
+
+		float[][] carryValues = new float[charCount][Channel.COUNT];
+		for (int c = 0; c < charCount; c++) {
+			System.arraycopy(Channel.DEFAULTS, 0, carryValues[c], 0, Channel.COUNT);
+		}
+
+		List<List<CompiledStep>> channelStepLists = new ArrayList<>(Channel.COUNT);
+		for (int p = 0; p < Channel.COUNT; p++) {
+			channelStepLists.add(new ArrayList<>());
+		}
+
+		for (int si = 0; si < steps.size(); si++) {
+			Step step = steps.get(si);
+			boolean stepHasStagger = step.hasStagger() && charCount > 0;
+			int stepChars = stepHasStagger ? charCount : 1;
+
+			for (var entry : step.channels().entrySet()) {
+				Channel ch = entry.getKey();
+				Interpolator interpolator = entry.getValue();
+				int chIdx = ch.ordinal();
+
+				float[] resolvedStarts = new float[charCount];
+				float explicitStart = interpolator.startValue();
+
+				if (!stepHasStagger) {
+					float resolved = resolveStart(interpolator, explicitStart,
+							carryValues[0][chIdx], sharedRng);
+					for (int c = 0; c < charCount; c++) {
+						resolvedStarts[c] = resolved;
+					}
+				} else {
+					for (int c = 0; c < charCount; c++) {
+						var charRng = new Random(seed ^ c);
+						resolvedStarts[c] = resolveStart(interpolator, explicitStart,
+								carryValues[c][chIdx], charRng);
+					}
+				}
+
+				Eval eval = createEval(interpolator, resolvedStarts, step.durationMs(),
+						stepChars, charCount, sharedRng, seed);
+
+				CompiledStep compiledStep = new CompiledStep(
+						eval, step.startMs(), step.durationMs(), step.plays(),
+						interpolator.compose(), step.playback(), staggerDelays[si]);
+
+				channelStepLists.get(chIdx).add(compiledStep);
+
+				for (int c = 0; c < charCount; c++) {
+					carryValues[c][chIdx] = eval.endValue(c);
+				}
+			}
+		}
+
+		CompiledStep[][] channelSteps = new CompiledStep[Channel.COUNT][];
+		for (int ch = 0; ch < Channel.COUNT; ch++) {
+			List<CompiledStep> list = channelStepLists.get(ch);
+			channelSteps[ch] = list.toArray(new CompiledStep[0]);
+		}
+
+		return new CompiledAnimation(timeline.totalDurationMs(), charCount,
+				channelSteps, anyStagger);
+	}
+
+	private static Eval createEval(Interpolator ip, float[] resolvedStarts, int durationMs,
+			int stepChars, int charCount, Random rng, long seed) {
+		return switch (ip) {
+			case ConstantInterpolator c -> {
+				if (c.source() instanceof ConstantInterpolator.Fixed) {
+					yield new EvalConstant(resolvedStarts);
+				}
+				float[] vals = new float[charCount];
+				for (int i = 0; i < charCount; i++) {
+					vals[i] = resolvedStarts[i];
+				}
+				yield new EvalConstant(vals);
+			}
+			case TweenInterpolator t -> {
+				float to = resolveTweenTo(t, rng);
+				if (stepChars == 1 && charCount > 1) {
+					float[] starts = new float[charCount];
+					for (int c = 0; c < charCount; c++) {
+						starts[c] = resolvedStarts[0];
+					}
+					yield new EvalTween(starts, to, t.easing());
+				}
+				yield new EvalTween(resolvedStarts, to, t.easing());
+			}
+			case KeyframeInterpolator k -> {
+				KeyframeDef[] kfs = k.keyframes().toArray(new KeyframeDef[0]);
+				float firstVal = kfs.length > 0 ? kfs[0].value() : 0f;
+				float lastVal = kfs.length > 0 ? kfs[kfs.length - 1].value() : 0f;
+				if (stepChars == 1 && charCount > 1) {
+					float[] starts = new float[charCount];
+					for (int c = 0; c < charCount; c++) {
+						starts[c] = resolvedStarts[0];
+					}
+					yield new EvalKeyframe(starts, kfs, k.fallbackEasing(), firstVal, lastVal);
+				}
+				yield new EvalKeyframe(resolvedStarts, kfs, k.fallbackEasing(), firstVal, lastVal);
+			}
+			case SpringInterpolator s -> {
+				float mass = cromveil.combatnumbers.core.animation.SpringSolver.computeMass(
+						s.damping(), durationMs / 1000f);
+				if (stepChars == 1 && charCount > 1) {
+					float[] starts = new float[charCount];
+					for (int c = 0; c < charCount; c++) {
+						starts[c] = resolvedStarts[0];
+					}
+					yield new EvalSpring(starts, s.to(), s.velocity(),
+							s.stiffness(), s.damping(), mass, durationMs);
+				}
+				yield new EvalSpring(resolvedStarts, s.to(), s.velocity(),
+						s.stiffness(), s.damping(), mass, durationMs);
+			}
+		};
+	}
+
+	private static float resolveTweenTo(TweenInterpolator t, Random rng) {
+		if (!t.hasNestedInterpolator())
+			return t.toValue();
+		Interpolator nested = t.toInterpolator();
+		if (nested instanceof ConstantInterpolator c) {
+			return c.source().resolve(rng);
+		}
+		return t.toValue();
+	}
+
+	private static float resolveStart(Interpolator ip, float explicitStart,
+			float carryForward, Random rng) {
+		if (ip instanceof ConstantInterpolator c) {
+			return c.source().resolve(rng);
+		}
+		if (Float.isNaN(explicitStart)) {
+			return switch (ip.compose()) {
+				case ADD -> 0f;
+				case MULTIPLY -> 1f;
+				default -> carryForward;
+			};
+		}
+		return explicitStart;
+	}
+}

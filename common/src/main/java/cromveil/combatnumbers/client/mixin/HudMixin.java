@@ -1,11 +1,11 @@
 package cromveil.combatnumbers.client.mixin;
 
+import cromveil.combatnumbers.client.MixinBridge;
+import cromveil.combatnumbers.client.RenderContext;
 import cromveil.combatnumbers.client.render.CameraAdapter;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.GuiGraphicsExtractorAdapter;
 import cromveil.combatnumbers.client.render.HudStrategy;
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,7 +25,8 @@ public abstract class HudMixin {
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void combatnumbers$renderFloatingTextHud(
 			GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		if (!Config.get(ConfigIds.ENABLED) || !Config.get(ConfigIds.RENDER_MODE).isHud()) {
+		RenderContext ctx = MixinBridge.CONTEXT;
+		if (ctx == null || !ctx.shouldRenderHud()) {
 			return;
 		}
 
@@ -35,7 +36,7 @@ public abstract class HudMixin {
 		}
 
 		var cam = CameraAdapter.from(mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState);
-		var ctx = new GuiGraphicsExtractorAdapter(graphics);
-		FloatingTextRenderer.renderAll(new HudStrategy(ctx, cam));
+		var gfx = new GuiGraphicsExtractorAdapter(graphics);
+		FloatingTextRenderer.renderAll(new HudStrategy(gfx, cam), ctx.config(), ctx.textManager());
 	}
 }

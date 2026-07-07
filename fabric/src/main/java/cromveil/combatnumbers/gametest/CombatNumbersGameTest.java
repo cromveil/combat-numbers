@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
-import cromveil.combatnumbers.core.events.RenderEvent;
+import cromveil.combatnumbers.core.events.DispatchEvent;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -23,14 +23,14 @@ public class CombatNumbersGameTest {
 		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
-		List<RenderEvent> captured = new ArrayList<>();
-		CombatNumbersEvents.RENDER.register(captured::add);
+		List<DispatchEvent> captured = new ArrayList<>();
+		CombatNumbersEvents.DISPATCH.register(captured::add);
 		helper.hurt(zombie, source, 5.0f);
 
 		helper.assertTrue(captured.size() == 1,
 			"Expected 1 instance, got " + captured.size());
 
-		RenderEvent inst = captured.getFirst();
+		DispatchEvent inst = captured.getFirst();
 		helper.assertTrue(inst.entityId() == zombie.getId(),
 			"Instance entityId " + inst.entityId() + " != zombie id " + zombie.getId());
 		helper.assertTrue(inst.value() > 0f && inst.value() <= 5.0f,
@@ -45,8 +45,8 @@ public class CombatNumbersGameTest {
 		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
-		List<RenderEvent> captured = new ArrayList<>();
-		CombatNumbersEvents.RENDER.register(captured::add);
+		List<DispatchEvent> captured = new ArrayList<>();
+		CombatNumbersEvents.DISPATCH.register(captured::add);
 		helper.hurt(zombie, source, 5.0f);
 		helper.hurt(zombie, source, 10.0f);
 
@@ -69,14 +69,14 @@ public class CombatNumbersGameTest {
 		LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, SPAWN_POS);
 		DamageSource source = level.damageSources().magic();
 
-		List<RenderEvent> captured = new ArrayList<>();
-		CombatNumbersEvents.RENDER.register(captured::add);
+		List<DispatchEvent> captured = new ArrayList<>();
+		CombatNumbersEvents.DISPATCH.register(captured::add);
 		helper.hurt(zombie, source, DAMAGE);
 
 		helper.assertTrue(captured.size() == 1,
 			"Expected 1 instance, got " + captured.size());
 
-		RenderEvent inst = captured.getFirst();
+		DispatchEvent inst = captured.getFirst();
 		helper.assertTrue(inst.value() == DAMAGE,
 			"Wrong last hit damage:" + inst.value() + ", expected:" + DAMAGE);
 

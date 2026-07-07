@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.resource;
 
+import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.core.StableId;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jspecify.annotations.Nullable;

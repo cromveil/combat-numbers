@@ -4,7 +4,9 @@ public final class CombatNumbersEvents {
 
 	public static final Event<CombatCallback> COMBAT = Event.create(CombatCallback.class);
 
-	public static final Event<RenderCallback> RENDER = Event.create(RenderCallback.class);
+	public static final Event<DispatchCallback> DISPATCH = Event.create(DispatchCallback.class);
+
+	public static final Event<Runnable> DATA_RELOADED = Event.create(Runnable.class);
 
 	@FunctionalInterface
 	public interface CombatCallback {
@@ -12,8 +14,8 @@ public final class CombatNumbersEvents {
 	}
 
 	@FunctionalInterface
-	public interface RenderCallback {
-		void onEvent(RenderEvent instance);
+	public interface DispatchCallback {
+		void onEvent(DispatchEvent instance);
 	}
 
 	private CombatNumbersEvents() {

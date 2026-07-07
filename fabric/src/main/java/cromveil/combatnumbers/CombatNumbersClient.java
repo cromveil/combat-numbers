@@ -1,113 +1,57 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.StableId;
-import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
-import cromveil.combatnumbers.client.ClientRuntime;
-import cromveil.combatnumbers.client.render.BillboardStrategy;
-import cromveil.combatnumbers.client.render.CameraAdapter;
-import cromveil.combatnumbers.client.render.FloatingText;
+import java.util.Map;
+
+import cromveil.combatnumbers.client.RenderContext;
+import cromveil.combatnumbers.client.MixinBridge;
+import cromveil.combatnumbers.client.ReadResourcePacksModule;
+import cromveil.combatnumbers.client.ThemeModule;
+import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
-import cromveil.combatnumbers.client.render.FloatingTextRenderer;
-import cromveil.combatnumbers.client.render.RenderOption;
-import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
-import cromveil.combatnumbers.packets.RenderPacket;
-import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
-import cromveil.combatnumbers.packets.SyncSkinDataPacket;
-import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
-import cromveil.combatnumbers.packets.SyncStyleTablePacket;
-import cromveil.combatnumbers.resource.DataConsumer;
+import cromveil.combatnumbers.client.skins.SkinResolver;
+import cromveil.combatnumbers.client.theme.ThemeLoader;
+import cromveil.combatnumbers.config.ConfigFiles;
+import cromveil.combatnumbers.config.Configs;
+import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
+import cromveil.combatnumbers.core.config.ConfigDef.Category;
+import cromveil.combatnumbers.core.config.MergedConfigState;
 import cromveil.combatnumbers.resource.FabricReloadRegistry;
-import cromveil.combatnumbers.core.styles.StyleTable;
-import cromveil.combatnumbers.resource.StableIdMapper;
-import cromveil.combatnumbers.skins.SkinDefinition;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
-import net.minecraft.client.Minecraft;
 
 public class CombatNumbersClient implements ClientModInitializer {
 
-	private final ClientRuntime runtime = new ClientRuntime();
-
 	@Override
 	public void onInitializeClient() {
-		Config.store().addChangeListener(runtime::reloadTheme);
-		Systems.initClient(new Systems.Client(Config.store(), new FloatingTextManager()));
+		var textManager = new FloatingTextManager();
+		var skinResolver = new SkinResolver();
+		var animationResolver = new AnimationResolver();
 
-		var reloadRegistry = new FabricReloadRegistry();
-		reloadRegistry.registerClientResources(
-				StableId.of(Constants.MOD_ID, "skins"),
-				"skins", SkinDefinition.CODEC,
-				runtime::applyResourcePackSkins);
-		reloadRegistry.registerClientResources(
-				StableId.of(Constants.MOD_ID, "animations"),
-				"animations", TimelineCodec.CODEC,
-				DataConsumer.from(runtime::applyResourcePackAnimations));
+		var commonConfig = ConfigFiles.load("combatnumbers-common.json", Configs.COMMON);
+		var clientConfig = ConfigFiles.load("combatnumbers-client.json", Configs.CLIENT);
+		var configState = new MergedConfigState(Map.of(
+				Category.COMMON, commonConfig.state(),
+				Category.CLIENT, clientConfig.state()));
 
-		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-			ClientPlayNetworking.registerReceiver(SyncStyleTablePacket.TYPE,
-					(packet, context) -> context.client().execute(
-							() -> runtime.applyStyleTable(
-									new StyleTable(
-											packet.skinIds().stream().map(StableIdMapper::from).toList(),
-											packet.animationIds().stream().map(StableIdMapper::from).toList()))));
+		Runnable[] onClientResourcesLoaded = new Runnable[1];
+		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
+				new FabricReloadRegistry(), () -> {
+					if (onClientResourcesLoaded[0] != null) {
+						onClientResourcesLoaded[0].run();
+					}
+				});
+		var theme = new ThemeModule(configState, new ThemeLoader(), skinResolver, animationResolver,
+				resourcePacks::resources);
+		onClientResourcesLoaded[0] = theme::reload;
 
-			ClientPlayNetworking.registerReceiver(SyncAnimationDataPacket.TYPE,
-					(packet, context) -> context.client().execute(
-							() -> runtime.applyServerAnimations(packet.animations())));
+		var serverStyles = new SyncReceiver(animationResolver, skinResolver);
+		var renderer = new FloatingTextRendererModule(configState, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
 
-			ClientPlayNetworking.registerReceiver(SyncSkinDataPacket.TYPE,
-					(packet, context) -> context.client().execute(
-							() -> runtime.applyServerSkins(packet.skins())));
+		MixinBridge.init(new RenderContext(configState, textManager));
 
-			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE,
-					(packet, context) -> context.client().execute(
-							() -> runtime.applyServerTextures(packet.textures())));
-
-			ClientPlayNetworking.registerReceiver(RenderPacket.TYPE,
-					(payload, context) -> context.client().execute(
-							() -> runtime.onRenderPacket(
-									payload.entityId(), payload.value(),
-									payload.skinIndex(), payload.animationIndex())));
-		});
-
-		ClientPlayConnectionEvents.DISCONNECT.register(
-				(handler, client) -> runtime.onDisconnect());
-
-		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
-			if (!Config.get(ConfigIds.ENABLED)) {
-				Systems.client().textManager().clear();
-				return;
-			}
-
-			Minecraft mc = Minecraft.getInstance();
-			var level = mc.level;
-			if (level == null) {
-				Systems.client().textManager().clear();
-				return;
-			}
-			double gameTime = level.getGameTime()
-					+ mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-
-			for (FloatingText text : Systems.client().textManager().getActive()) {
-				text.setGameTime(gameTime);
-			}
-			Systems.client().textManager().cleanupExpired();
-
-			RenderOption option = Config.get(ConfigIds.RENDER_MODE);
-			if (option.isHud()) {
-				return;
-			}
-
-			FloatingTextRenderer.renderAll(BillboardStrategy.create(
-					option,
-					context.poseStack(),
-					new SubmitNodeCollectorAdapter(context.submitNodeCollector()),
-					CameraAdapter.from(context.levelState().cameraRenderState)));
-		});
+		Setup.registerAll(
+			resourcePacks, theme, serverStyles, 
+			renderer
+		);
 	}
 }

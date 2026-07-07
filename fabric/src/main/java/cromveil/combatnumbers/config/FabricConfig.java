@@ -3,9 +3,9 @@ package cromveil.combatnumbers.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.config.ConfigId;
-import cromveil.combatnumbers.core.config.ConfigStore;
-import net.fabricmc.loader.api.FabricLoader;
+import cromveil.combatnumbers.core.config.ConfigDef;
+import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.ConfigWriter;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -16,79 +16,56 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public final class FabricConfig implements ConfigStore {
+public final class FabricConfig implements ConfigState, ConfigWriter {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final Path COMMON_PATH = FabricLoader.getInstance()
-			.getConfigDir().resolve("combatnumbers-common.json");
-	private static final Path CLIENT_PATH = FabricLoader.getInstance()
-			.getConfigDir().resolve("combatnumbers-client.json");
-	// private static final Path SERVER_PATH = FabricLoader.getInstance()
-	// 		.getConfigDir().resolve("combatnumbers-server.json");
-
-	private final Map<String, Object> commonValues = new LinkedHashMap<>();
-	private final Map<String, Object> clientValues = new LinkedHashMap<>();
-	// private final Map<String, Object> serverValues = new LinkedHashMap<>();
+	private final Path path;
+	private final List<ConfigDef<?>> defs;
+	private final Map<String, Object> values = new LinkedHashMap<>();
 	private final List<Runnable> changeListeners = new ArrayList<>();
+	private final Map<String, List<Runnable>> keyListeners = new LinkedHashMap<>();
+	private Map<String, Object> previousValues;
 
-	public FabricConfig() {
-		load(COMMON_PATH, commonValues, ConfigIds.ALL_COMMON);
-		load(CLIENT_PATH, clientValues, ConfigIds.ALL_CLIENT);
-		// load(SERVER_PATH, serverValues, ConfigIds.ALL_SERVER);
+	public FabricConfig(Path path, List<ConfigDef<?>> defs) {
+		this.path = path;
+		this.defs = defs;
+		load();
+		previousValues = new LinkedHashMap<>(values);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void load(Path path, Map<String, Object> target, List<ConfigId<?>> ids) {
+	private void load() {
 		if (Files.exists(path)) {
 			try (Reader reader = Files.newBufferedReader(path)) {
 				Map<String, Object> fromFile = GSON.fromJson(reader, Map.class);
 				if (fromFile != null) {
-					target.putAll(fromFile);
+					values.putAll(fromFile);
 				}
 			} catch (Exception e) {
 				Constants.LOG.warn("Failed to read config {}, using defaults", path, e);
 			}
 		}
 
-		for (ConfigId<?> id : ids) {
-			target.putIfAbsent(id.key(), id.defaultValue());
+		for (ConfigDef<?> id : defs) {
+			values.putIfAbsent(id.key(), id.defaultValue());
 		}
 
 		if (!Files.exists(path)) {
-			save(path, target);
-		}
-	}
-
-	private static void save(Path path, Map<String, Object> values) {
-		try {
-			Files.createDirectories(path.getParent());
-			try (Writer writer = Files.newBufferedWriter(path)) {
-				GSON.toJson(values, writer);
-			}
-		} catch (IOException e) {
-			Constants.LOG.warn("Failed to write config {}", path, e);
+			saveToFile();
 		}
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public <T> T get(ConfigId<T> id) {
-		Map<String, Object> store = switch (id.category()) {
-			case COMMON -> commonValues;
-			case CLIENT -> clientValues;
-			// case SERVER -> serverValues;
-			default -> null;
-		};
-		if (store == null) {
-			return id.defaultValue();
-		}
-		Object raw = store.get(id.key());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T> T get(ConfigDef<T> id) {
+		Object raw = values.get(id.key());
 		if (raw == null) {
 			return id.defaultValue();
 		}
-		if (id.kind() == ConfigId.Kind.ENUM_CYCLE && raw instanceof String s) {
+		if (id.valueType() == ConfigDef.ValueType.ENUM && raw instanceof String s) {
 			T def = id.defaultValue();
 			Class enumClass = ((Enum) def).getDeclaringClass();
 			try {
@@ -101,30 +78,73 @@ public final class FabricConfig implements ConfigStore {
 	}
 
 	@Override
-	public <T> void set(ConfigId<T> id, T value) {
-		Map<String, Object> store = switch (id.category()) {
-			case COMMON -> commonValues;
-			case CLIENT -> clientValues;
-			// case SERVER -> serverValues;
-			default -> null;
-		};
-		if (store != null) {
-			store.put(id.key(), value);
-		}
+	public <T> void setValue(ConfigDef<T> id, T value) {
+		values.put(id.key(), value);
 	}
 
 	@Override
-	public void save() {
-		save(COMMON_PATH, commonValues);
-		save(CLIENT_PATH, clientValues);
-		// save(SERVER_PATH, serverValues);
+	public void commit() {
+		saveToFile();
 		for (Runnable listener : changeListeners) {
 			listener.run();
 		}
+		fireKeyListeners();
 	}
 
 	@Override
-	public void addChangeListener(Runnable listener) {
+	public void onChanged(Runnable listener) {
 		changeListeners.add(listener);
+	}
+
+	@Override
+	public <T> void onChanged(ConfigDef<T> key, Runnable listener) {
+		keyListeners.computeIfAbsent(key.key(), k -> new ArrayList<>()).add(listener);
+	}
+
+	public void reload() {
+		if (Files.exists(path)) {
+			try (Reader reader = Files.newBufferedReader(path)) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> fromFile = GSON.fromJson(reader, Map.class);
+				if (fromFile != null) {
+					values.clear();
+					values.putAll(fromFile);
+				}
+			} catch (Exception e) {
+				Constants.LOG.warn("Failed to read config {}, using defaults", path, e);
+			}
+		}
+
+		for (ConfigDef<?> id : defs) {
+			values.putIfAbsent(id.key(), id.defaultValue());
+		}
+
+		for (Runnable listener : changeListeners) {
+			listener.run();
+		}
+		fireKeyListeners();
+	}
+
+	private void fireKeyListeners() {
+		for (var entry : keyListeners.entrySet()) {
+			String key = entry.getKey();
+			if (!Objects.equals(previousValues.get(key), values.get(key))) {
+				previousValues.put(key, values.get(key));
+				for (Runnable listener : entry.getValue()) {
+					listener.run();
+				}
+			}
+		}
+	}
+
+	private void saveToFile() {
+		try {
+			Files.createDirectories(path.getParent());
+			try (Writer writer = Files.newBufferedWriter(path)) {
+				GSON.toJson(values, writer);
+			}
+		} catch (IOException e) {
+			Constants.LOG.warn("Failed to write config {}", path, e);
+		}
 	}
 }

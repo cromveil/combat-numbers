@@ -4,6 +4,7 @@ import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.resolver.LayeredResolver;
 import cromveil.combatnumbers.skins.SkinDefinition;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,13 +18,22 @@ public final class SkinResolver {
 	private final LayeredResolver<StableId, Skin> resolver = new LayeredResolver<>(
 			List.of(server, resourcePack, theme));
 
+	private Map<StableId, SkinDefinition> serverSkinDefs = Map.of();
+	private Map<StableId, byte[]> serverTextureBytes = new LinkedHashMap<>();
+
 	public Skin resolve(StableId id) {
 		Skin skin = resolver.resolve(id);
 		return skin != null ? skin : DEFAULT;
 	}
 
-	public void setServer(Map<StableId, SkinDefinition> defs, TextureByteSource textures) {
-		server.set(defs, textures);
+	public void setServerSkinDefs(Map<StableId, SkinDefinition> defs) {
+		this.serverSkinDefs = Map.copyOf(defs);
+		rebuildServerSkins();
+	}
+
+	public void setServerTextureBytes(Map<StableId, byte[]> textures) {
+		this.serverTextureBytes = new LinkedHashMap<>(textures);
+		rebuildServerSkins();
 	}
 
 	public void setResourcePack(Map<StableId, SkinDefinition> defs, TextureByteSource textures) {
@@ -36,5 +46,11 @@ public final class SkinResolver {
 
 	public void clearServer() {
 		server.clear();
+		serverSkinDefs = Map.of();
+		serverTextureBytes.clear();
+	}
+
+	private void rebuildServerSkins() {
+		server.set(serverSkinDefs, logical -> serverTextureBytes.get(logical));
 	}
 }

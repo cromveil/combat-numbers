@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.config;
 
-import cromveil.combatnumbers.client.theme.ThemeManager;
+import cromveil.combatnumbers.client.theme.ThemeDiscoverer;
 import cromveil.combatnumbers.config.screen.ConfigOption;
-import cromveil.combatnumbers.core.config.ConfigId;
-import cromveil.combatnumbers.core.config.ConfigStore;
+import cromveil.combatnumbers.core.config.ConfigDef;
+import cromveil.combatnumbers.core.config.ConfigState;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -13,45 +13,44 @@ public final class ConfigWidgetFactory {
 
 	private ConfigWidgetFactory() {}
 
-	@SuppressWarnings("unchecked")
-	public static ConfigOption<?> toWidget(ConfigId<?> id, ConfigStore store) {
-		return switch (id.kind()) {
+	public static ConfigOption<?> toWidget(ConfigDef<?> id, ConfigState state) {
+		return switch (id.valueType()) {
 			case BOOL -> {
-				ConfigId<Boolean> self = (ConfigId<Boolean>) (Object) id;
-				yield ConfigOption.ofBool(id.key(), self.defaultValue(),
-						() -> store.get(self), v -> store.set(self, v));
+				var self = id.asBool();
+				yield ConfigOption.ofBool(self, () -> state.get(self));
 			}
-			case DOUBLE_SLIDER -> {
-				ConfigId<Double> self = (ConfigId<Double>) (Object) id;
-				yield ConfigOption.ofSlider(id.key(), self.defaultValue(), id.min(), id.max(),
-						() -> store.get(self), v -> store.set(self, v),
-						id.sliderFormat());
+			case NUMBER -> {
+				var self = id.asNumber();
+				yield ConfigOption.ofSlider(self, () -> state.get(self),
+						SliderFormat.fromDecimalPlaces(id.decimalPlaces()));
 			}
-			case STRING_CYCLE -> {
-				ConfigId<String> self = (ConfigId<String>) (Object) id;
+			case STRING_LIST -> {
+				var self = id.asStringList();
 				List<String> values = id.allowedValuesSupplier().get();
 				Function<String, Component> disp = Component::literal;
 				Function<Object, Component> descFn = null;
-				if (id == ConfigIds.CLIENT_THEME) {
-					disp = ThemeManager::displayName;
+				if (id == Configs.CLIENT_THEME) {
+					disp = ThemeDiscoverer::displayName;
 					descFn = current -> {
 						String currentId = (String) current;
 						if (currentId == null || currentId.isEmpty()) {
 							return Component.translatable("config.combatnumbers.option.theme.off.description");
 						}
-						String desc = ThemeManager.description(currentId);
+						String desc = ThemeDiscoverer.description(currentId);
 						return desc != null ? Component.literal(desc) : null;
 					};
 				}
-				yield ConfigOption.ofStringCycle(id.key(), self.defaultValue(),
-						() -> store.get(self), v -> store.set(self, v),
+				yield ConfigOption.ofStringCycle(self,
+						() -> state.get(self),
 						values, disp, descFn, id.allowEmpty(),
 						Component.translatable("options.off"));
 			}
-			case ENUM_CYCLE -> {
-				ConfigOption<?> opt = ConfigOption.ofEnum(id.key(), (Enum) id.defaultValue(),
-						() -> (Enum) store.get((ConfigId) (Object) id),
-						v -> store.set((ConfigId) (Object) id, v),
+			case ENUM -> {
+				@SuppressWarnings("rawtypes")
+				ConfigDef raw = id.asEnum();
+				@SuppressWarnings({"rawtypes", "unchecked"})
+				ConfigOption<?> opt = ConfigOption.ofEnum(raw,
+						() -> (Enum) state.get(raw),
 						e -> Component.translatable(
 								"config.combatnumbers.renderOption." + e.name()));
 				yield opt;

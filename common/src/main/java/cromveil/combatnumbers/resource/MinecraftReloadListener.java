@@ -1,6 +1,7 @@
 package cromveil.combatnumbers.resource;
 
 import com.mojang.serialization.Codec;
+import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.core.StableId;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 class MinecraftReloadListener<T> extends SimpleJsonResourceReloadListener<T> {
 
-	private final DataConsumer<T> consumer;
+	private final ResourceLoadCallback<T> consumer;
 
-	MinecraftReloadListener(Codec<T> codec, String directory, DataConsumer<T> consumer) {
+	MinecraftReloadListener(Codec<T> codec, String directory, ResourceLoadCallback<T> consumer) {
 		super(codec, FileToIdConverter.json(directory));
 		this.consumer = consumer;
 	}
