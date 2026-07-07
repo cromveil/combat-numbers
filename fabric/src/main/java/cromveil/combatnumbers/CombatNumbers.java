@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.config.ConfigFiles;
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.config.FabricConfigReloadModule;
 import cromveil.combatnumbers.core.Setup;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.core.styles.RuleEngine;
@@ -37,15 +36,14 @@ public class CombatNumbers implements ModInitializer {
 		var filterRegistry = new FilterRegistry<ServerLevel>();
 		Supplier<StyleTable> styleTable = () -> StyleTable.from(ruleEngine);
 
-		var configReloadListener = new FabricConfigReloadModule();
 		var entityResolver = new EntityLevelResolver(lifecycle);
 		var datapacks = new ReadDatapacksModule(reloadRegistry, animationRegistry, skinRegistry, ruleEngine, filterRegistry);
 		var syncToClient = new SyncToClientModule(network, lifecycle, entityResolver, animationRegistry, skinRegistry, styleTable);
-		var styling = new StylingModule(config.state(), ruleEngine, filterRegistry, entityResolver);
-		var broadcast = new BroadcastModule(config.state(), network, styleTable, entityResolver);
+		var styling = new StylingModule(config, ruleEngine, filterRegistry, entityResolver);
+		var broadcast = new BroadcastModule(config, network, styleTable, entityResolver);
 
 		Setup.registerAll(
-				entityResolver, configReloadListener,
+				entityResolver,
 				datapacks,
 				styling,
 				syncToClient, broadcast

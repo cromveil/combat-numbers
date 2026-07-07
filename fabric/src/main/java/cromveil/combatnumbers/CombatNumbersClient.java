@@ -15,7 +15,7 @@ import cromveil.combatnumbers.config.Configs;
 import cromveil.combatnumbers.core.Setup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
 import cromveil.combatnumbers.core.config.ConfigDef.Category;
-import cromveil.combatnumbers.core.config.MergedConfigState;
+import cromveil.combatnumbers.core.config.MergedConfig;
 import cromveil.combatnumbers.resource.FabricReloadRegistry;
 import net.fabricmc.api.ClientModInitializer;
 
@@ -29,25 +29,20 @@ public class CombatNumbersClient implements ClientModInitializer {
 
 		var commonConfig = ConfigFiles.load("combatnumbers-common.json", Configs.COMMON);
 		var clientConfig = ConfigFiles.load("combatnumbers-client.json", Configs.CLIENT);
-		var configState = new MergedConfigState(Map.of(
-				Category.COMMON, commonConfig.state(),
-				Category.CLIENT, clientConfig.state()));
+		var config = new MergedConfig(Map.of(
+				Category.COMMON, commonConfig,
+				Category.CLIENT, clientConfig));
 
-		Runnable[] onClientResourcesLoaded = new Runnable[1];
 		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
-				new FabricReloadRegistry(), () -> {
-					if (onClientResourcesLoaded[0] != null) {
-						onClientResourcesLoaded[0].run();
-					}
-				});
-		var theme = new ThemeModule(configState, new ThemeLoader(), skinResolver, animationResolver,
+				new FabricReloadRegistry());
+		var theme = new ThemeModule(config, new ThemeLoader(), skinResolver, animationResolver,
 				resourcePacks::resources);
-		onClientResourcesLoaded[0] = theme::reload;
+		resourcePacks.setOnComplete(theme::reload);
 
 		var serverStyles = new SyncReceiver(animationResolver, skinResolver);
-		var renderer = new FloatingTextRendererModule(configState, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
+		var renderer = new FloatingTextRendererModule(config, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
 
-		MixinBridge.init(new RenderContext(configState, textManager));
+		MixinBridge.init(new RenderContext(config, textManager));
 
 		Setup.registerAll(
 			resourcePacks, theme, serverStyles, 

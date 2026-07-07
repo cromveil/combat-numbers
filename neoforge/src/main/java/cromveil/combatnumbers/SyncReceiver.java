@@ -26,7 +26,6 @@ public final class SyncReceiver implements Setup {
 	}
 
 	@Override
-
 	public void register() {
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {

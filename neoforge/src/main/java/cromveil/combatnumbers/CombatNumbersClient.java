@@ -16,8 +16,7 @@ import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.Setup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
 import cromveil.combatnumbers.core.config.ConfigDef.Category;
-import cromveil.combatnumbers.core.config.MergedConfigState;
-import cromveil.combatnumbers.core.config.MergedConfigWriter;
+import cromveil.combatnumbers.core.config.MergedConfig;
 import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -35,28 +34,20 @@ public class CombatNumbersClient {
 
 		var commonConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.COMMON, Configs.COMMON);
 		var clientConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.CLIENT, Configs.CLIENT);
-		var configState = new MergedConfigState(Map.of(
-				Category.COMMON, commonConfig.state(),
-				Category.CLIENT, clientConfig.state()));
-		var configWriter = new MergedConfigWriter(Map.of(
-				Category.COMMON, commonConfig.writer(),
-				Category.CLIENT, clientConfig.writer()));
-		ConfigFiles.registerConfigScreen(container, configState, configWriter);
-		
-		Runnable[] onClientResourcesLoaded = new Runnable[1];
-		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
-				new NeoForgeReloadRegistry(modEventBus), () -> {
-					if (onClientResourcesLoaded[0] != null) {
-						onClientResourcesLoaded[0].run();
-					}
-				});
-		var theme = new ThemeModule(configState, new ThemeLoader(), skinResolver, animationResolver,
-				resourcePacks::resources);
-		onClientResourcesLoaded[0] = theme::reload;
-		var serverStyles = new SyncReceiver(modEventBus, animationResolver, skinResolver);
-		var renderer = new FloatingTextRendererModule(modEventBus, configState, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
+		var config = new MergedConfig(Map.of(
+				Category.COMMON, commonConfig,
+				Category.CLIENT, clientConfig));
+		ConfigFiles.registerConfigScreen(container, config, config);
 
-		MixinBridge.init(new RenderContext(configState, textManager));
+		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
+				new NeoForgeReloadRegistry(modEventBus));
+		var theme = new ThemeModule(config, new ThemeLoader(), skinResolver, animationResolver,
+				resourcePacks::resources);
+		resourcePacks.setOnComplete(theme::reload);
+		var serverStyles = new SyncReceiver(modEventBus, animationResolver, skinResolver);
+		var renderer = new FloatingTextRendererModule(modEventBus, config, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
+
+		MixinBridge.init(new RenderContext(config, textManager));
 
 		Setup.registerAll(
 			resourcePacks, theme, serverStyles,

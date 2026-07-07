@@ -28,7 +28,6 @@ public final class FloatingTextRendererModule implements Setup {
 	}
 
 	@Override
-
 	public void register() {
 
 		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e ->

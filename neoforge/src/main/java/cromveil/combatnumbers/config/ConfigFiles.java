@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cromveil.combatnumbers.core.config.ConfigBundle;
 import cromveil.combatnumbers.core.config.ConfigDef;
 import cromveil.combatnumbers.core.config.ConfigState;
 import cromveil.combatnumbers.core.config.ConfigWriter;
@@ -21,7 +20,7 @@ public final class ConfigFiles {
 
 	private ConfigFiles() {}
 
-	public static ConfigBundle of(IEventBus eventBus, ModContainer container,
+	public static NeoForgeConfig of(IEventBus eventBus, ModContainer container,
 			ModConfig.Type type, List<ConfigDef<?>> defs) {
 		var config = cache.computeIfAbsent(type,
 				k -> new NeoForgeConfig(defs));
@@ -29,7 +28,7 @@ public final class ConfigFiles {
 			config.init(eventBus);
 			container.registerConfig(type, config.spec());
 		}
-		return new ConfigBundle(config, config);
+		return config;
 	}
 
 	public static void registerConfigScreen(ModContainer container,

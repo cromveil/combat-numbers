@@ -43,8 +43,8 @@ public class CombatNumbers {
 		var entityResolver = new EntityLevelResolver(lifecycle);
 		var datapacks = new ReadDatapacksModule(reloadRegistry, animationRegistry, skinRegistry, ruleEngine, filterRegistry);
 		var syncToClient = new SyncToClientModule(network, lifecycle, entityResolver, animationRegistry, skinRegistry, styleTable);
-		var styling = new StylingModule(config.state(), ruleEngine, filterRegistry, entityResolver);
-		var broadcast = new BroadcastModule(config.state(), network, styleTable, entityResolver);
+		var styling = new StylingModule(config, ruleEngine, filterRegistry, entityResolver);
+		var broadcast = new BroadcastModule(config, network, styleTable, entityResolver);
 
 		Setup.registerAll(
 				entityResolver,

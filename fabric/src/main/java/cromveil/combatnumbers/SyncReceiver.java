@@ -22,7 +22,6 @@ public final class SyncReceiver implements Setup {
 	}
 
 	@Override
-
 	public void register() {
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {

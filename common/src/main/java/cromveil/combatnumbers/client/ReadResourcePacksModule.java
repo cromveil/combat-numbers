@@ -18,15 +18,18 @@ public final class ReadResourcePacksModule implements Setup {
 	private final SkinResolver skinResolver;
 	private final AnimationResolver animationResolver;
 	private final ReloadListenerRegistry reloadRegistry;
-	private final Runnable onComplete;
 	private ModResourceAccessor lastResources;
 	private int loadedCount;
+	private Runnable onComplete;
 
 	public ReadResourcePacksModule(SkinResolver skinResolver, AnimationResolver animationResolver,
-			ReloadListenerRegistry reloadRegistry, Runnable onComplete) {
+			ReloadListenerRegistry reloadRegistry) {
 		this.skinResolver = skinResolver;
 		this.animationResolver = animationResolver;
 		this.reloadRegistry = reloadRegistry;
+	}
+
+	public void setOnComplete(Runnable onComplete) {
 		this.onComplete = onComplete;
 	}
 
@@ -63,7 +66,9 @@ public final class ReadResourcePacksModule implements Setup {
 		loadedCount++;
 		if (loadedCount >= 2) {
 			loadedCount = 0;
-			onComplete.run();
+			if (onComplete != null) {
+				onComplete.run();
+			}
 		}
 	}
 

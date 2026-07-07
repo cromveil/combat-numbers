@@ -33,7 +33,6 @@ public final class FloatingTextRendererModule implements Setup {
 	}
 
 	@Override
-
 	public void register() {
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) ->
