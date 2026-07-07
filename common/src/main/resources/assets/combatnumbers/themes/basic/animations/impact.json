@@ -10,7 +10,6 @@
   {
     "start": 0,
     "duration": 200,
-    "label": "enter",
     "channels": {
       "scale": { "type": "keyframe", "values": [1.8, 0.8], "easing": "ease_out" },
       "opacity": { "type": "keyframe", "values": [0, 1], "easing": "ease_out" }
@@ -26,7 +25,6 @@
   {
     "start": 600,
     "duration": 300,
-    "label": "exit",
     "channels": {
       "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
       "y": { "type": "tween", "to": 6, "compose": "add", "easing": "ease_out_circ" }

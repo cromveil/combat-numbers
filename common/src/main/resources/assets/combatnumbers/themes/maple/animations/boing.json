@@ -1,9 +1,9 @@
 [
   {
     "start": 0,
-    "duration": 200,
+    "duration": 150,
     "channels": {
-      "scale": { "type": "keyframe", "values": [1.5, 1], "easing": "ease_out" },
+      "scale": { "type": "keyframe", "values": [2.5, 1], "easing": "ease_out" },
       "opacity": { "type": "keyframe", "values": [0, 1], "easing": "ease_out" }
     }
   },

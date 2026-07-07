@@ -1,17 +1,15 @@
 [
   {
     "start": 0,
-    "duration": 200,
-    "label": "enter",
+    "duration": 150,
     "channels": {
-      "scale": { "type": "keyframe", "values": [1.5, 1], "easing": "ease_out" },
+      "scale": { "type": "keyframe", "values": [2.5, 1], "easing": "ease_out" },
       "opacity": { "type": "keyframe", "values": [0, 1], "easing": "ease_out" }
     }
   },
   {
     "start": 50,
     "duration": 450,
-    "label": "hold",
     "channels": {
       "y": {
         "type": "keyframe",
@@ -32,7 +30,6 @@
   {
     "start": 800,
     "duration": 300,
-    "label": "exit",
     "channels": {
       "scale": { "type": "keyframe", "values": [1, 0.9], "easing": "ease_out_circ" },
       "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" },
