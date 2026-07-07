@@ -56,7 +56,7 @@ public final class FloatingTextFactory {
 			return;
 		}
 
-		Vec3 camPos = mc.gameRenderer.mainCamera().position();
+		Vec3 camPos = mc.gameRenderer.getMainCamera().position();
 		Vec3 worldPos = livingEntity.getEyePosition();
 
 		if (!config.get(Configs.SHOW_THROUGH_WALLS)) {

@@ -15,6 +15,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 
 import cromveil.combatnumbers.client.MixinBridge;
@@ -31,10 +32,15 @@ public abstract class LevelRendererMixin {
 	@Shadow
 	private SubmitNodeStorage submitNodeStorage;
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;submitFeatures("
-			+
-			"Lnet/minecraft/client/renderer/state/level/LevelRenderState;" +
-			"Lnet/minecraft/client/renderer/SubmitNodeCollector;Z)V"))
+	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass("
+			+ "Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;"
+			+ "Lnet/minecraft/client/renderer/culling/Frustum;"
+			+ "Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"
+			+ "ZLnet/minecraft/client/renderer/state/level/LevelRenderState;"
+			+ "Lnet/minecraft/client/DeltaTracker;"
+			+ "Lnet/minecraft/util/profiling/ProfilerFiller;"
+			+ "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;"
+			+ ")V"))
 	private void injectCombatNumbersRender(
 			GraphicsResourceAllocator resourceAllocator,
 			DeltaTracker deltaTracker,
@@ -44,6 +50,7 @@ public abstract class LevelRendererMixin {
 			GpuBufferSlice terrainFog,
 			Vector4f fogColor,
 			boolean shouldRenderSky,
+			ChunkSectionsToRender chunkSectionsToRender,
 			CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
 		RenderContext ctx = MixinBridge.CONTEXT;
