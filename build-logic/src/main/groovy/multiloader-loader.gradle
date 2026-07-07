@@ -24,7 +24,7 @@ dependencies {
 }
 
 afterEvaluate {
-    project.plugins.withId('net.fabricmc.fabric-loom') {
+    project.plugins.withId('net.fabricmc.fabric-loom-remap') {
         project.dependencies {
             include(project(':core'))
         }
