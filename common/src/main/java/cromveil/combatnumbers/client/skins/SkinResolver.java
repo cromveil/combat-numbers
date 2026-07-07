@@ -10,19 +10,19 @@ import java.util.Map;
 
 public final class SkinResolver {
 
-	private static final Skin DEFAULT = TextSkin.createDefault();
+	private static final ISkin DEFAULT = TextSkin.createDefault();
 
 	private final LazySkinLayer server = new LazySkinLayer("server");
 	private final LazySkinLayer resourcePack = new LazySkinLayer("rp");
 	private final LazySkinLayer theme = new LazySkinLayer("theme");
-	private final LayeredResolver<StableId, Skin> resolver = new LayeredResolver<>(
+	private final LayeredResolver<StableId, ISkin> resolver = new LayeredResolver<>(
 			List.of(server, resourcePack, theme));
 
 	private Map<StableId, SkinDefinition> serverSkinDefs = Map.of();
 	private Map<StableId, byte[]> serverTextureBytes = new LinkedHashMap<>();
 
-	public Skin resolve(StableId id) {
-		Skin skin = resolver.resolve(id);
+	public ISkin resolve(StableId id) {
+		ISkin skin = resolver.resolve(id);
 		return skin != null ? skin : DEFAULT;
 	}
 
@@ -36,11 +36,11 @@ public final class SkinResolver {
 		rebuildServerSkins();
 	}
 
-	public void setResourcePack(Map<StableId, SkinDefinition> defs, TextureByteSource textures) {
+	public void setResourcePack(Map<StableId, SkinDefinition> defs, ITextureByteSource textures) {
 		resourcePack.set(defs, textures);
 	}
 
-	public void setTheme(Map<StableId, SkinDefinition> defs, TextureByteSource textures) {
+	public void setTheme(Map<StableId, SkinDefinition> defs, ITextureByteSource textures) {
 		theme.set(defs, textures);
 	}
 

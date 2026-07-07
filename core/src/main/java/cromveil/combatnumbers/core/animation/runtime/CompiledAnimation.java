@@ -2,7 +2,7 @@ package cromveil.combatnumbers.core.animation.runtime;
 
 import cromveil.combatnumbers.core.animation.Channel;
 
-public class CompiledAnimation implements AnimationEvaluator {
+public class CompiledAnimation implements IAnimationEvaluator {
 
 	private final float totalDurationMs;
 	private final CompiledStep[][] channelSteps;

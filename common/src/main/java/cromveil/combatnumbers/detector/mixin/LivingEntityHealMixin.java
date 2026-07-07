@@ -3,7 +3,7 @@ package cromveil.combatnumbers.detector.mixin;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
-import cromveil.combatnumbers.detector.HealTypeTracker;
+import cromveil.combatnumbers.detector.IHealTypeTracker;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 import java.util.LinkedHashSet;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityHealMixin implements HealTypeTracker {
+public class LivingEntityHealMixin implements IHealTypeTracker {
 
 	@Unique
 	private float combatNumbers$actualHeal;

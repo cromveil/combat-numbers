@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class RuleEngine<C> {
 
-	public record Rule<C>(ConditionMatcher<C> when, Style then) {}
+	public record Rule<C>(IConditionMatcher<C> when, Style then) {}
 
 	private Map<StableId, KindState<C>> kindStates = Map.of();
 

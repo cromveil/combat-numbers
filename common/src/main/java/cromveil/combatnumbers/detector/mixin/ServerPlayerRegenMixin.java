@@ -2,7 +2,7 @@ package cromveil.combatnumbers.detector.mixin;
 
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
-import cromveil.combatnumbers.detector.HealTypeTracker;
+import cromveil.combatnumbers.detector.IHealTypeTracker;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ public class ServerPlayerRegenMixin {
 
 	@Inject(method = "tickRegeneration", at = @At("HEAD"))
 	private void combatNumbers$markNaturalRegen(CallbackInfo ci) {
-		if (this instanceof HealTypeTracker tracker) {
+		if (this instanceof IHealTypeTracker tracker) {
 			tracker.combatNumbers$setHealType(NATURAL_REGEN);
 		}
 	}

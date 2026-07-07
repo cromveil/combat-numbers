@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.config.screen;
 
-import cromveil.combatnumbers.core.config.ConfigWriter;
+import cromveil.combatnumbers.core.config.IConfigWriter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -19,7 +19,7 @@ public class ConfigScreen extends Screen {
 	private final Screen parent;
 	private final String prefix;
 	private final Supplier<List<ConfigOption<?>>> optionsSupplier;
-	private final ConfigWriter writer;
+	private final IConfigWriter writer;
 
 	private List<ConfigOption<?>> options;
 
@@ -33,7 +33,7 @@ public class ConfigScreen extends Screen {
 	private Button cancelBtn;
 	private Button resetAllBtn;
 
-	public ConfigScreen(Screen parent, Component title, String prefix, Supplier<List<ConfigOption<?>>> optionsSupplier, ConfigWriter writer) {
+	public ConfigScreen(Screen parent, Component title, String prefix, Supplier<List<ConfigOption<?>>> optionsSupplier, IConfigWriter writer) {
 		super(title);
 		this.parent = parent;
 		this.prefix = prefix;

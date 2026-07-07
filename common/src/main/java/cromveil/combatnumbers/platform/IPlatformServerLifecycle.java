@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public interface PlatformServerLifecycle {
+public interface IPlatformServerLifecycle {
 
 	void onServerStarted(Consumer<MinecraftServer> listener);
 

@@ -4,8 +4,8 @@ import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
-import cromveil.combatnumbers.client.skins.TextureByteSource;
-import cromveil.combatnumbers.resource.ModResourceAccessor;
+import cromveil.combatnumbers.client.skins.ITextureByteSource;
+import cromveil.combatnumbers.resource.IModResourceAccessor;
 import cromveil.combatnumbers.skins.SkinDefinition;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public final class ThemeLoader {
 
-	public Optional<LoadedTheme> load(String themeId, ModResourceAccessor resources) {
+	public Optional<LoadedTheme> load(String themeId, IModResourceAccessor resources) {
 		if (themeId == null || themeId.isBlank()) {
 			return Optional.empty();
 		}
@@ -31,7 +31,7 @@ public final class ThemeLoader {
 		}
 
 		String textureBase = base + "/textures/";
-		TextureByteSource textureBytes = logical -> resources.getBytes(
+		ITextureByteSource textureBytes = logical -> resources.getBytes(
 				StableId.of(Constants.MOD_ID,
 						textureBase + logical.path() + ".png"));
 
@@ -43,6 +43,6 @@ public final class ThemeLoader {
 	public record LoadedTheme(
 			Map<StableId, SkinDefinition> skins,
 			Map<StableId, Timeline> animations,
-			TextureByteSource textureBytes) {
+			ITextureByteSource textureBytes) {
 	}
 }

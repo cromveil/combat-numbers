@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 
 /**
  * Abstracts the mechanism for submitting 3D geometry so that
- * {@code SkinRenderer} and world-space strategies never import
+ * {@code ISkinRenderer} and world-space strategies never import
  * {@code SubmitNodeCollector} directly.
  * <p>
  * Each Minecraft version supplies its own adapter:
@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
  *       {@code MultiBufferSource.BufferSource})</li>
  * </ul>
  */
-public interface GeometrySubmitter {
+public interface IGeometrySubmitter {
 
 	/**
 	 * Queue a geometry submission. The {@code renderer} receives the current
@@ -23,5 +23,5 @@ public interface GeometrySubmitter {
 	 * render type's buffer.
 	 */
 	void submitGeometry(PoseStack poseStack, RenderType renderType,
-			CustomGeometryRenderer renderer);
+			ICustomGeometryRenderer renderer);
 }

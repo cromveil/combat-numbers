@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class FabricServerLifecycle implements PlatformServerLifecycle {
+public class FabricServerLifecycle implements IPlatformServerLifecycle {
 
 	@Override
 	public void onServerStarted(Consumer<MinecraftServer> listener) {

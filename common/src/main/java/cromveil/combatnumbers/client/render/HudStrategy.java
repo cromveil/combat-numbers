@@ -8,11 +8,11 @@ import org.joml.Vector4f;
  * Renders floating text on the HUD. The one that works against all edge cases
  * I know of so far.
  */
-public final class HudStrategy implements Strategy {
+public final class HudStrategy implements IStrategy {
 
 	private static final float NDC_MARGIN = 1.1f;
 
-	private final HudRenderContext ctx;
+	private final IHudRenderContext ctx;
 	private final RenderCamera cam;
 	private final int guiWidth;
 	private final int guiHeight;
@@ -20,7 +20,7 @@ public final class HudStrategy implements Strategy {
 	private float screenX;
 	private float screenY;
 
-	public HudStrategy(HudRenderContext ctx, RenderCamera cam) {
+	public HudStrategy(IHudRenderContext ctx, RenderCamera cam) {
 		this.ctx = ctx;
 		this.cam = cam;
 		this.guiWidth = ctx.guiWidth();

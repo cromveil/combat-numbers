@@ -6,19 +6,19 @@ import cromveil.combatnumbers.client.FloatingTextFactory;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.skins.SkinResolver;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.RenderPacket;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
-public final class FloatingTextRendererModule implements Setup {
+public final class FloatingTextRendererModule implements ISetup {
 
 	private final IEventBus modEventBus;
 	private final FloatingTextFactory factory;
-	public FloatingTextRendererModule(IEventBus modEventBus, ConfigState config,
+	public FloatingTextRendererModule(IEventBus modEventBus, IConfigState config,
 			FloatingTextManager textManager, SkinResolver skinResolver,
 			AnimationResolver animationResolver, AnimationCompiler animationCompiler,
 			Supplier<StyleTable> styleTable) {

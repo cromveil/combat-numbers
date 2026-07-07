@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-public class FabricNetwork implements PlatformNetwork {
+public class FabricNetwork implements IPlatformNetwork {
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})

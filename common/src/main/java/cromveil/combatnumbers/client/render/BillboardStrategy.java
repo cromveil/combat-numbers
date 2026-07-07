@@ -12,21 +12,21 @@ import net.minecraft.world.phys.Vec3;
  * scale transform; they differ only in how the glyph anchor is placed and which
  * depth drives the GUI-pixel-to-world scale.
  */
-public abstract sealed class BillboardStrategy implements Strategy
+public abstract sealed class BillboardStrategy implements IStrategy
 		permits WorldStrategy, ScreenStrategy {
 
 	protected final PoseStack ps;
-	protected final GeometrySubmitter geom;
+	protected final IGeometrySubmitter geom;
 	protected final RenderCamera cam;
 
-	protected BillboardStrategy(PoseStack ps, GeometrySubmitter geom, RenderCamera cam) {
+	protected BillboardStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
 		this.ps = ps;
 		this.geom = geom;
 		this.cam = cam;
 	}
 
 	public static BillboardStrategy create(RenderOption option, PoseStack ps,
-			GeometrySubmitter geom, RenderCamera cam) {
+			IGeometrySubmitter geom, RenderCamera cam) {
 		return option == RenderOption.SCREEN
 				? new ScreenStrategy(ps, geom, cam)
 				: new WorldStrategy(ps, geom, cam);

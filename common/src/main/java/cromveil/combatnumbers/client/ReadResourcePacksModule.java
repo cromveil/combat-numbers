@@ -5,25 +5,25 @@ import java.util.Map;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
-import cromveil.combatnumbers.resource.ModResourceAccessor;
-import cromveil.combatnumbers.resource.ReloadListenerRegistry;
+import cromveil.combatnumbers.resource.IModResourceAccessor;
+import cromveil.combatnumbers.resource.IReloadListenerRegistry;
 import cromveil.combatnumbers.skins.SkinDefinition;
 
-public final class ReadResourcePacksModule implements Setup {
+public final class ReadResourcePacksModule implements ISetup {
 
 	private final SkinResolver skinResolver;
 	private final AnimationResolver animationResolver;
-	private final ReloadListenerRegistry reloadRegistry;
-	private ModResourceAccessor lastResources;
+	private final IReloadListenerRegistry reloadRegistry;
+	private IModResourceAccessor lastResources;
 	private int loadedCount;
 	private Runnable onComplete;
 
 	public ReadResourcePacksModule(SkinResolver skinResolver, AnimationResolver animationResolver,
-			ReloadListenerRegistry reloadRegistry) {
+			IReloadListenerRegistry reloadRegistry) {
 		this.skinResolver = skinResolver;
 		this.animationResolver = animationResolver;
 		this.reloadRegistry = reloadRegistry;
@@ -46,7 +46,7 @@ public final class ReadResourcePacksModule implements Setup {
 				this::onAnimationsLoaded);
 	}
 
-	private void onSkinsLoaded(Map<StableId, SkinDefinition> skins, ModResourceAccessor resources) {
+	private void onSkinsLoaded(Map<StableId, SkinDefinition> skins, IModResourceAccessor resources) {
 		lastResources = resources;
 		skinResolver.setResourcePack(skins, logical -> {
 			StableId png = StableId.of(
@@ -56,7 +56,7 @@ public final class ReadResourcePacksModule implements Setup {
 		afterResourceLoaded();
 	}
 
-	private void onAnimationsLoaded(Map<StableId, Timeline> animations, ModResourceAccessor resources) {
+	private void onAnimationsLoaded(Map<StableId, Timeline> animations, IModResourceAccessor resources) {
 		animationResolver.setResourcePack(animations);
 		afterResourceLoaded();
 	}
@@ -72,7 +72,7 @@ public final class ReadResourcePacksModule implements Setup {
 		}
 	}
 
-	public ModResourceAccessor resources() {
+	public IModResourceAccessor resources() {
 		return lastResources;
 	}
 }

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.config.ConfigFiles;
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.core.styles.RuleEngine;
 import cromveil.combatnumbers.core.styles.StyleTable;
@@ -42,7 +42,7 @@ public class CombatNumbers implements ModInitializer {
 		var styling = new StylingModule(config, ruleEngine, filterRegistry, entityResolver);
 		var broadcast = new BroadcastModule(config, network, styleTable, entityResolver);
 
-		Setup.registerAll(
+		ISetup.registerAll(
 				entityResolver,
 				datapacks,
 				styling,

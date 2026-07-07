@@ -11,7 +11,7 @@ public final class ScreenStrategy extends BillboardStrategy {
 
 	private static final float FIXED_DEPTH = 1.0f;
 
-	ScreenStrategy(PoseStack ps, GeometrySubmitter geom, RenderCamera cam) {
+	ScreenStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
 		super(ps, geom, cam);
 	}
 

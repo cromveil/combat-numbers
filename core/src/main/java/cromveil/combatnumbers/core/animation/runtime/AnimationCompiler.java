@@ -21,11 +21,11 @@ import java.util.Random;
 
 public class AnimationCompiler {
 
-	public AnimationEvaluator compile(Timeline timeline, int charCount, long seed) {
+	public IAnimationEvaluator compile(Timeline timeline, int charCount, long seed) {
 		return build(timeline, charCount, seed);
 	}
 
-	private AnimationEvaluator build(Timeline timeline, int charCount, long seed) {
+	private IAnimationEvaluator build(Timeline timeline, int charCount, long seed) {
 		List<Step> steps = timeline.steps();
 		var sharedRng = new Random(seed);
 

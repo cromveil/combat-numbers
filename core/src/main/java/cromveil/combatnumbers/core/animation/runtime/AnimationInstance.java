@@ -6,15 +6,15 @@ import java.util.function.Consumer;
 
 public class AnimationInstance {
 
-	private final AnimationEvaluator evaluator;
+	private final IAnimationEvaluator evaluator;
 	private final List<Consumer<AnimationInstance>> completeListeners = new ArrayList<>();
 	private boolean completeFired;
 
-	public AnimationInstance(AnimationEvaluator evaluator) {
+	public AnimationInstance(IAnimationEvaluator evaluator) {
 		this.evaluator = evaluator;
 	}
 
-	public AnimationEvaluator evaluator() {
+	public IAnimationEvaluator evaluator() {
 		return evaluator;
 	}
 

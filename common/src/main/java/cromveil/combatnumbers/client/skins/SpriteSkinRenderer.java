@@ -2,13 +2,13 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import cromveil.combatnumbers.client.render.GeometrySubmitter;
-import cromveil.combatnumbers.client.render.HudRenderContext;
+import cromveil.combatnumbers.client.render.IGeometrySubmitter;
+import cromveil.combatnumbers.client.render.IHudRenderContext;
 import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.joml.Matrix4fc;
 
-public class SpriteSkinRenderer implements SkinRenderer {
+public class SpriteSkinRenderer implements ISkinRenderer {
 
 	private final SpriteSheet spriteSheet;
 	private final String text;
@@ -69,7 +69,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, GeometrySubmitter geom, float alpha, int light) {
+	public void render3d(PoseStack poseStack, IGeometrySubmitter geom, float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
@@ -117,7 +117,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, GeometrySubmitter geom,
+	public void renderChar3d(int index, PoseStack poseStack, IGeometrySubmitter geom,
 			float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
@@ -133,7 +133,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(HudRenderContext ctx, float alpha) {
+	public void render2d(IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -142,7 +142,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar2d(int index, HudRenderContext ctx, float alpha) {
+	public void renderChar2d(int index, IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0 || index < 0 || index >= charInfos.length)
 			return;
@@ -150,7 +150,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 		blitChars(ctx, -totalWidth / 2f, color, index, index + 1);
 	}
 
-	private void blitChars(HudRenderContext ctx, float startX, int color, int from, int to) {
+	private void blitChars(IHudRenderContext ctx, float startX, int color, int from, int to) {
 		int texWidth = spriteSheet.columns() * spriteSheet.cellWidth();
 		int texHeight = spriteSheet.rows() * spriteSheet.cellHeight();
 		for (int i = from; i < to; i++) {

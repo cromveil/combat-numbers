@@ -4,9 +4,9 @@ import cromveil.combatnumbers.client.render.FloatingText;
 import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.RenderOption;
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.IConfigState;
 
-public record RenderContext(ConfigState config, FloatingTextManager textManager) {
+public record RenderContext(IConfigState config, FloatingTextManager textManager) {
 
 	public void tickTexts(double gameTime) {
 		if (!config.get(Configs.ENABLED)) {

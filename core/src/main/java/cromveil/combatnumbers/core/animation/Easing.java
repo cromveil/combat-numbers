@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Locale;
 
-public enum Easing implements EasingFunction {
+public enum Easing implements IEasingFunction {
 	LINEAR(t -> t),
 	EASE_IN(Easing::easeIn),
 	EASE_OUT(Easing::easeOut),
@@ -24,9 +24,9 @@ public enum Easing implements EasingFunction {
 	EASE_OUT_SINE(Easing::easeOutSine),
 	EASE_IN_OUT_SINE(Easing::easeInOutSine);
 
-	private final EasingFunction function;
+	private final IEasingFunction function;
 
-	Easing(EasingFunction function) {
+	Easing(IEasingFunction function) {
 		this.function = function;
 	}
 

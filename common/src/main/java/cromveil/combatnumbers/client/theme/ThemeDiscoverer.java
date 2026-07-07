@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.theme.ThemeInfo;
-import cromveil.combatnumbers.resource.ModResourceAccessor;
+import cromveil.combatnumbers.resource.IModResourceAccessor;
 import net.minecraft.network.chat.Component;
 
 import java.io.InputStream;
@@ -23,7 +23,7 @@ public final class ThemeDiscoverer {
 	private ThemeDiscoverer() {
 	}
 
-	public static synchronized void discover(ModResourceAccessor resources) {
+	public static synchronized void discover(IModResourceAccessor resources) {
 		List<ThemeInfo> themes = new ArrayList<>();
 		loadBuiltinThemes(themes);
 		loadResourcePackThemes(themes, resources);
@@ -90,7 +90,7 @@ public final class ThemeDiscoverer {
 		}
 	}
 
-	private static void loadResourcePackThemes(List<ThemeInfo> out, ModResourceAccessor resources) {
+	private static void loadResourcePackThemes(List<ThemeInfo> out, IModResourceAccessor resources) {
 		String prefix = "themes";
 		for (StableId file : resources.findResources(prefix,
 				path -> path.endsWith("/theme.json"))) {

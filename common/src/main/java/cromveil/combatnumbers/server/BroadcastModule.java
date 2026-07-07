@@ -3,25 +3,25 @@ package cromveil.combatnumbers.server;
 import java.util.function.Supplier;
 
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.Setup;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.DispatchEvent;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.RenderPacket;
-import cromveil.combatnumbers.platform.PlatformNetwork;
+import cromveil.combatnumbers.platform.IPlatformNetwork;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
-public final class BroadcastModule implements Setup {
+public final class BroadcastModule implements ISetup {
 
-	private final ConfigState config;
-	private final PlatformNetwork network;
+	private final IConfigState config;
+	private final IPlatformNetwork network;
 	private final Supplier<StyleTable> styleTable;
 	private final EntityLevelResolver entities;
-	public BroadcastModule(ConfigState config,
-			PlatformNetwork network,
+	public BroadcastModule(IConfigState config,
+			IPlatformNetwork network,
 			Supplier<StyleTable> styleTable,
 			EntityLevelResolver entities) {
 		this.config = config;

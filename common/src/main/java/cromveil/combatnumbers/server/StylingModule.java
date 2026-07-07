@@ -1,8 +1,8 @@
 package cromveil.combatnumbers.server;
 
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.Setup;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.DispatchEvent;
@@ -11,13 +11,13 @@ import cromveil.combatnumbers.core.styles.RuleEngine;
 import cromveil.combatnumbers.core.styles.Style;
 import net.minecraft.server.level.ServerLevel;
 
-public final class StylingModule implements Setup {
+public final class StylingModule implements ISetup {
 
-	private final ConfigState config;
+	private final IConfigState config;
 	private final RuleEngine<ServerLevel> ruleEngine;
 	private final FilterRegistry<ServerLevel> filterRegistry;
 	private final EntityLevelResolver entities;
-	public StylingModule(ConfigState config,
+	public StylingModule(IConfigState config,
 			RuleEngine<ServerLevel> ruleEngine,
 			FilterRegistry<ServerLevel> filterRegistry,
 			EntityLevelResolver entities) {

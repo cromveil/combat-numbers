@@ -13,8 +13,8 @@ public final class SkinCompiler {
 	private SkinCompiler() {
 	}
 
-	public static Skin compile(SkinDefinition def, String layerPrefix, ManagedTextureSet textures,
-			TextureByteSource byteSource) {
+	public static ISkin compile(SkinDefinition def, String layerPrefix, ManagedTextureSet textures,
+			ITextureByteSource byteSource) {
 		return switch (def) {
 			case TextSkinDefinition t -> new TextSkin(
 					t.fillColor(),
@@ -24,8 +24,8 @@ public final class SkinCompiler {
 		};
 	}
 
-	private static Skin compileSprite(SpriteSkinDefinition s, String layerPrefix, ManagedTextureSet textures,
-			TextureByteSource byteSource) {
+	private static ISkin compileSprite(SpriteSkinDefinition s, String layerPrefix, ManagedTextureSet textures,
+			ITextureByteSource byteSource) {
 		StableId logical = s.texture();
 		StableId renderId = StableId.of(
 				Constants.MOD_ID, layerPrefix + "/" + logical.namespace() + "/" + logical.path());

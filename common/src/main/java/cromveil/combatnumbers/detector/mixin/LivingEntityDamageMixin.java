@@ -4,8 +4,8 @@ import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
-import cromveil.combatnumbers.detector.CritTracker;
-import cromveil.combatnumbers.detector.PoisonTickTracker;
+import cromveil.combatnumbers.detector.ICritTracker;
+import cromveil.combatnumbers.detector.IPoisonTickTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
+public class LivingEntityDamageMixin implements ICritTracker, IPoisonTickTracker {
 
 	@Unique
 	private float combatNumbers$actualDamage;

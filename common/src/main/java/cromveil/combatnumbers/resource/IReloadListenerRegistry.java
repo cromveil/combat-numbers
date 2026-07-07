@@ -9,13 +9,13 @@ import com.mojang.serialization.Codec;
  * Each registered listener watches a JSON directory inside datapacks (server)
  * or resource packs (client). On reload the files are deserialized via the
  * given {@link Codec} and the resulting map is delivered to the
- * {@link ResourceLoadCallback}.
+ * {@link IResourceLoadCallback}.
  */
-public interface ReloadListenerRegistry {
+public interface IReloadListenerRegistry {
 
 	<T> void registerServerData(StableId name, String directory,
-			Codec<T> codec, ResourceLoadCallback<T> consumer);
+			Codec<T> codec, IResourceLoadCallback<T> consumer);
 
 	<T> void registerClientResources(StableId name, String directory,
-			Codec<T> codec, ResourceLoadCallback<T> consumer);
+			Codec<T> codec, IResourceLoadCallback<T> consumer);
 }

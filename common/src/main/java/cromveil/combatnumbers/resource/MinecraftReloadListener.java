@@ -14,9 +14,9 @@ import java.util.Map;
 
 class MinecraftReloadListener<T> extends SimpleJsonResourceReloadListener<T> {
 
-	private final ResourceLoadCallback<T> consumer;
+	private final IResourceLoadCallback<T> consumer;
 
-	MinecraftReloadListener(Codec<T> codec, String directory, ResourceLoadCallback<T> consumer) {
+	MinecraftReloadListener(Codec<T> codec, String directory, IResourceLoadCallback<T> consumer) {
 		super(codec, FileToIdConverter.json(directory));
 		this.consumer = consumer;
 	}

@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.core.animation.runtime;
 
-public interface AnimationEvaluator {
+public interface IAnimationEvaluator {
 
 	void sampleAll(float elapsedMs, int charIdx, ChannelBuffer out);
 

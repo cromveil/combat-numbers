@@ -2,14 +2,14 @@ package cromveil.combatnumbers.server;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.core.styles.RuleEngine;
 import cromveil.combatnumbers.filters.FilterLoader;
-import cromveil.combatnumbers.resource.ReloadListenerRegistry;
+import cromveil.combatnumbers.resource.IReloadListenerRegistry;
 import cromveil.combatnumbers.skins.SkinDefinition;
 import cromveil.combatnumbers.skins.SkinRegistry;
 import cromveil.combatnumbers.styles.RuleLoader;
@@ -17,9 +17,9 @@ import cromveil.combatnumbers.styles.RuleSet;
 import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.server.level.ServerLevel;
 
-public final class ReadDatapacksModule implements Setup {
+public final class ReadDatapacksModule implements ISetup {
 
-	private final ReloadListenerRegistry reloadRegistry;
+	private final IReloadListenerRegistry reloadRegistry;
 	private final AnimationRegistry animationRegistry;
 	private final SkinRegistry skinRegistry;
 	private final RuleEngine<ServerLevel> ruleEngine;
@@ -27,7 +27,7 @@ public final class ReadDatapacksModule implements Setup {
 
 	private int loadedCount;
 
-	public ReadDatapacksModule(ReloadListenerRegistry reloadRegistry,
+	public ReadDatapacksModule(IReloadListenerRegistry reloadRegistry,
 			AnimationRegistry animationRegistry, SkinRegistry skinRegistry,
 			RuleEngine<ServerLevel> ruleEngine, FilterRegistry<ServerLevel> filterRegistry) {
 		this.reloadRegistry = reloadRegistry;

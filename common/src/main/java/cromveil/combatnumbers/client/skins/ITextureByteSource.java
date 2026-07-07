@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
  * stores them (synced server bytes, client resources, or theme jar files).
  */
 @FunctionalInterface
-public interface TextureByteSource {
+public interface ITextureByteSource {
 
 	/** @return the PNG bytes or null. */
 	@Nullable

@@ -3,7 +3,7 @@ package cromveil.combatnumbers.skins;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
-import cromveil.combatnumbers.resource.ModResourceAccessor;
+import cromveil.combatnumbers.resource.IModResourceAccessor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class SkinRegistry {
 	private Runnable onReload = () -> {
 	};
 
-	public void accept(Map<StableId, SkinDefinition> entries, ModResourceAccessor resources) {
+	public void accept(Map<StableId, SkinDefinition> entries, IModResourceAccessor resources) {
 		definitions.clear();
 		definitions.putAll(entries);
 

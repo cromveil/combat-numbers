@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
  * that actually vary between strategies: per-text visibility and glyph
  * emission.
  */
-public interface Strategy {
+public interface IStrategy {
 
 	/**
 	 * Camera position used by the shared driver for distance-based fade and

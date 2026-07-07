@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.config.Configs;
 import net.minecraft.world.phys.Vec3;
 
@@ -11,7 +11,7 @@ public final class FloatingTextRenderer {
 
 	private static final float MIN_FADE_DISTANCE = 0.5f;
 
-	public static void renderAll(Strategy strategy, ConfigState config, FloatingTextManager textManager) {
+	public static void renderAll(IStrategy strategy, IConfigState config, FloatingTextManager textManager) {
 		float baseFontSize = config.get(Configs.BASE_FONT_SIZE).floatValue();
 		float nearFadeDistance = config.get(Configs.NEAR_FADE_DISTANCE).floatValue();
 		float maxRenderDistance = config.get(Configs.MAX_RENDER_DISTANCE).floatValue();
@@ -71,11 +71,11 @@ public final class FloatingTextRenderer {
 					float charRot = text.getCharRotation(c);
 					float charOffX = text.getCharOffsetX(c) * offsetScale;
 					float charOffY = text.getCharOffsetY(c) * offsetScale;
-					strategy.draw(text, c, true, new Strategy.GlyphPlacement(
+					strategy.draw(text, c, true, new IStrategy.GlyphPlacement(
 							charOffX, charOffY, charScale, charRot, perceivedScale, charAlpha));
 				}
 			} else {
-				strategy.draw(text, 0, false, new Strategy.GlyphPlacement(
+				strategy.draw(text, 0, false, new IStrategy.GlyphPlacement(
 						offX, offY, scale, rot, perceivedScale, alpha));
 			}
 		}

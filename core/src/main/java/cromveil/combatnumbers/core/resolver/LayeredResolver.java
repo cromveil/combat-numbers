@@ -10,10 +10,10 @@ import java.util.List;
  */
 public final class LayeredResolver<K, V> {
 
-	private final List<Source<K, V>> sources;
+	private final List<ISource<K, V>> sources;
 
 	/** @param sources the sources to consult, highest priority first. */
-	public LayeredResolver(List<? extends Source<K, V>> sources) {
+	public LayeredResolver(List<? extends ISource<K, V>> sources) {
 		this.sources = List.copyOf(sources);
 	}
 
@@ -22,7 +22,7 @@ public final class LayeredResolver<K, V> {
 		if (key == null) {
 			return null;
 		}
-		for (Source<K, V> source : sources) {
+		for (ISource<K, V> source : sources) {
 			V value = source.get(key);
 			if (value != null) {
 				return value;

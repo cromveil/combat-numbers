@@ -1,12 +1,12 @@
 package cromveil.combatnumbers.client.skins;
 
-public record TextSkin(Integer fillColor, int outlineColor, float scale) implements Skin {
+public record TextSkin(Integer fillColor, int outlineColor, float scale) implements ISkin {
 	public TextSkin(Integer fillColor, int outlineColor) {
 		this(fillColor, outlineColor, 1.0f);
 	}
 
 	@Override
-	public SkinRenderer createVisual(String text) {
+	public ISkinRenderer createVisual(String text) {
 		return new TextSkinRenderer(text, fillColor, outlineColor);
 	}
 

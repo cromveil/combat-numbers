@@ -2,7 +2,7 @@ package cromveil.combatnumbers.config.screen;
 
 import cromveil.combatnumbers.config.SliderFormat;
 import cromveil.combatnumbers.core.config.ConfigDef;
-import cromveil.combatnumbers.core.config.ConfigWriter;
+import cromveil.combatnumbers.core.config.IConfigWriter;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -107,7 +107,7 @@ public final class ConfigOption<T> {
 
 	public void load() { this.pendingValue = reader.get(); }
 
-	public void apply(ConfigWriter writer) {
+	public void apply(IConfigWriter writer) {
 		writer.setValue(def, pendingValue);
 	}
 

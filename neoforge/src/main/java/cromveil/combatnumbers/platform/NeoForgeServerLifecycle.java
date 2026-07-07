@@ -10,7 +10,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class NeoForgeServerLifecycle implements PlatformServerLifecycle {
+public class NeoForgeServerLifecycle implements IPlatformServerLifecycle {
 
 	private volatile MinecraftServer server;
 

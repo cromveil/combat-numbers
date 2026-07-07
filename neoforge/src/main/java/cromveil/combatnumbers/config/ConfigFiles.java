@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cromveil.combatnumbers.core.config.ConfigDef;
-import cromveil.combatnumbers.core.config.ConfigState;
-import cromveil.combatnumbers.core.config.ConfigWriter;
+import cromveil.combatnumbers.core.config.IConfigState;
+import cromveil.combatnumbers.core.config.IConfigWriter;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
@@ -32,7 +32,7 @@ public final class ConfigFiles {
 	}
 
 	public static void registerConfigScreen(ModContainer container,
-			ConfigState state, ConfigWriter writer) {
+			IConfigState state, IConfigWriter writer) {
 		container.registerExtensionPoint(IConfigScreenFactory.class,
 				(c, screen) -> CombatNumbersOptions.createScreen(screen, state, writer));
 	}

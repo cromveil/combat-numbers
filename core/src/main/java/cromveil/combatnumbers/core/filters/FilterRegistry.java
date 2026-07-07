@@ -1,15 +1,15 @@
 package cromveil.combatnumbers.core.filters;
 
 import cromveil.combatnumbers.core.events.CombatEvent;
-import cromveil.combatnumbers.core.styles.ConditionMatcher;
+import cromveil.combatnumbers.core.styles.IConditionMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterRegistry<C> {
-	private final List<ConditionMatcher<C>> filters = new ArrayList<>();
+	private final List<IConditionMatcher<C>> filters = new ArrayList<>();
 
-	public void register(ConditionMatcher<C> condition) {
+	public void register(IConditionMatcher<C> condition) {
 		filters.add(condition);
 	}
 

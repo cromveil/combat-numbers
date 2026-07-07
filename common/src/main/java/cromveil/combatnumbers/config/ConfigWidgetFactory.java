@@ -3,7 +3,7 @@ package cromveil.combatnumbers.config;
 import cromveil.combatnumbers.client.theme.ThemeDiscoverer;
 import cromveil.combatnumbers.config.screen.ConfigOption;
 import cromveil.combatnumbers.core.config.ConfigDef;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.IConfigState;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public final class ConfigWidgetFactory {
 
 	private ConfigWidgetFactory() {}
 
-	public static ConfigOption<?> toWidget(ConfigDef<?> id, ConfigState state) {
+	public static ConfigOption<?> toWidget(ConfigDef<?> id, IConfigState state) {
 		return switch (id.valueType()) {
 			case BOOL -> {
 				var self = id.asBool();

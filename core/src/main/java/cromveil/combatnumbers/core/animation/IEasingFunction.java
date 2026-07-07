@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.core.animation;
 
 @FunctionalInterface
-public interface EasingFunction {
+public interface IEasingFunction {
 	float apply(float t);
 }

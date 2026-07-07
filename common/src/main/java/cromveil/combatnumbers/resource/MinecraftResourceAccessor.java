@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-class MinecraftResourceAccessor implements ModResourceAccessor {
+class MinecraftResourceAccessor implements IModResourceAccessor {
 
 	private final ResourceManager manager;
 

@@ -3,31 +3,31 @@ package cromveil.combatnumbers.server;
 import java.util.function.Supplier;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
-import cromveil.combatnumbers.platform.PlatformNetwork;
-import cromveil.combatnumbers.platform.PlatformServerLifecycle;
+import cromveil.combatnumbers.platform.IPlatformNetwork;
+import cromveil.combatnumbers.platform.IPlatformServerLifecycle;
 import cromveil.combatnumbers.skins.SkinRegistry;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-public final class SyncToClientModule implements Setup {
+public final class SyncToClientModule implements ISetup {
 
-	private final PlatformNetwork network;
-	private final PlatformServerLifecycle lifecycle;
+	private final IPlatformNetwork network;
+	private final IPlatformServerLifecycle lifecycle;
 	private final EntityLevelResolver entities;
 	private final AnimationRegistry animationRegistry;
 	private final SkinRegistry skinRegistry;
 	private final Supplier<StyleTable> styleTable;
 
-	public SyncToClientModule(PlatformNetwork network,
-			PlatformServerLifecycle lifecycle,
+	public SyncToClientModule(IPlatformNetwork network,
+			IPlatformServerLifecycle lifecycle,
 			EntityLevelResolver entities,
 			AnimationRegistry animationRegistry,
 			SkinRegistry skinRegistry,

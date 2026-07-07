@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class WorldStrategy extends BillboardStrategy {
 
-	WorldStrategy(PoseStack ps, GeometrySubmitter geom, RenderCamera cam) {
+	WorldStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
 		super(ps, geom, cam);
 	}
 

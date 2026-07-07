@@ -1,8 +1,8 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import cromveil.combatnumbers.client.render.GeometrySubmitter;
-import cromveil.combatnumbers.client.render.HudRenderContext;
+import cromveil.combatnumbers.client.render.IGeometrySubmitter;
+import cromveil.combatnumbers.client.render.IHudRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.TextRenderable;
@@ -13,7 +13,7 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextSkinRenderer implements SkinRenderer {
+public class TextSkinRenderer implements ISkinRenderer {
 	private static final int[][] OUTLINE_OFFSETS = {
 			{ -1, -1 }, { 0, -1 }, { 1, -1 },
 			{ -1, 0 }, { 1, 0 },
@@ -39,14 +39,14 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, GeometrySubmitter geom, float alpha, int light) {
+	public void render3d(PoseStack poseStack, IGeometrySubmitter geom, float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		float x = -font.width(text) / 2f;
 		submitText(font, fullSequence, x, 0f, alpha, poseStack, geom, light);
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, GeometrySubmitter geom,
+	public void renderChar3d(int index, PoseStack poseStack, IGeometrySubmitter geom,
 			float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		submitText(font, charSequences[index], charStartX(font, index), 0f, alpha,
@@ -54,7 +54,7 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	private void submitText(Font font, FormattedCharSequence sequence, float x, float y, float alpha,
-			PoseStack poseStack, GeometrySubmitter geom, int light) {
+			PoseStack poseStack, IGeometrySubmitter geom, int light) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -83,7 +83,7 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(HudRenderContext ctx, float alpha) {
+	public void render2d(IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -94,7 +94,7 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar2d(int index, HudRenderContext ctx, float alpha) {
+	public void renderChar2d(int index, IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -104,7 +104,7 @@ public class TextSkinRenderer implements SkinRenderer {
 		drawText(ctx, font, charSequences[index], x, y, a);
 	}
 
-	private void drawText(HudRenderContext ctx, Font font, FormattedCharSequence sequence,
+	private void drawText(IHudRenderContext ctx, Font font, FormattedCharSequence sequence,
 			int x, int y, int a) {
 		int fColor = (a << 24) | (fillColor & 0x00FFFFFF);
 		int oColor = (a << 24) | (outlineColor & 0x00FFFFFF);

@@ -12,9 +12,9 @@ import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
 import cromveil.combatnumbers.client.skins.SkinResolver;
-import cromveil.combatnumbers.core.Setup;
+import cromveil.combatnumbers.core.ISetup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
-import cromveil.combatnumbers.core.config.ConfigState;
+import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.RenderPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -22,10 +22,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
 
-public final class FloatingTextRendererModule implements Setup {
+public final class FloatingTextRendererModule implements ISetup {
 
 	private final FloatingTextFactory factory;
-	public FloatingTextRendererModule(ConfigState config, FloatingTextManager textManager,
+	public FloatingTextRendererModule(IConfigState config, FloatingTextManager textManager,
 			SkinResolver skinResolver, AnimationResolver animationResolver,
 			AnimationCompiler animationCompiler, Supplier<StyleTable> styleTable) {
 		this.factory = new FloatingTextFactory(config, textManager, skinResolver,

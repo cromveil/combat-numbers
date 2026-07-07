@@ -6,9 +6,9 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 
 /**
  * Bridges 26.2 / 1.21.11's {@code SubmitNodeCollector} to the
- * version-agnostic {@link GeometrySubmitter}.
+ * version-agnostic {@link IGeometrySubmitter}.
  */
-public final class SubmitNodeCollectorAdapter implements GeometrySubmitter {
+public final class SubmitNodeCollectorAdapter implements IGeometrySubmitter {
 
 	private final SubmitNodeCollector collector;
 
@@ -18,7 +18,7 @@ public final class SubmitNodeCollectorAdapter implements GeometrySubmitter {
 
 	@Override
 	public void submitGeometry(PoseStack poseStack, RenderType renderType,
-			CustomGeometryRenderer renderer) {
+			ICustomGeometryRenderer renderer) {
 		collector.submitCustomGeometry(poseStack, renderType,
 				(pose, vertexConsumer) -> renderer.render(pose, vertexConsumer));
 	}

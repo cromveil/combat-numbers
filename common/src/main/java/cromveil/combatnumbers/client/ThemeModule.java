@@ -9,21 +9,21 @@ import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.client.theme.ThemeDiscoverer;
 import cromveil.combatnumbers.client.theme.ThemeLoader;
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.Setup;
-import cromveil.combatnumbers.core.config.ConfigState;
-import cromveil.combatnumbers.resource.ModResourceAccessor;
+import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.config.IConfigState;
+import cromveil.combatnumbers.resource.IModResourceAccessor;
 
-public final class ThemeModule implements Setup {
+public final class ThemeModule implements ISetup {
 
-	private final ConfigState config;
+	private final IConfigState config;
 	private final ThemeLoader themeLoader;
 	private final SkinResolver skinResolver;
 	private final AnimationResolver animationResolver;
-	private final Supplier<ModResourceAccessor> resources;
+	private final Supplier<IModResourceAccessor> resources;
 
-	public ThemeModule(ConfigState config, ThemeLoader themeLoader,
+	public ThemeModule(IConfigState config, ThemeLoader themeLoader,
 			SkinResolver skinResolver, AnimationResolver animationResolver,
-			Supplier<ModResourceAccessor> resources) {
+			Supplier<IModResourceAccessor> resources) {
 		this.config = config;
 		this.themeLoader = themeLoader;
 		this.skinResolver = skinResolver;

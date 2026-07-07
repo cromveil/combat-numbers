@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.core.config;
 
-public interface ConfigState {
+public interface IConfigState {
 
 	<T> T get(ConfigDef<T> key);
 

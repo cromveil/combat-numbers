@@ -11,13 +11,13 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NeoForgeReloadRegistry implements ReloadListenerRegistry {
+public class NeoForgeReloadRegistry implements IReloadListenerRegistry {
 
 	private final List<Entry> serverEntries = new ArrayList<>();
 	private final List<Entry> clientEntries = new ArrayList<>();
 
 	private record Entry(StableId name, String directory,
-			Codec<?> codec, ResourceLoadCallback<?> consumer) {
+			Codec<?> codec, IResourceLoadCallback<?> consumer) {
 	}
 
 	public NeoForgeReloadRegistry(IEventBus modEventBus) {
@@ -47,13 +47,13 @@ public class NeoForgeReloadRegistry implements ReloadListenerRegistry {
 
 	@Override
 	public <T> void registerServerData(StableId name, String directory,
-			Codec<T> codec, ResourceLoadCallback<T> consumer) {
+			Codec<T> codec, IResourceLoadCallback<T> consumer) {
 		serverEntries.add(new Entry(name, directory, codec, consumer));
 	}
 
 	@Override
 	public <T> void registerClientResources(StableId name, String directory,
-			Codec<T> codec, ResourceLoadCallback<T> consumer) {
+			Codec<T> codec, IResourceLoadCallback<T> consumer) {
 		clientEntries.add(new Entry(name, directory, codec, consumer));
 	}
 }

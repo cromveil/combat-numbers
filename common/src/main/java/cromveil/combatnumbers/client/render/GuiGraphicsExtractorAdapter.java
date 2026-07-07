@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.FormattedCharSequence;
 
-public final class GuiGraphicsExtractorAdapter implements HudRenderContext {
+public final class GuiGraphicsExtractorAdapter implements IHudRenderContext {
 
 	private final GuiGraphicsExtractor graphics;
 

@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.config.ConfigDef;
-import cromveil.combatnumbers.core.config.ConfigState;
-import cromveil.combatnumbers.core.config.ConfigWriter;
+import cromveil.combatnumbers.core.config.IConfigState;
+import cromveil.combatnumbers.core.config.IConfigWriter;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public final class FabricConfig implements ConfigState, ConfigWriter {
+public final class FabricConfig implements IConfigState, IConfigWriter {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public interface ModResourceAccessor {
+public interface IModResourceAccessor {
 
 	byte @Nullable [] getBytes(StableId location);
 

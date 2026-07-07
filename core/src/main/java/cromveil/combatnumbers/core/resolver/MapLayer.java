@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Simple source backed by a Map.
  */
-public final class MapLayer<K, V> implements Source<K, V> {
+public final class MapLayer<K, V> implements ISource<K, V> {
 
 	private Map<K, V> values = Map.of();
 

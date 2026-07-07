@@ -2,11 +2,11 @@ package cromveil.combatnumbers.core.config;
 
 import java.util.Map;
 
-public final class MergedConfig implements ConfigState, ConfigWriter {
+public final class MergedConfig implements IConfigState, IConfigWriter {
 
-	private final Map<ConfigDef.Category, ConfigState> states;
+	private final Map<ConfigDef.Category, IConfigState> states;
 
-	public MergedConfig(Map<ConfigDef.Category, ConfigState> states) {
+	public MergedConfig(Map<ConfigDef.Category, IConfigState> states) {
 		this.states = Map.copyOf(states);
 	}
 
@@ -35,14 +35,14 @@ public final class MergedConfig implements ConfigState, ConfigWriter {
 	public <T> void setValue(ConfigDef<T> id, T value) {
 		var state = states.get(id.category());
 		if (state != null) {
-			((ConfigWriter) state).setValue(id, value);
+			((IConfigWriter) state).setValue(id, value);
 		}
 	}
 
 	@Override
 	public void commit() {
 		for (var state : states.values()) {
-			((ConfigWriter) state).commit();
+			((IConfigWriter) state).commit();
 		}
 	}
 }

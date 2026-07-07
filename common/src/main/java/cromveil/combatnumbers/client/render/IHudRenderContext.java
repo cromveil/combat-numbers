@@ -4,7 +4,7 @@ import cromveil.combatnumbers.core.StableId;
 import net.minecraft.client.gui.Font;
 import net.minecraft.util.FormattedCharSequence;
 
-public interface HudRenderContext {
+public interface IHudRenderContext {
 
 	void pushMatrix();
 

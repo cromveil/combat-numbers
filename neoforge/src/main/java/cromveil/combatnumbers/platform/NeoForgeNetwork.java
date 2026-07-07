@@ -7,7 +7,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-public class NeoForgeNetwork implements PlatformNetwork {
+public class NeoForgeNetwork implements IPlatformNetwork {
 
 	private final IEventBus modEventBus;
 
