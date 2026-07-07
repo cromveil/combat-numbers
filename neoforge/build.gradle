@@ -3,8 +3,18 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
+// Version needs to be set before additionalRuntimeClasspath is called
+// https://github.com/neoforged/ModDevGradle/issues/289
 neoForge {
     version = neoforge_version
+}
+
+dependencies {
+    compileOnly('org.jspecify:jspecify:1.0.0')
+    additionalRuntimeClasspath(project(':core')) // https://docs.neoforged.net/toolchain/docs/dependencies/nonmclibs/
+}
+
+neoForge {
     // Automatically enable neoforge AccessTransformers if the file exists
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {

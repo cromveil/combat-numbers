@@ -9,6 +9,7 @@ repositories {
     }
 }
 dependencies {
+    compileOnly("org.jspecify:jspecify:1.0.0")
     minecraft("com.mojang:minecraft:${minecraft_version}")
     mappings loom.officialMojangMappings()
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
@@ -62,7 +63,7 @@ fabricApi {
 		createSourceSet = true
 		modId = "test-${project.name}"
 		eula = true
-		// enableGameTests = true
+ 		enableGameTests = false
 		// enableClientGameTests = true
 	}
 }

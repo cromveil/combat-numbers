@@ -62,6 +62,7 @@ repositories {
 
 dependencies {
     implementation minecraft.dependency("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+    compileOnly('org.jspecify:jspecify:1.0.0')
 }
 
 def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
