@@ -2,7 +2,7 @@ package cromveil.combatnumbers.server;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
@@ -17,7 +17,7 @@ import cromveil.combatnumbers.styles.RuleSet;
 import cromveil.combatnumbers.styles.WhenCondition;
 import net.minecraft.server.level.ServerLevel;
 
-public final class ReadDatapacksModule implements ISetup {
+public final class ReadDatapacksModule implements IServerSetup {
 
 	private final IReloadListenerRegistry reloadRegistry;
 	private final AnimationRegistry animationRegistry;

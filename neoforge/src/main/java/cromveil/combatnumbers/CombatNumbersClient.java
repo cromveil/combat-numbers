@@ -13,7 +13,7 @@ import cromveil.combatnumbers.client.theme.ThemeLoader;
 import cromveil.combatnumbers.config.ConfigFiles;
 import cromveil.combatnumbers.config.Configs;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
 import cromveil.combatnumbers.core.config.ConfigDef.Category;
 import cromveil.combatnumbers.core.config.MergedConfig;
@@ -49,7 +49,7 @@ public class CombatNumbersClient {
 
 		MixinBridge.init(new RenderContext(config, textManager));
 
-		ISetup.registerAll(
+		IClientSetup.registerAll(
 			resourcePacks, theme, serverStyles,
 			renderer
 		);

@@ -3,7 +3,7 @@ package cromveil.combatnumbers.server;
 import java.util.function.Supplier;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
@@ -17,7 +17,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-public final class SyncToClientModule implements ISetup {
+public final class SyncToClientModule implements IServerSetup {
 
 	private final IPlatformNetwork network;
 	private final IPlatformServerLifecycle lifecycle;

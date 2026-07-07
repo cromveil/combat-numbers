@@ -9,11 +9,11 @@ import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.client.theme.ThemeDiscoverer;
 import cromveil.combatnumbers.client.theme.ThemeLoader;
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.resource.IModResourceAccessor;
 
-public final class ThemeModule implements ISetup {
+public final class ThemeModule implements IClientSetup {
 
 	private final IConfigState config;
 	private final ThemeLoader themeLoader;

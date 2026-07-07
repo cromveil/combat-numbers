@@ -2,7 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-public final class SyncReceiver implements ISetup {
+public final class SyncReceiver implements IClientSetup {
 
 	private final IEventBus modEventBus;
 	private final AnimationResolver animationResolver;

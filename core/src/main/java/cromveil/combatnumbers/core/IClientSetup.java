@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @FunctionalInterface
-public interface ISetup {
+public interface IClientSetup {
 
 	void register();
 
-	static void registerAll(ISetup... setups) {
-		Set<ISetup> seen = new HashSet<>();
-		for (ISetup s : setups) {
+	static void registerAll(IClientSetup... setups) {
+		Set<IClientSetup> seen = new HashSet<>();
+		for (IClientSetup s : setups) {
 			if (seen.add(s)) {
 				s.register();
 			}

@@ -1,11 +1,11 @@
 package cromveil.combatnumbers.server;
 
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.platform.IPlatformServerLifecycle;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
-public final class EntityLevelResolver implements ISetup {
+public final class EntityLevelResolver implements IServerSetup {
 
 	private final IPlatformServerLifecycle lifecycle;
 	private MinecraftServer server;

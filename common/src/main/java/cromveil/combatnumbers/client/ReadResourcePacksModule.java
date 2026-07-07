@@ -5,7 +5,7 @@ import java.util.Map;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.animation.codec.TimelineCodec;
@@ -13,7 +13,7 @@ import cromveil.combatnumbers.resource.IModResourceAccessor;
 import cromveil.combatnumbers.resource.IReloadListenerRegistry;
 import cromveil.combatnumbers.skins.SkinDefinition;
 
-public final class ReadResourcePacksModule implements ISetup {
+public final class ReadResourcePacksModule implements IClientSetup {
 
 	private final SkinResolver skinResolver;
 	private final AnimationResolver animationResolver;

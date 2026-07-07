@@ -12,7 +12,7 @@ import cromveil.combatnumbers.client.render.FloatingTextManager;
 import cromveil.combatnumbers.client.render.FloatingTextRenderer;
 import cromveil.combatnumbers.client.render.SubmitNodeCollectorAdapter;
 import cromveil.combatnumbers.client.skins.SkinResolver;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
 import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.styles.StyleTable;
@@ -22,7 +22,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
 
-public final class FloatingTextRendererModule implements ISetup {
+public final class FloatingTextRendererModule implements IClientSetup {
 
 	private final FloatingTextFactory factory;
 	public FloatingTextRendererModule(IConfigState config, FloatingTextManager textManager,

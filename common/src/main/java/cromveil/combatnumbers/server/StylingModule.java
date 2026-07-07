@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.server;
 
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.events.CombatEvent;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
@@ -11,7 +11,7 @@ import cromveil.combatnumbers.core.styles.RuleEngine;
 import cromveil.combatnumbers.core.styles.Style;
 import net.minecraft.server.level.ServerLevel;
 
-public final class StylingModule implements ISetup {
+public final class StylingModule implements IServerSetup {
 
 	private final IConfigState config;
 	private final RuleEngine<ServerLevel> ruleEngine;

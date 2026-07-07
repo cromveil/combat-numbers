@@ -6,7 +6,7 @@ import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.config.ConfigFiles;
 import cromveil.combatnumbers.config.Configs;
 import cromveil.combatnumbers.core.Constants;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.core.styles.RuleEngine;
 import cromveil.combatnumbers.core.styles.StyleTable;
@@ -46,7 +46,7 @@ public class CombatNumbers {
 		var styling = new StylingModule(config, ruleEngine, filterRegistry, entityResolver);
 		var broadcast = new BroadcastModule(config, network, styleTable, entityResolver);
 
-		ISetup.registerAll(
+		IServerSetup.registerAll(
 				entityResolver,
 				datapacks,
 				styling,

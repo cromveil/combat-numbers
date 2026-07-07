@@ -3,7 +3,7 @@ package cromveil.combatnumbers.server;
 import java.util.function.Supplier;
 
 import cromveil.combatnumbers.config.Configs;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IServerSetup;
 import cromveil.combatnumbers.core.config.IConfigState;
 import cromveil.combatnumbers.core.events.CombatNumbersEvents;
 import cromveil.combatnumbers.core.events.DispatchEvent;
@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
-public final class BroadcastModule implements ISetup {
+public final class BroadcastModule implements IServerSetup {
 
 	private final IConfigState config;
 	private final IPlatformNetwork network;

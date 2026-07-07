@@ -2,7 +2,7 @@ package cromveil.combatnumbers;
 
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
-import cromveil.combatnumbers.core.ISetup;
+import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
@@ -11,7 +11,7 @@ import cromveil.combatnumbers.packets.SyncStyleTablePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-public final class SyncReceiver implements ISetup {
+public final class SyncReceiver implements IClientSetup {
 
 	private final AnimationResolver animationResolver;
 	private final SkinResolver skinResolver;
