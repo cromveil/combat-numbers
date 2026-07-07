@@ -1,29 +1,22 @@
 package cromveil.combatnumbers.filters;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.core.filters.FilterRegistry;
 import cromveil.combatnumbers.styles.WhenCondition;
-import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 import java.util.Map;
 
-public class FilterLoader extends SimpleJsonResourceReloadListener<List<WhenCondition>> {
-	private static final FileToIdConverter LISTER = FileToIdConverter.json("filters");
+public class FilterLoader {
+	private final FilterRegistry<ServerLevel> registry;
 
-	private final FilterRegistry registry;
-
-	public FilterLoader(FilterRegistry registry) {
-		super(WhenCondition.CODEC.listOf(), LISTER);
+	public FilterLoader(FilterRegistry<ServerLevel> registry) {
 		this.registry = registry;
 	}
 
-	@Override
-	protected void apply(Map<Identifier, List<WhenCondition>> entries,
-			ResourceManager manager, ProfilerFiller profiler) {
+	public void accept(Map<StableId, List<WhenCondition>> entries) {
 		registry.clear();
 		int count = 0;
 		for (var entry : entries.entrySet()) {

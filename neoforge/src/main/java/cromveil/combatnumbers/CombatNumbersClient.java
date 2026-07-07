@@ -1,97 +1,57 @@
 package cromveil.combatnumbers;
 
-import cromveil.combatnumbers.animation.Timeline;
-import cromveil.combatnumbers.animation.codec.TimelineCodec;
-import cromveil.combatnumbers.client.ClientRuntime;
-import cromveil.combatnumbers.config.CombatNumbersOptions;
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.NeoForgeConfig;
-import cromveil.combatnumbers.packets.RenderPacket;
-import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
-import cromveil.combatnumbers.packets.SyncSkinDataPacket;
-import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
-import cromveil.combatnumbers.packets.SyncStyleTablePacket;
-import cromveil.combatnumbers.skins.SkinDefinition;
-import cromveil.combatnumbers.styles.StyleTable;
-import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
+import java.util.Map;
+
+import cromveil.combatnumbers.client.RenderContext;
+import cromveil.combatnumbers.client.MixinBridge;
+import cromveil.combatnumbers.client.ReadResourcePacksModule;
+import cromveil.combatnumbers.client.ThemeModule;
+import cromveil.combatnumbers.client.animation.AnimationResolver;
+import cromveil.combatnumbers.client.render.FloatingTextManager;
+import cromveil.combatnumbers.client.skins.SkinResolver;
+import cromveil.combatnumbers.client.theme.ThemeLoader;
+import cromveil.combatnumbers.config.ConfigFiles;
+import cromveil.combatnumbers.config.Configs;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.IClientSetup;
+import cromveil.combatnumbers.core.animation.runtime.AnimationCompiler;
+import cromveil.combatnumbers.core.config.ConfigDef.Category;
+import cromveil.combatnumbers.core.config.MergedConfig;
+import cromveil.combatnumbers.resource.NeoForgeReloadRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
-import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.Map;
 
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class CombatNumbersClient {
 
-	private final ClientRuntime runtime = new ClientRuntime();
-
 	public CombatNumbersClient(IEventBus modEventBus, ModContainer container) {
-		NeoForgeConfig config = NeoForgeConfig.instance();
-		Config.init(config);
+		var textManager = new FloatingTextManager();
+		var skinResolver = new SkinResolver();
+		var animationResolver = new AnimationResolver();
 
-		container.registerConfig(ModConfig.Type.CLIENT, config.clientSpec());
-		container.registerExtensionPoint(IConfigScreenFactory.class,
-				(container1, screen) -> CombatNumbersOptions.createScreen(screen, Config.store()));
+		var commonConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.COMMON, Configs.COMMON);
+		var clientConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.CLIENT, Configs.CLIENT);
+		var config = new MergedConfig(Map.of(
+				Category.COMMON, commonConfig,
+				Category.CLIENT, clientConfig));
+		ConfigFiles.registerConfigScreen(container, config, config);
 
-		modEventBus.addListener(RegisterClientPayloadHandlersEvent.class, e -> {
-			e.register(SyncStyleTablePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
-					runtime.applyStyleTable(new StyleTable(payload.skinIds(), payload.animationIds()))));
+		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
+				new NeoForgeReloadRegistry(modEventBus));
+		var theme = new ThemeModule(config, new ThemeLoader(), skinResolver, animationResolver,
+				resourcePacks::resources);
+		resourcePacks.setOnComplete(theme::reload);
+		var serverStyles = new SyncReceiver(modEventBus, animationResolver, skinResolver);
+		var renderer = new FloatingTextRendererModule(modEventBus, config, textManager, skinResolver, animationResolver, new AnimationCompiler(), serverStyles::styleTable);
 
-			e.register(SyncAnimationDataPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
-					runtime.applyServerAnimations(payload.animations())));
+		MixinBridge.init(new RenderContext(config, textManager));
 
-			e.register(SyncSkinDataPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
-					runtime.applyServerSkins(payload.skins())));
-
-			e.register(SyncSpriteTexturePacket.TYPE, (payload, context) -> context.enqueueWork(() ->
-					runtime.applyServerTextures(payload.textures())));
-
-			e.register(RenderPacket.TYPE, (payload, context) -> context.enqueueWork(() ->
-					runtime.onRenderPacket(
-							payload.entityId(), payload.value(),
-							payload.skinIndex(), payload.animationIndex())));
-		});
-
-		modEventBus.addListener(AddClientReloadListenersEvent.class, e -> {
-			e.addListener(
-					Identifier.fromNamespaceAndPath("combatnumbers", "skins"),
-					new SimpleJsonResourceReloadListener<SkinDefinition>(SkinDefinition.CODEC,
-							FileToIdConverter.json("skins")) {
-						@Override
-						protected void apply(Map<Identifier, SkinDefinition> entries,
-								ResourceManager manager, ProfilerFiller profiler) {
-							runtime.applyResourcePackSkins(entries, manager);
-						}
-					});
-			e.addListener(
-					Identifier.fromNamespaceAndPath("combatnumbers", "animations"),
-					new SimpleJsonResourceReloadListener<Timeline>(TimelineCodec.CODEC,
-							FileToIdConverter.json("animations")) {
-						@Override
-						protected void apply(Map<Identifier, Timeline> entries,
-								ResourceManager manager, ProfilerFiller profiler) {
-							runtime.applyResourcePackAnimations(entries);
-						}
-					});
-		});
-
-		modEventBus.addListener(ModConfigEvent.Reloading.class, event -> {
-			if (event.getConfig().getSpec() == config.clientSpec()) {
-				runtime.reloadTheme();
-			}
-		});
-		NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, e -> runtime.onDisconnect());
+		IClientSetup.registerAll(
+			resourcePacks, theme, serverStyles,
+			renderer
+		);
 	}
 }

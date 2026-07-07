@@ -1,12 +1,14 @@
 package cromveil.combatnumbers.config.screen;
 
+import cromveil.combatnumbers.config.SliderFormat;
+import cromveil.combatnumbers.core.config.ConfigDef;
+import cromveil.combatnumbers.core.config.IConfigWriter;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -14,11 +16,9 @@ public final class ConfigOption<T> {
 
 	public enum Type { BOOLEAN, CYCLE, SLIDER }
 
-	private final String key;
+	private final ConfigDef<T> def;
 	private final Type type;
-	private final T defaultValue;
-	private final Supplier<T> externalReader;
-	private final Consumer<T> externalWriter;
+	private final Supplier<T> reader;
 
 	private T pendingValue;
 
@@ -32,17 +32,14 @@ public final class ConfigOption<T> {
 	final double sliderMax;
 	final SliderFormat sliderFormat;
 
-	private ConfigOption(String key, Type type, T defaultValue,
-			Supplier<T> externalReader, Consumer<T> externalWriter,
+	private ConfigOption(ConfigDef<T> def, Type type, Supplier<T> reader,
 			List<T> cycleValues, Function<T, Component> displayFn,
 			T emptyValue, Component emptyDisplay,
 			Function<Object, Component> descriptionFn,
 			double sliderMin, double sliderMax, SliderFormat sliderFormat) {
-		this.key = key;
+		this.def = def;
 		this.type = type;
-		this.defaultValue = defaultValue;
-		this.externalReader = externalReader;
-		this.externalWriter = externalWriter;
+		this.reader = reader;
 		this.cycleValues = cycleValues != null ? Collections.unmodifiableList(cycleValues) : null;
 		this.displayFn = displayFn;
 		this.emptyValue = emptyValue;
@@ -53,30 +50,28 @@ public final class ConfigOption<T> {
 		this.sliderFormat = sliderFormat;
 	}
 
-	public static ConfigOption<Boolean> ofBool(String key, boolean defaultValue,
-			Supplier<Boolean> reader, Consumer<Boolean> writer) {
-		return new ConfigOption<>(key, Type.BOOLEAN, defaultValue, reader, writer,
+	public static ConfigOption<Boolean> ofBool(ConfigDef<Boolean> def, Supplier<Boolean> reader) {
+		return new ConfigOption<>(def, Type.BOOLEAN, reader,
 				null, null, null, null, null, 0, 0, null);
 	}
 
-	public static <E extends Enum<E>> ConfigOption<E> ofEnum(String key, E defaultValue,
-			Supplier<E> reader, Consumer<E> writer, Function<E, Component> displayFn) {
-		@SuppressWarnings("unchecked")
-		E[] constants = (E[]) defaultValue.getClass().getEnumConstants();
-		return new ConfigOption<>(key, Type.CYCLE, defaultValue, reader, writer,
+	@SuppressWarnings("unchecked")
+	public static <E extends Enum<E>> ConfigOption<E> ofEnum(ConfigDef<E> def,
+			Supplier<E> reader, Function<E, Component> displayFn) {
+		E[] constants = (E[]) def.defaultValue().getClass().getEnumConstants();
+		return new ConfigOption<>(def, Type.CYCLE, reader,
 				List.of(constants), displayFn, null, null, null, 0, 0, null);
 	}
 
-	public static ConfigOption<String> ofStringCycle(String key, String defaultValue,
-			Supplier<String> reader, Consumer<String> writer,
+	public static ConfigOption<String> ofStringCycle(ConfigDef<String> def,
+			Supplier<String> reader,
 			List<String> values, Function<String, Component> displayFn,
 			boolean allowEmpty, Component emptyDisplay) {
-		return ofStringCycle(key, defaultValue, reader, writer, values, displayFn,
-				null, allowEmpty, emptyDisplay);
+		return ofStringCycle(def, reader, values, displayFn, null, allowEmpty, emptyDisplay);
 	}
 
-	public static ConfigOption<String> ofStringCycle(String key, String defaultValue,
-			Supplier<String> reader, Consumer<String> writer,
+	public static ConfigOption<String> ofStringCycle(ConfigDef<String> def,
+			Supplier<String> reader,
 			List<String> values, Function<String, Component> displayFn,
 			Function<Object, Component> descriptionFn,
 			boolean allowEmpty, Component emptyDisplay) {
@@ -88,49 +83,51 @@ public final class ConfigOption<T> {
 		} else {
 			allValues = new ArrayList<>(values);
 		}
-		return new ConfigOption<>(key, Type.CYCLE, defaultValue, reader, writer,
+		return new ConfigOption<>(def, Type.CYCLE, reader,
 				allValues, displayFn, allowEmpty ? "" : null, emptyDisplay,
 				descriptionFn, 0, 0, null);
 	}
 
-	public static ConfigOption<Double> ofSlider(String key, double defaultValue,
-			double min, double max, Supplier<Double> reader, Consumer<Double> writer,
-			SliderFormat format) {
-		return new ConfigOption<>(key, Type.SLIDER, defaultValue, reader, writer,
-				null, null, null, null, null, min, max, format);
+	public static ConfigOption<Double> ofSlider(ConfigDef<Double> def,
+			Supplier<Double> reader, SliderFormat format) {
+		return new ConfigOption<>(def, Type.SLIDER, reader,
+				null, null, null, null, null,
+				def.min(), def.max(), format);
 	}
 
-	public String key() { return key; }
+	public String key() { return def.key(); }
 
 	public Type type() { return type; }
 
-	public T defaultValue() { return defaultValue; }
+	public T defaultValue() { return def.defaultValue(); }
 
 	public T get() { return pendingValue; }
 
 	public void set(T value) { this.pendingValue = value; }
 
-	public void load() { this.pendingValue = externalReader.get(); }
+	public void load() { this.pendingValue = reader.get(); }
 
-	public void save() { externalWriter.accept(pendingValue); }
+	public void apply(IConfigWriter writer) {
+		writer.setValue(def, pendingValue);
+	}
 
 	public boolean isAtDefault() {
-		if (pendingValue instanceof Double d && defaultValue instanceof Double def) {
-			return Math.abs(d - def) < 0.001;
+		if (pendingValue instanceof Double d && def.defaultValue() instanceof Double defVal) {
+			return Math.abs(d - defVal) < 0.001;
 		}
-		return Objects.equals(pendingValue, defaultValue);
+		return Objects.equals(pendingValue, def.defaultValue());
 	}
 
 	public void reset() {
-		this.pendingValue = defaultValue;
+		this.pendingValue = def.defaultValue();
 	}
 
 	public Component label(String prefix) {
-		return Component.translatable(prefix + ".option." + key);
+		return Component.translatable(prefix + ".option." + def.key());
 	}
 
 	public Component tooltip(String prefix) {
-		return Component.translatable(prefix + ".option." + key + ".tooltip");
+		return Component.translatable(prefix + ".option." + def.key() + ".tooltip");
 	}
 
 	public Function<Object, Component> description() {

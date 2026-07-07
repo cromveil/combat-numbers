@@ -1,6 +1,6 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.detector.PoisonTickTracker;
+import cromveil.combatnumbers.detector.IPoisonTickTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +14,7 @@ public class PoisonEffectMixin {
 	@Inject(method = "applyEffectTick", at = @At("HEAD"))
 	private void combatNumbers$markPoisonTick(ServerLevel level, LivingEntity mob, int amplifier,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (mob instanceof PoisonTickTracker tracker) {
+		if (mob instanceof IPoisonTickTracker tracker) {
 			tracker.combatNumbers$setPoisonTick(true);
 		}
 	}
@@ -22,7 +22,7 @@ public class PoisonEffectMixin {
 	@Inject(method = "applyEffectTick", at = @At("RETURN"))
 	private void combatNumbers$clearPoisonTickLeftover(ServerLevel level, LivingEntity mob, int amplifier,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (mob instanceof PoisonTickTracker tracker) {
+		if (mob instanceof IPoisonTickTracker tracker) {
 			tracker.combatNumbers$getAndClearPoisonTick();
 		}
 	}

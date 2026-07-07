@@ -1,7 +1,8 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.detector.HealTypeTracker;
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.detector.IHealTypeTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.minecraft.world.effect.RegenerationMobEffect")
 public class RegenerationEffectMixin {
 
-	private static final Identifier REGEN_EFFECT = Identifier.fromNamespaceAndPath("combatnumbers", "regen_effect");
+	private static final StableId REGEN_EFFECT = StableId.of(Constants.MOD_ID, "regen_effect");
 
 	@Inject(method = "applyEffectTick", at = @At("HEAD"))
 	private void combatNumbers$markRegenEffect(ServerLevel level, LivingEntity mob, int amplification,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (mob instanceof HealTypeTracker tracker) {
+		if (mob instanceof IHealTypeTracker tracker) {
 			tracker.combatNumbers$setHealType(REGEN_EFFECT);
 		}
 	}

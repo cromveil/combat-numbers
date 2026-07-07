@@ -1,8 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,35 +12,34 @@ import net.minecraft.world.phys.Vec3;
  * scale transform; they differ only in how the glyph anchor is placed and which
  * depth drives the GUI-pixel-to-world scale.
  */
-public abstract sealed class BillboardStrategy implements Strategy
+public abstract sealed class BillboardStrategy implements IStrategy
 		permits WorldStrategy, ScreenStrategy {
 
 	protected final PoseStack ps;
-	protected final SubmitNodeCollector collector;
-	protected final CameraRenderState cam;
+	protected final IGeometrySubmitter geom;
+	protected final RenderCamera cam;
 
-	protected BillboardStrategy(PoseStack ps, SubmitNodeCollector collector, CameraRenderState cam) {
+	protected BillboardStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
 		this.ps = ps;
-		this.collector = collector;
+		this.geom = geom;
 		this.cam = cam;
 	}
 
 	public static BillboardStrategy create(RenderOption option, PoseStack ps,
-			SubmitNodeCollector collector, CameraRenderState cam) {
+			IGeometrySubmitter geom, RenderCamera cam) {
 		return option == RenderOption.SCREEN
-				? new ScreenStrategy(ps, collector, cam)
-				: new WorldStrategy(ps, collector, cam);
+				? new ScreenStrategy(ps, geom, cam)
+				: new WorldStrategy(ps, geom, cam);
 	}
 
 	@Override
 	public Vec3 camPos() {
-		return cam.pos;
+		return cam.position();
 	}
 
 	@Override
 	public boolean cull(FloatingText text) {
-		Vec3 p = text.worldPos;
-		return !cam.cullFrustum.pointInFrustum(p.x, p.y, p.z);
+		return !BillboardHelper.isOnScreen(cam, text.worldPos);
 	}
 
 	@Override
@@ -55,9 +52,9 @@ public abstract sealed class BillboardStrategy implements Strategy
 		BillboardHelper.rotateZ(ps, placement.rotation());
 		BillboardHelper.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
 		if (perChar) {
-			text.visual.renderChar3d(charIndex, ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.renderChar3d(charIndex, ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
 		} else {
-			text.visual.render3d(ps, collector, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.render3d(ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
 		}
 		ps.popPose();
 	}

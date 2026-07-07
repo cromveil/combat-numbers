@@ -1,16 +1,16 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
-import cromveil.combatnumbers.detector.CritTracker;
-import cromveil.combatnumbers.detector.PoisonTickTracker;
-import cromveil.combatnumbers.events.CombatEvent;
-import cromveil.combatnumbers.events.CombatNumbersEvents;
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatNumbersEvents;
+import cromveil.combatnumbers.detector.ICritTracker;
+import cromveil.combatnumbers.detector.IPoisonTickTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
+public class LivingEntityDamageMixin implements ICritTracker, IPoisonTickTracker {
 
 	@Unique
 	private float combatNumbers$actualDamage;
@@ -85,8 +85,6 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 			this.combatNumbers$poisonTick = false;
 			return;
 		}
-		if (!Config.get(ConfigIds.ENABLED))
-			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;
 		if (self.isRemoved())
@@ -96,15 +94,28 @@ public class LivingEntityDamageMixin implements CritTracker, PoisonTickTracker {
 		if (finalDamage <= 0f)
 			return;
 
-		Set<Identifier> flags = new HashSet<>();
+		Set<StableId> flags = new LinkedHashSet<>();
 		if (this.combatNumbers$consumeCritAttack()) {
-			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "crit"));
+			flags.add(StableId.of(Constants.MOD_ID, "crit"));
 		}
 		if (this.combatNumbers$getAndClearPoisonTick()) {
-			flags.add(Identifier.fromNamespaceAndPath("combatnumbers", "poison_tick"));
+			flags.add(StableId.of(Constants.MOD_ID, "poison_tick"));
+		}
+
+		Optional<StableId> typeKey = source.typeHolder().unwrapKey()
+				.map(k -> StableId.of(k.identifier().getNamespace(), k.identifier().getPath()));
+
+		Set<StableId> tags = source.typeHolder().tags()
+				.map(t -> StableId.of(t.location().getNamespace(), t.location().getPath()))
+				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+
+		Optional<Integer> attackerId = Optional.empty();
+		var attacker = source.getEntity();
+		if (attacker != null) {
+			attackerId = Optional.of(attacker.getId());
 		}
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(
-			new CombatEvent.Damage(self, source, amount, finalDamage, flags));
+			new CombatEvent.Damage(self.getId(), typeKey, tags, amount, finalDamage, flags, attackerId));
 	}
 }

@@ -1,17 +1,17 @@
 package cromveil.combatnumbers.client.skins;
 
-import cromveil.combatnumbers.Constants;
+import cromveil.combatnumbers.core.Constants;
 
 import org.jspecify.annotations.Nullable;
 
 public record SpriteSkin(SpriteSheet sheet, @Nullable Integer fillColor, float letterSpacing, boolean colored,
-		float scale) implements Skin {
+		float scale) implements ISkin {
 	public SpriteSkin(SpriteSheet sheet, @Nullable Integer fillColor, float letterSpacing, boolean colored) {
 		this(sheet, fillColor, letterSpacing, colored, 1.0f);
 	}
 
 	@Override
-	public SkinRenderer createVisual(String text) {
+	public ISkinRenderer createVisual(String text) {
 		if (sheet == null) {
 			Constants.LOG.warn("SpriteSkin with null sheet, falling back to text");
 			return new TextSkinRenderer(

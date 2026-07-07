@@ -1,8 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -12,18 +10,19 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class WorldStrategy extends BillboardStrategy {
 
-	WorldStrategy(PoseStack ps, SubmitNodeCollector collector, CameraRenderState cam) {
-		super(ps, collector, cam);
+	WorldStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
+		super(ps, geom, cam);
 	}
 
 	@Override
 	protected float anchor(Vec3 worldPos) {
 		float depth = BillboardHelper.forwardDepth(cam, worldPos);
 		float guiPixelToWorld = BillboardHelper.guiPixelToWorld(cam, depth);
+		Vec3 camPos = cam.position();
 		ps.translate(
-				worldPos.x - cam.pos.x,
-				worldPos.y - cam.pos.y,
-				worldPos.z - cam.pos.z);
+				worldPos.x - camPos.x,
+				worldPos.y - camPos.y,
+				worldPos.z - camPos.z);
 		return guiPixelToWorld;
 	}
 }

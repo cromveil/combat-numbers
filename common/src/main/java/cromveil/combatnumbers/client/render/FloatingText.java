@@ -1,9 +1,9 @@
 package cromveil.combatnumbers.client.render;
 
-import cromveil.combatnumbers.animation.Channel;
-import cromveil.combatnumbers.client.animation.AnimationInstance;
-import cromveil.combatnumbers.client.animation.ChannelBuffer;
-import cromveil.combatnumbers.client.skins.SkinRenderer;
+import cromveil.combatnumbers.core.animation.Channel;
+import cromveil.combatnumbers.core.animation.runtime.AnimationInstance;
+import cromveil.combatnumbers.core.animation.runtime.ChannelBuffer;
+import cromveil.combatnumbers.client.skins.ISkinRenderer;
 import net.minecraft.world.phys.Vec3;
 
 public class FloatingText {
@@ -12,7 +12,7 @@ public class FloatingText {
 
 	public final Vec3 worldPos;
 	public final String formattedText;
-	public final SkinRenderer visual;
+	public final ISkinRenderer visual;
 	public final AnimationInstance animation;
 	public final float scale;
 
@@ -22,7 +22,7 @@ public class FloatingText {
 	private int lastSampledChar = -1;
 	private float lastSampledElapsed = -1f;
 
-	public FloatingText(Vec3 worldPos, String formattedText, SkinRenderer visual,
+	public FloatingText(Vec3 worldPos, String formattedText, ISkinRenderer visual,
 			AnimationInstance animation, float scale, double gameTime) {
 		this.worldPos = worldPos;
 		this.formattedText = formattedText;

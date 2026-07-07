@@ -1,28 +1,24 @@
 package cromveil.combatnumbers.styles;
 
-import cromveil.combatnumbers.Constants;
-import cromveil.combatnumbers.events.CombatEvent;
-import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.styles.RuleEngine;
+
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
+public class RuleLoader {
 
-	private static final FileToIdConverter LISTER = FileToIdConverter.json("styles");
-
-	private final RuleEngine engine;
+	private final RuleEngine<ServerLevel> engine;
 	private Runnable onReload = () -> {
 	};
 
-	public RuleLoader(RuleEngine engine) {
-		super(RuleSet.CODEC, LISTER);
+	public RuleLoader(RuleEngine<ServerLevel> engine) {
 		this.engine = engine;
 	}
 
@@ -30,24 +26,25 @@ public class RuleLoader extends SimpleJsonResourceReloadListener<RuleSet> {
 		this.onReload = onReload;
 	}
 
-	@Override
-	protected void apply(Map<Identifier, RuleSet> entries,
-			ResourceManager manager, ProfilerFiller profiler) {
-		Map<Identifier, List<Rule>> rulesByKind = new HashMap<>();
+	public void accept(Map<StableId, RuleSet> entries) {
+		Map<StableId, List<RuleEngine.Rule<ServerLevel>>> rulesByKind = new HashMap<>();
 
 		for (var entry : entries.entrySet()) {
-			var path = entry.getKey().getPath();
+			var path = entry.getKey().path();
 			var slashIdx = path.indexOf('/');
-			Identifier kind;
+			StableId kind;
 			if (slashIdx >= 0) {
-				kind = Identifier.fromNamespaceAndPath(
-						entry.getKey().getNamespace(), path.substring(0, slashIdx));
+				kind = StableId.of(
+						entry.getKey().namespace(), path.substring(0, slashIdx));
 			} else {
 				kind = CombatEvent.DAMAGE_KIND;
 			}
 
 			var set = entry.getValue();
-			rulesByKind.computeIfAbsent(kind, k -> new ArrayList<>()).addAll(set.rules());
+			var coreRules = set.rules().stream()
+					.map(r -> new RuleEngine.Rule<>(r.when(), r.then()))
+					.toList();
+			rulesByKind.computeIfAbsent(kind, k -> new ArrayList<>()).addAll(coreRules);
 		}
 
 		engine.load(rulesByKind);

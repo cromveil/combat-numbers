@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+}
+
+base {
+    archivesName = "${mod_id}-core"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    withJavadocJar()
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Mojang'
+        url = uri('https://libraries.minecraft.net/')
+    }
+}
+
+dependencies {
+    compileOnly 'org.jspecify:jspecify:1.0.0'
+    compileOnly 'org.slf4j:slf4j-api:2.0.17'
+    compileOnly 'org.joml:joml:1.10.8'
+    compileOnly 'com.mojang:datafixerupper:10.0.21'
+}

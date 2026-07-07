@@ -1,6 +1,8 @@
 package cromveil.combatnumbers.packets;
 
-import cromveil.combatnumbers.styles.StyleTable;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.styles.StyleTable;
+import cromveil.combatnumbers.StableIdMapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,7 +16,7 @@ public record SyncStyleTablePacket(
 		List<Identifier> animationIds) implements CustomPacketPayload {
 
 	public static final Type<SyncStyleTablePacket> TYPE = new Type<>(
-			Identifier.fromNamespaceAndPath("combatnumbers", "sync_style_table"));
+			Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sync_style_table"));
 
 	private static final StreamCodec<ByteBuf, List<Identifier>> ID_LIST_CODEC = Identifier.STREAM_CODEC
 			.apply(ByteBufCodecs.list());
@@ -25,7 +27,8 @@ public record SyncStyleTablePacket(
 			SyncStyleTablePacket::new);
 
 	public SyncStyleTablePacket(StyleTable table) {
-		this(table.skinIds(), table.animationIds());
+		this(table.skinIds().stream().map(StableIdMapper::to).toList(),
+				table.animationIds().stream().map(StableIdMapper::to).toList());
 	}
 
 	@Override

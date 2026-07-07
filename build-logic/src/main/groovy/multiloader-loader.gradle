@@ -20,6 +20,7 @@ dependencies {
     }
     commonJava(project(path: ':common', configuration: 'commonJava'))
     commonResources(project(path: ':common', configuration: 'commonResources'))
+    implementation(project(':core'))
 }
 
 tasks.named('compileJava', JavaCompile) {

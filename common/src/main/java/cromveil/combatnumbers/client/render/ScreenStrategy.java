@@ -1,8 +1,6 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -13,8 +11,8 @@ public final class ScreenStrategy extends BillboardStrategy {
 
 	private static final float FIXED_DEPTH = 1.0f;
 
-	ScreenStrategy(PoseStack ps, SubmitNodeCollector collector, CameraRenderState cam) {
-		super(ps, collector, cam);
+	ScreenStrategy(PoseStack ps, IGeometrySubmitter geom, RenderCamera cam) {
+		super(ps, geom, cam);
 	}
 
 	@Override
@@ -22,10 +20,11 @@ public final class ScreenStrategy extends BillboardStrategy {
 		float depth = BillboardHelper.forwardDepth(cam, worldPos);
 		float guiPixelToWorld = BillboardHelper.guiPixelToWorld(cam, FIXED_DEPTH);
 		float factor = FIXED_DEPTH / depth;
+		Vec3 camPos = cam.position();
 		ps.translate(
-				(worldPos.x - cam.pos.x) * factor,
-				(worldPos.y - cam.pos.y) * factor,
-				(worldPos.z - cam.pos.z) * factor);
+				(worldPos.x - camPos.x) * factor,
+				(worldPos.y - camPos.y) * factor,
+				(worldPos.z - camPos.z) * factor);
 		return guiPixelToWorld;
 	}
 }

@@ -1,7 +1,8 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.detector.HealTypeTracker;
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.Constants;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.detector.IHealTypeTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,12 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.minecraft.world.effect.HealOrHarmMobEffect")
 public class HealOrHarmEffectMixin {
 
-	private static final Identifier INSTANT_HEALTH = Identifier.fromNamespaceAndPath("combatnumbers", "instant_health");
+	private static final StableId INSTANT_HEALTH = StableId.of(Constants.MOD_ID, "instant_health");
 
 	@Inject(method = "applyEffectTick", at = @At("HEAD"))
 	private void combatNumbers$markInstantHealthTick(ServerLevel level, LivingEntity mob, int amplification,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (mob instanceof HealTypeTracker tracker) {
+		if (mob instanceof IHealTypeTracker tracker) {
 			tracker.combatNumbers$setHealType(INSTANT_HEALTH);
 		}
 	}
@@ -28,7 +29,7 @@ public class HealOrHarmEffectMixin {
 	@Inject(method = "applyInstantaneousEffect", at = @At("HEAD"))
 	private void combatNumbers$markInstantHealthEffect(ServerLevel serverLevel, @Nullable Entity source, @Nullable Entity owner,
 			LivingEntity mob, int amplification, double scale, CallbackInfo ci) {
-		if (mob instanceof HealTypeTracker tracker) {
+		if (mob instanceof IHealTypeTracker tracker) {
 			tracker.combatNumbers$setHealType(INSTANT_HEALTH);
 		}
 	}

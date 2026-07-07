@@ -1,11 +1,11 @@
 package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import cromveil.combatnumbers.client.render.IGeometrySubmitter;
+import cromveil.combatnumbers.client.render.IHudRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.font.TextRenderable;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -13,7 +13,7 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextSkinRenderer implements SkinRenderer {
+public class TextSkinRenderer implements ISkinRenderer {
 	private static final int[][] OUTLINE_OFFSETS = {
 			{ -1, -1 }, { 0, -1 }, { 1, -1 },
 			{ -1, 0 }, { 1, 0 },
@@ -39,22 +39,22 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float alpha, int light) {
+	public void render3d(PoseStack poseStack, IGeometrySubmitter geom, float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		float x = -font.width(text) / 2f;
-		submitText(font, fullSequence, x, 0f, alpha, poseStack, submitNodeCollector, light);
+		submitText(font, fullSequence, x, 0f, alpha, poseStack, geom, light);
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	public void renderChar3d(int index, PoseStack poseStack, IGeometrySubmitter geom,
 			float alpha, int light) {
 		Font font = Minecraft.getInstance().font;
 		submitText(font, charSequences[index], charStartX(font, index), 0f, alpha,
-				poseStack, submitNodeCollector, light);
+				poseStack, geom, light);
 	}
 
 	private void submitText(Font font, FormattedCharSequence sequence, float x, float y, float alpha,
-			PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light) {
+			PoseStack poseStack, IGeometrySubmitter geom, int light) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
@@ -70,7 +70,7 @@ public class TextSkinRenderer implements SkinRenderer {
 			outlines.add(collectGlyphs(font, sequence, x + off[0], y + off[1], oColor));
 		}
 
-		submitNodeCollector.submitCustomGeometry(poseStack, fill.renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, fill.renderType, (pose, vertexConsumer) -> {
 			for (GlyphCollector outline : outlines) {
 				for (TextRenderable glyph : outline.glyphs) {
 					glyph.render(pose.pose(), vertexConsumer, light, false);
@@ -83,35 +83,35 @@ public class TextSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	public void render2d(IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
 		Font font = Minecraft.getInstance().font;
 		int x = -(font.width(text) / 2);
 		int y = -(font.lineHeight / 2);
-		drawText(graphics, font, fullSequence, x, y, a);
+		drawText(ctx, font, fullSequence, x, y, a);
 	}
 
 	@Override
-	public void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
+	public void renderChar2d(int index, IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
 		Font font = Minecraft.getInstance().font;
 		int x = -(font.width(text) / 2) + font.width(text.substring(0, index));
 		int y = -(font.lineHeight / 2);
-		drawText(graphics, font, charSequences[index], x, y, a);
+		drawText(ctx, font, charSequences[index], x, y, a);
 	}
 
-	private void drawText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence sequence,
+	private void drawText(IHudRenderContext ctx, Font font, FormattedCharSequence sequence,
 			int x, int y, int a) {
 		int fColor = (a << 24) | (fillColor & 0x00FFFFFF);
 		int oColor = (a << 24) | (outlineColor & 0x00FFFFFF);
 		for (int[] off : OUTLINE_OFFSETS) {
-			graphics.text(font, sequence, x + off[0], y + off[1], oColor, false);
+			ctx.drawString(font, sequence, x + off[0], y + off[1], oColor, false);
 		}
-		graphics.text(font, sequence, x, y, fColor, false);
+		ctx.drawString(font, sequence, x, y, fColor, false);
 	}
 
 	private float charStartX(Font font, int index) {

@@ -2,13 +2,13 @@ package cromveil.combatnumbers.client.skins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import cromveil.combatnumbers.client.render.IGeometrySubmitter;
+import cromveil.combatnumbers.client.render.IHudRenderContext;
+import cromveil.combatnumbers.StableIdMapper;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.joml.Matrix4fc;
 
-public class SpriteSkinRenderer implements SkinRenderer {
+public class SpriteSkinRenderer implements ISkinRenderer {
 
 	private final SpriteSheet spriteSheet;
 	private final String text;
@@ -69,15 +69,15 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void render3d(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float alpha, int light) {
+	public void render3d(PoseStack poseStack, IGeometrySubmitter geom, float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
 		float startX = -totalWidth / 2f;
 
-		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
+		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
-		submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
 			renderChars(vertexConsumer, matrix, startX, 0f, color, light);
 		});
@@ -117,40 +117,40 @@ public class SpriteSkinRenderer implements SkinRenderer {
 	}
 
 	@Override
-	public void renderChar3d(int index, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	public void renderChar3d(int index, PoseStack poseStack, IGeometrySubmitter geom,
 			float alpha, int light) {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
 		float startX = -totalWidth / 2f;
 
-		var renderType = RenderTypes.textSeeThrough(spriteSheet.textureId());
+		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
-		submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
 			renderChar(vertexConsumer, matrix, index, startX, 0f, color, light);
 		});
 	}
 
 	@Override
-	public void render2d(GuiGraphicsExtractor graphics, float alpha) {
+	public void render2d(IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(graphics, -totalWidth / 2f, color, 0, text.length());
+		blitChars(ctx, -totalWidth / 2f, color, 0, text.length());
 	}
 
 	@Override
-	public void renderChar2d(int index, GuiGraphicsExtractor graphics, float alpha) {
+	public void renderChar2d(int index, IHudRenderContext ctx, float alpha) {
 		int a = (int) (alpha * 255f);
 		if (a <= 0 || index < 0 || index >= charInfos.length)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(graphics, -totalWidth / 2f, color, index, index + 1);
+		blitChars(ctx, -totalWidth / 2f, color, index, index + 1);
 	}
 
-	private void blitChars(GuiGraphicsExtractor graphics, float startX, int color, int from, int to) {
+	private void blitChars(IHudRenderContext ctx, float startX, int color, int from, int to) {
 		int texWidth = spriteSheet.columns() * spriteSheet.cellWidth();
 		int texHeight = spriteSheet.rows() * spriteSheet.cellHeight();
 		for (int i = from; i < to; i++) {
@@ -163,7 +163,7 @@ public class SpriteSkinRenderer implements SkinRenderer {
 			int y = -(height / 2);
 			float u = info.minU * texWidth;
 			float v = info.minV * texHeight;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, spriteSheet.textureId(),
+			ctx.blitSprite(spriteSheet.textureId(),
 					x, y, u, v, width, height, texWidth, texHeight, color);
 		}
 	}

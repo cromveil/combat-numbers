@@ -1,14 +1,13 @@
 package cromveil.combatnumbers.detector.mixin;
 
-import cromveil.combatnumbers.config.Config;
-import cromveil.combatnumbers.config.ConfigIds;
-import cromveil.combatnumbers.detector.HealTypeTracker;
-import cromveil.combatnumbers.events.CombatEvent;
-import cromveil.combatnumbers.events.CombatNumbersEvents;
-import net.minecraft.resources.Identifier;
+import cromveil.combatnumbers.core.StableId;
+import cromveil.combatnumbers.core.events.CombatEvent;
+import cromveil.combatnumbers.core.events.CombatNumbersEvents;
+import cromveil.combatnumbers.detector.IHealTypeTracker;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,24 +16,24 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityHealMixin implements HealTypeTracker {
+public class LivingEntityHealMixin implements IHealTypeTracker {
 
 	@Unique
 	private float combatNumbers$actualHeal;
 
 	@Unique
 	@Nullable
-	private Identifier combatNumbers$healType;
+	private StableId combatNumbers$healType;
 
 	@Override
-	public void combatNumbers$setHealType(@Nullable Identifier type) {
+	public void combatNumbers$setHealType(@Nullable StableId type) {
 		this.combatNumbers$healType = type;
 	}
 
 	@Override
 	@Nullable
-	public Identifier combatNumbers$getAndClearHealType() {
-		Identifier t = this.combatNumbers$healType;
+	public StableId combatNumbers$getAndClearHealType() {
+		StableId t = this.combatNumbers$healType;
 		this.combatNumbers$healType = null;
 		return t;
 	}
@@ -60,8 +59,6 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 
 	@Inject(method = "heal", at = @At("RETURN"))
 	private void onHealReturn(float amount, CallbackInfo ci) {
-		if (!Config.get(ConfigIds.ENABLED))
-			return;
 
 		LivingEntity self = (LivingEntity) (Object) this;
 		if (self.isRemoved())
@@ -71,10 +68,10 @@ public class LivingEntityHealMixin implements HealTypeTracker {
 		if (actualHeal <= 0f)
 			return;
 
-		Identifier healType = this.combatNumbers$getAndClearHealType();
+		StableId healType = this.combatNumbers$getAndClearHealType();
 		if (healType == null) healType = CombatEvent.GENERIC_HEAL;
 
 		CombatNumbersEvents.COMBAT.invoker().onEvent(
-			new CombatEvent.Heal(self, actualHeal, healType, new HashSet<>()));
+			new CombatEvent.Heal(self.getId(), actualHeal, Optional.of(healType), new LinkedHashSet<>()));
 	}
 }

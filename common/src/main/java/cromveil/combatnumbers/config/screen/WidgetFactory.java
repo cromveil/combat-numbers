@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.config.screen;
 
+import cromveil.combatnumbers.config.SliderFormat;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
