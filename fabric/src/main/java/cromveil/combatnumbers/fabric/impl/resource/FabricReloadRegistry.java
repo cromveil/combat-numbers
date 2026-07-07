@@ -16,14 +16,14 @@ public class FabricReloadRegistry implements IReloadListenerRegistry {
 	@Override
 	public <T> void registerServerData(StableId name, String directory,
 			Codec<T> codec, IResourceLoadCallback<T> consumer) {
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(
 				StableIdMapper.to(name), new MinecraftReloadListener<>(codec, directory, consumer));
 	}
 
 	@Override
 	public <T> void registerClientResources(StableId name, String directory,
 			Codec<T> codec, IResourceLoadCallback<T> consumer) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(
 				StableIdMapper.to(name), new MinecraftReloadListener<>(codec, directory, consumer));
 	}
 }

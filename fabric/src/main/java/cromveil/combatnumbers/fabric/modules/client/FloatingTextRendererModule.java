@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 
 import cromveil.combatnumbers.client.RenderContext;
 import cromveil.combatnumbers.client.FloatingTextFactory;
@@ -44,7 +44,7 @@ public final class FloatingTextRendererModule implements IClientSetup {
 										payload.entityId(), payload.value(),
 										payload.skinIndex(), payload.animationIndex()))));
 
-		LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
+		WorldRenderEvents.BEFORE_ENTITIES.register(context -> {
 			Minecraft mc = Minecraft.getInstance();
 			if (mc.level == null) {
 				return;
@@ -67,9 +67,9 @@ public final class FloatingTextRendererModule implements IClientSetup {
 
 			FloatingTextRenderer.renderAll(BillboardStrategy.create(
 					option,
-					context.poseStack(),
-					new SubmitNodeCollectorAdapter(context.submitNodeCollector()),
-					CameraAdapter.from(context.levelState().cameraRenderState)),
+					context.matrices(),
+					new SubmitNodeCollectorAdapter(context.commandQueue()),
+					CameraAdapter.from(context.worldState().cameraRenderState)),
 					ctx.config(), ctx.textManager());
 		});
 	}

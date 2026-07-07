@@ -14,7 +14,7 @@ public class FabricNetwork implements IPlatformNetwork {
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void registerClientbound(CustomPacketPayload.Type type, StreamCodec codec) {
-		PayloadTypeRegistry.clientboundPlay().register(type, codec);
+		PayloadTypeRegistry.playS2C().register(type, codec);
 	}
 
 	@Override

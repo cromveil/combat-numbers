@@ -1,7 +1,7 @@
 package cromveil.combatnumbers.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -52,9 +52,9 @@ public abstract sealed class BillboardStrategy implements IStrategy
 		BillboardHelper.rotateZ(ps, placement.rotation());
 		BillboardHelper.scaleBillboard(ps, placement.scale(), guiPixelToWorld, placement.perceivedScale());
 		if (perChar) {
-			text.visual.renderChar3d(charIndex, ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.renderChar3d(charIndex, ps, geom, placement.alpha(), LightTexture.FULL_BRIGHT);
 		} else {
-			text.visual.render3d(ps, geom, placement.alpha(), LightCoordsUtil.FULL_BRIGHT);
+			text.visual.render3d(ps, geom, placement.alpha(), LightTexture.FULL_BRIGHT);
 		}
 		ps.popPose();
 	}
