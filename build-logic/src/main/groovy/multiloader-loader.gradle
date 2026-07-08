@@ -34,6 +34,11 @@ afterEvaluate {
             jarJar(project(':core'))
         }
     }
+    project.plugins.withId('net.minecraftforge.jarjar') {
+        project.dependencies {
+            jarJar(project(':core'))
+        }
+    }
 }
 
 tasks.named('compileJava', JavaCompile) {

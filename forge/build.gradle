@@ -1,0 +1,71 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.minecraftforge.gradle' version '[7.0.3,8)'
+    id 'net.minecraftforge.jarjar' version '0.2.3'
+    id 'idea'
+}
+
+jarJar.register()
+
+tasks.named('jar') {
+    archiveClassifier = 'slim'
+}
+
+tasks.named('jarJar') {
+    archiveClassifier = null
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+base {
+    archivesName = "${mod_id}-forge-${minecraft_version}"
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir('runs/' + it.name)
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        }
+        register('client')
+        register('server') { args '--nogui' }
+        register('data') {
+            workingDir = layout.projectDirectory.dir('runs/data')
+            args '--mod', mod_id, '--all',
+                 '--output', file('src/generated/resources/').absolutePath,
+                 '--existing', file('src/main/resources/').absolutePath
+        }
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+}
+
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, 'forge')
+        }
+    }
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, 'forge')
+            }
+        }
+    }
+}
