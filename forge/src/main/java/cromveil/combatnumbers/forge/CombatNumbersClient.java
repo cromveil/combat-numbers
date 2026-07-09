@@ -8,12 +8,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 
 import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.SimpleChannel;
-
 import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.client.FloatingTextFactory;
 import cromveil.combatnumbers.client.MixinBridge;
@@ -40,8 +39,8 @@ import cromveil.combatnumbers.forge.impl.config.ConfigFiles;
 import cromveil.combatnumbers.forge.impl.platform.ForgeNetwork;
 import cromveil.combatnumbers.forge.impl.resource.ForgeReloadRegistry;
 
-import cromveil.combatnumbers.modules.client.ReadResourcePacksModule;
 import cromveil.combatnumbers.modules.client.ThemeModule;
+import cromveil.combatnumbers.modules.client.ReadResourcePacksModule;
 import cromveil.combatnumbers.forge.modules.client.FloatingTextRendererModule;
 import cromveil.combatnumbers.forge.modules.client.SyncReceiver;
 
@@ -49,7 +48,7 @@ public final class CombatNumbersClient {
 
 	private CombatNumbersClient() {}
 
-	public static void setup(BusGroup modBusGroup, ModContainer container,
+	public static void setup(IEventBus modEventBus, ModContainer container,
 			ForgeNetwork network, IConfigState commonConfig) {
 
 		var textManager = new FloatingTextManager();
@@ -58,7 +57,7 @@ public final class CombatNumbersClient {
 
 		var serverStyles = new SyncReceiver(animationResolver, skinResolver);
 
-		var clientConfig = ConfigFiles.of(modBusGroup, container, ModConfig.Type.CLIENT, Configs.CLIENT);
+		var clientConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.CLIENT, Configs.CLIENT);
 		var config = new MergedConfig(Map.of(
 				Category.COMMON, commonConfig,
 				Category.CLIENT, clientConfig));
@@ -98,7 +97,7 @@ public final class CombatNumbersClient {
 		network.setChannel(channel);
 
 		var resourcePacks = new ReadResourcePacksModule(skinResolver, animationResolver,
-				new ForgeReloadRegistry());
+				new ForgeReloadRegistry(modEventBus));
 		var theme = new ThemeModule(config, new ThemeLoader(), skinResolver, animationResolver,
 				resourcePacks::resources);
 		resourcePacks.setOnComplete(theme::reload);

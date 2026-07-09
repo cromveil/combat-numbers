@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -18,7 +19,7 @@ public class ForgeServerLifecycle implements IPlatformServerLifecycle {
 
 	@Override
 	public void onServerStarted(Consumer<MinecraftServer> listener) {
-		ServerStartedEvent.BUS.addListener(e -> {
+		MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> {
 			this.server = e.getServer();
 			listener.accept(this.server);
 		});
@@ -26,7 +27,7 @@ public class ForgeServerLifecycle implements IPlatformServerLifecycle {
 
 	@Override
 	public void onServerStopping(Consumer<MinecraftServer> listener) {
-		ServerStoppingEvent.BUS.addListener(e -> {
+		MinecraftForge.EVENT_BUS.addListener((ServerStoppingEvent e) -> {
 			listener.accept(this.server);
 			this.server = null;
 		});
@@ -34,7 +35,7 @@ public class ForgeServerLifecycle implements IPlatformServerLifecycle {
 
 	@Override
 	public void onPlayerJoin(BiConsumer<ServerPlayer, MinecraftServer> listener) {
-		PlayerEvent.PlayerLoggedInEvent.BUS.addListener(e -> {
+		MinecraftForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent e) -> {
 			if (e.getEntity() instanceof ServerPlayer player && this.server != null) {
 				listener.accept(player, this.server);
 			}

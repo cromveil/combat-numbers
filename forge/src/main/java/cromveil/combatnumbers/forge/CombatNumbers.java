@@ -1,4 +1,4 @@
-package cromveil.combatnumbers;
+package cromveil.combatnumbers.forge;
 
 import java.util.function.Supplier;
 
@@ -10,7 +10,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.IEventBus;
 
 import cromveil.combatnumbers.animation.AnimationRegistry;
 import cromveil.combatnumbers.config.Configs;
@@ -36,14 +36,14 @@ import cromveil.combatnumbers.modules.server.SyncToClientModule;
 public class CombatNumbers {
 
 	public CombatNumbers(FMLJavaModLoadingContext context) {
-		BusGroup modBusGroup = context.getModBusGroup();
+		IEventBus modEventBus = context.getModEventBus();
 		ModContainer container = context.getContainer();
 
 		var network = new ForgeNetwork();
 		var lifecycle = new ForgeServerLifecycle();
-		var reloadRegistry = new ForgeReloadRegistry();
+		var reloadRegistry = new ForgeReloadRegistry(modEventBus);
 
-		var commonConfig = ConfigFiles.of(modBusGroup, container, ModConfig.Type.COMMON, Configs.COMMON);
+		var commonConfig = ConfigFiles.of(modEventBus, container, ModConfig.Type.COMMON, Configs.COMMON);
 		var animationRegistry = new AnimationRegistry();
 		var skinRegistry = new SkinRegistry();
 		var ruleEngine = new RuleEngine<ServerLevel>();
@@ -64,7 +64,7 @@ public class CombatNumbers {
 		);
 
 		if (FMLEnvironment.dist == Dist.CLIENT) {
-			CombatNumbersClient.setup(modBusGroup, container, network, commonConfig);
+			CombatNumbersClient.setup(modEventBus, container, network, commonConfig);
 		}
 	}
 }

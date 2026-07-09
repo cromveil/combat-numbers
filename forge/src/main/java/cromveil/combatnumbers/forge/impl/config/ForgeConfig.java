@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import cromveil.combatnumbers.core.config.ConfigDef;
@@ -23,7 +23,7 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 	private final List<Runnable> changeListeners = new ArrayList<>();
 	private final List<DeferredKeyListener> pendingKeyListeners = new ArrayList<>();
 	private Map<String, Object> previousValues;
-	private BusGroup modBusGroup;
+	private IEventBus eventBus;
 
 	public ForgeConfig(List<ConfigDef<?>> defs) {
 		this.spec = buildSpec(defs, values);
@@ -114,8 +114,8 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 		}
 	}
 
-	public void init(BusGroup modBusGroup) {
-		this.modBusGroup = modBusGroup;
+	public void init(IEventBus modEventBus) {
+		this.eventBus = modEventBus;
 		previousValues = snapshotValues();
 		for (Runnable listener : changeListeners) {
 			registerReloadListener(listener);
@@ -129,7 +129,7 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 
 	@Override
 	public void onChanged(Runnable listener) {
-		if (modBusGroup != null) {
+		if (eventBus != null) {
 			registerReloadListener(listener);
 		} else {
 			changeListeners.add(listener);
@@ -138,7 +138,7 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 
 	@Override
 	public <T> void onChanged(ConfigDef<T> key, Runnable listener) {
-		if (modBusGroup != null) {
+		if (eventBus != null) {
 			registerKeyReloadListener(key.key(), listener);
 		} else {
 			pendingKeyListeners.add(new DeferredKeyListener(key.key(), listener));
@@ -146,8 +146,7 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 	}
 
 	private void registerReloadListener(Runnable listener) {
-		var bus = ModConfigEvent.Reloading.getBus(modBusGroup);
-		bus.addListener(event -> {
+		eventBus.addListener((ModConfigEvent.Reloading event) -> {
 			if (event.getConfig().getSpec() == spec) {
 				listener.run();
 			}
@@ -155,8 +154,7 @@ public final class ForgeConfig implements IConfigState, IConfigWriter {
 	}
 
 	private void registerKeyReloadListener(String key, Runnable listener) {
-		var bus = ModConfigEvent.Reloading.getBus(modBusGroup);
-		bus.addListener(event -> {
+		eventBus.addListener((ModConfigEvent.Reloading event) -> {
 			if (event.getConfig().getSpec() == spec) {
 				ConfigValue<?> cv = values.get(key);
 				Object newVal = cv != null ? cv.get() : null;

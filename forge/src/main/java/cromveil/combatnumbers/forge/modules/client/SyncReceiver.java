@@ -3,6 +3,7 @@ package cromveil.combatnumbers.forge.modules.client;
 import java.util.Map;
 
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
@@ -45,7 +46,7 @@ public final class SyncReceiver implements IClientSetup {
 
 	@Override
 	public void register() {
-		ClientPlayerNetworkEvent.LoggingOut.BUS.addListener(e -> {
+		MinecraftForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> {
 			animationResolver.clearServer();
 			skinResolver.clearServer();
 			styleTable = StyleTable.EMPTY;

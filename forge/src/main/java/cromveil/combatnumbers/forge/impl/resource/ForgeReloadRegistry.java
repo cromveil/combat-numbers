@@ -5,10 +5,11 @@ import java.util.List;
 
 import com.mojang.serialization.Codec;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 
-import cromveil.combatnumbers.StableIdMapper;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.resource.IReloadListenerRegistry;
 import cromveil.combatnumbers.resource.IResourceLoadCallback;
@@ -23,13 +24,13 @@ public class ForgeReloadRegistry implements IReloadListenerRegistry {
 			Codec<?> codec, IResourceLoadCallback<?> consumer) {
 	}
 
-	public ForgeReloadRegistry() {
-		AddReloadListenerEvent.BUS.addListener(e -> {
+	public ForgeReloadRegistry(IEventBus modEventBus) {
+		MinecraftForge.EVENT_BUS.addListener((AddReloadListenerEvent e) -> {
 			for (var entry : serverEntries) {
 				addServerListener(e, entry);
 			}
 		});
-		RegisterClientReloadListenersEvent.BUS.addListener(e -> {
+		modEventBus.addListener((RegisterClientReloadListenersEvent e) -> {
 			for (var entry : clientEntries) {
 				addClientListener(e, entry);
 			}
