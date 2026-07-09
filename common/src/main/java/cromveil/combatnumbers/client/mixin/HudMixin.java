@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Gui.class)
 public abstract class HudMixin {
 
-	@Inject(method = "render", at = @At("TAIL"))
+	@Inject(method = "render", at = @At("HEAD"))
 	private void combatnumbers$renderFloatingTextHud(
 			GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		RenderContext ctx = MixinBridge.CONTEXT;
