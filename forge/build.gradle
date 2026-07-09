@@ -22,6 +22,18 @@ base {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+tasks.named('jar', Jar) {
+    manifest {
+        attributes 'MixinConfigs': 'combatnumbers.mixins.json,combatnumbers.client.mixins.json,combatnumbers.forge.mixins.json'
+    }
+}
+
+tasks.named('jarJar', Jar) {
+    manifest {
+        attributes 'MixinConfigs': 'combatnumbers.mixins.json,combatnumbers.client.mixins.json,combatnumbers.forge.mixins.json'
+    }
+}
+
 minecraft {
     mappings channel: 'official', version: minecraft_version
 

@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+MixinConfigs: combatnumbers.mixins.json,combatnumbers.client.mixins.json,combatnumbers.forge.mixins.json
