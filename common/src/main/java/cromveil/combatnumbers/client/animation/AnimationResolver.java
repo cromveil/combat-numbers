@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.client.animation;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.animation.Timeline;
 import cromveil.combatnumbers.core.resolver.LayeredResolver;
@@ -18,7 +19,13 @@ public final class AnimationResolver {
 
 	public Timeline resolve(StableId id) {
 		Timeline timeline = resolver.resolve(id);
-		return timeline != null ? timeline : Timeline.DEFAULT;
+		if (timeline != null) {
+			return timeline;
+		}
+		StableId defaultId = new StableId(
+				id != null ? id.namespace() : Constants.MOD_ID, "default");
+		Timeline defaultTimeline = resolver.resolve(defaultId);
+		return defaultTimeline != null ? defaultTimeline : Timeline.DEFAULT;
 	}
 
 	public void setServer(Map<StableId, Timeline> animations) {

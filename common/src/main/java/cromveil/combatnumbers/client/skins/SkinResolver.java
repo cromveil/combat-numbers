@@ -1,5 +1,6 @@
 package cromveil.combatnumbers.client.skins;
 
+import cromveil.combatnumbers.core.Constants;
 import cromveil.combatnumbers.core.StableId;
 import cromveil.combatnumbers.core.resolver.LayeredResolver;
 import cromveil.combatnumbers.skins.SkinDefinition;
@@ -23,7 +24,13 @@ public final class SkinResolver {
 
 	public ISkin resolve(StableId id) {
 		ISkin skin = resolver.resolve(id);
-		return skin != null ? skin : DEFAULT;
+		if (skin != null) {
+			return skin;
+		}
+		StableId defaultId = new StableId(
+				id != null ? id.namespace() : Constants.MOD_ID, "default");
+		ISkin defaultSkin = resolver.resolve(defaultId);
+		return defaultSkin != null ? defaultSkin : DEFAULT;
 	}
 
 	public void setServerSkinDefs(Map<StableId, SkinDefinition> defs) {
