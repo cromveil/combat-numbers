@@ -10,6 +10,8 @@
   "config.combatnumbers.option.renderMode.tooltip": "Changes how the floating text is rendered.",
   "config.combatnumbers.option.baseFontSize": "Font Size",
   "config.combatnumbers.option.baseFontSize.tooltip": "How large the text is. This is also affected by your GUI scale setting.",
+  "config.combatnumbers.option.showThroughWalls": "Show Through Walls",
+  "config.combatnumbers.option.showThroughWalls.tooltip": "When enabled, floating text renders through walls. May get noisy near mob farms.",
   "config.combatnumbers.option.nearFadeDistance": "Near Fade Distance",
   "config.combatnumbers.option.nearFadeDistance.tooltip": "Text will begin fading out from this distance (in blocks) as you get nearer.",
   "config.combatnumbers.option.maxRenderDistance": "Max Render Distance",

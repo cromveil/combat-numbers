@@ -59,13 +59,15 @@ public final class FloatingTextFactory {
 		Vec3 camPos = mc.gameRenderer.mainCamera().position();
 		Vec3 worldPos = livingEntity.getEyePosition();
 
-		var clipCtx = new ClipContext(
-				camPos, worldPos,
-				ClipContext.Block.COLLIDER,
-				ClipContext.Fluid.NONE,
-				mc.player);
-		if (level.clip(clipCtx).getType() == HitResult.Type.BLOCK) {
-			return;
+		if (!config.get(Configs.SHOW_THROUGH_WALLS)) {
+			var clipCtx = new ClipContext(
+					camPos, worldPos,
+					ClipContext.Block.COLLIDER,
+					ClipContext.Fluid.NONE,
+					mc.player);
+			if (level.clip(clipCtx).getType() == HitResult.Type.BLOCK) {
+				return;
+			}
 		}
 
 		StyleTable table = styleTable.get();

@@ -40,6 +40,9 @@ public final class Configs {
 			ConfigDef.doubleRange(ConfigDef.Category.CLIENT, "distanceFalloffEnd", 32.0,
 					0.0, 256.0, 0);
 
+	public static final ConfigDef<Boolean> SHOW_THROUGH_WALLS =
+			ConfigDef.bool(ConfigDef.Category.CLIENT, "showThroughWalls", false);
+
 	public static final ConfigDef<Double> DISTANCE_MIN_SCALE =
 			ConfigDef.doubleRange(ConfigDef.Category.CLIENT, "distanceMinScale", 0.3,
 					0.0, 1.0, 2);
@@ -51,6 +54,7 @@ public final class Configs {
 	public static final List<ConfigDef<?>> CLIENT = List.of(
 			CLIENT_THEME, RENDER_MODE,
 			BASE_FONT_SIZE, NEAR_FADE_DISTANCE,
+			SHOW_THROUGH_WALLS,
 			DISTANCE_FALLOFF_START, DISTANCE_FALLOFF_END, DISTANCE_MIN_SCALE
 	);
 }
