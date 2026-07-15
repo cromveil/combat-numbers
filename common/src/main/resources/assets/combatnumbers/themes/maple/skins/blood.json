@@ -1,0 +1,13 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:blood_1002_31x41",
+    "columns": 10,
+    "cell_width": 31,
+    "cell_height": 41,
+    "char_order": "0123456789",
+    "letter_spacing": -4.0,
+    "scale": 0.3,
+    "advances": { "1": 0.8 }
+  }
+}

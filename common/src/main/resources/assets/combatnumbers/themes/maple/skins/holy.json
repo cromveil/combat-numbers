@@ -1,0 +1,13 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:holy_138_57x81",
+    "columns": 10,
+    "cell_width": 57,
+    "cell_height": 81,
+    "char_order": "0123456789",
+    "letter_spacing": -21.0,
+    "scale": 0.24,
+    "advances": { "1": 0.78 }
+  }
+}
