@@ -19,6 +19,7 @@
 		{ "when": { "type": "minecraft:wither" },                 "then": { "skin": "combatnumbers:wither", "animation": "combatnumbers:tick" } },
 		{ "when": { "type": "minecraft:freeze" },                 "then": { "animation": "combatnumbers:tick" } },
 		{ "when": { "type": "minecraft:on_fire" },                "then": { "animation": "combatnumbers:tick" } },
+		{ "when": { "type": "minecraft:sonic_boom" },             "then": { "skin": "combatnumbers:deep" } },
 
 		{ "when": { "flags": ["combatnumbers:poison_tick"] },     "then": { "skin": "combatnumbers:nature", "animation": "combatnumbers:tick" } },
 		{ "when": { "flags": ["combatnumbers:crit"] },            "then": { "skin": "combatnumbers:physical_crit", "animation": "combatnumbers:wave" } }

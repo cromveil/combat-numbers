@@ -1,0 +1,13 @@
+{
+  "type": "sprite",
+  "settings": {
+    "texture": "combatnumbers:deep_1345_35x42",
+    "columns": 10,
+    "cell_width": 35,
+    "cell_height": 42,
+    "char_order": "0123456789",
+    "letter_spacing": -10.0,
+    "scale": 0.31,
+    "advances": { "1": 0.78 }
+  }
+}
