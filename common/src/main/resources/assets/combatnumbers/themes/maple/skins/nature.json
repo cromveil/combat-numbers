@@ -1,13 +1,13 @@
 {
   "type": "sprite",
   "settings": {
-    "texture": "combatnumbers:nature_1025_30x34",
+    "texture": "combatnumbers:nature_39_44x72",
     "columns": 10,
-    "cell_width": 30,
-    "cell_height": 34,
+    "cell_width": 44,
+    "cell_height": 72,
     "char_order": "0123456789",
-    "letter_spacing": -5.0,
-    "scale": 0.35,
+    "letter_spacing": -11.0,
+    "scale": 0.23,
     "advances": { "1": 0.8 }
   }
 }

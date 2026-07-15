@@ -1,13 +1,13 @@
 {
   "type": "sprite",
   "settings": {
-    "texture": "combatnumbers:ice_1312_56x63",
+    "texture": "combatnumbers:ice_1019_32x39",
     "columns": 10,
-    "cell_width": 56,
-    "cell_height": 63,
+    "cell_width": 32,
+    "cell_height": 39,
     "char_order": "0123456789",
-    "letter_spacing": -20.0,
-    "scale": 0.25,
-    "advances": { "1": 0.7 }
+    "letter_spacing": -5.0,
+    "scale": 0.3,
+    "advances": { "1": 0.9 }
   }
 }
