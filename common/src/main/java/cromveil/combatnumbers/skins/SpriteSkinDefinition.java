@@ -19,7 +19,9 @@ public record SpriteSkinDefinition(
 	float letterSpacing,
 	Map<String, Float> advances,
 	boolean colored,
-	float scale
+	float scale,
+	float xOffset,
+	float yOffset
 ) implements SkinDefinition {
 	public SpriteSkinDefinition {
 		if (cellHeight < 0) cellHeight = cellWidth;
@@ -36,9 +38,11 @@ public record SpriteSkinDefinition(
 			Codec.FLOAT.optionalFieldOf("letter_spacing", 0.0f).forGetter(SpriteSkinDefinition::letterSpacing),
 			Codec.unboundedMap(Codec.STRING, Codec.FLOAT).optionalFieldOf("advances", Map.of()).forGetter(SpriteSkinDefinition::advances),
 			Codec.BOOL.optionalFieldOf("colored", true).forGetter(SpriteSkinDefinition::colored),
-			Codec.FLOAT.optionalFieldOf("scale", 1.0f).forGetter(SpriteSkinDefinition::scale)
-		).apply(instance, (texture, columns, cellWidth, cellHeight, charOrder, fillColor, spacing, advances, colored, scale) ->
-			new SpriteSkinDefinition(texture, columns, cellWidth, cellHeight, charOrder, fillColor.orElse(null), spacing, advances, colored, scale)
+			Codec.FLOAT.optionalFieldOf("scale", 1.0f).forGetter(SpriteSkinDefinition::scale),
+			Codec.FLOAT.optionalFieldOf("x_offset", 0.0f).forGetter(SpriteSkinDefinition::xOffset),
+			Codec.FLOAT.optionalFieldOf("y_offset", 0.0f).forGetter(SpriteSkinDefinition::yOffset)
+		).apply(instance, (texture, columns, cellWidth, cellHeight, charOrder, fillColor, spacing, advances, colored, scale, xOffset, yOffset) ->
+			new SpriteSkinDefinition(texture, columns, cellWidth, cellHeight, charOrder, fillColor.orElse(null), spacing, advances, colored, scale, xOffset, yOffset)
 		)
 	);
 

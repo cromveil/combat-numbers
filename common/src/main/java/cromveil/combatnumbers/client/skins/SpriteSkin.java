@@ -5,9 +5,9 @@ import cromveil.combatnumbers.core.Constants;
 import org.jspecify.annotations.Nullable;
 
 public record SpriteSkin(SpriteSheet sheet, @Nullable Integer fillColor, float letterSpacing, boolean colored,
-		float scale) implements ISkin {
+		float xOffset, float yOffset, float scale) implements ISkin {
 	public SpriteSkin(SpriteSheet sheet, @Nullable Integer fillColor, float letterSpacing, boolean colored) {
-		this(sheet, fillColor, letterSpacing, colored, 1.0f);
+		this(sheet, fillColor, letterSpacing, colored, 0.0f, 0.0f, 1.0f);
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public record SpriteSkin(SpriteSheet sheet, @Nullable Integer fillColor, float l
 		} else {
 			color = 0xFFFFFFFF;
 		}
-		return new SpriteSkinRenderer(sheet, text, color, letterSpacing);
+		return new SpriteSkinRenderer(sheet, text, color, letterSpacing, xOffset, yOffset);
 	}
 
 	@Override

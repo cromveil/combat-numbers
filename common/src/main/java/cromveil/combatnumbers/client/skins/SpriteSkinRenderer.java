@@ -14,6 +14,8 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 	private final String text;
 	private final int fillColor;
 	private final float letterSpacing;
+	private final float xOffset;
+	private final float yOffset;
 	private final float totalWidth;
 	private final float charHeight;
 	private final CharInfo[] charInfos;
@@ -21,11 +23,14 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 	private record CharInfo(float x, float minU, float maxU, float minV, float maxV, float quadWidth) {
 	}
 
-	public SpriteSkinRenderer(SpriteSheet spriteSheet, String text, int fillColor, float letterSpacing) {
+	public SpriteSkinRenderer(SpriteSheet spriteSheet, String text, int fillColor, float letterSpacing,
+			float xOffset, float yOffset) {
 		this.spriteSheet = spriteSheet;
 		this.text = text;
 		this.fillColor = fillColor;
 		this.letterSpacing = letterSpacing;
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
 		this.charHeight = spriteSheet.cellHeight();
 		this.charInfos = buildCharInfos();
 		this.totalWidth = computeTotalWidth();
@@ -73,13 +78,13 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
-		float startX = -totalWidth / 2f;
+		float startX = -totalWidth / 2f + xOffset;
 
 		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
-			renderChars(vertexConsumer, matrix, startX, 0f, color, light);
+			renderChars(vertexConsumer, matrix, startX, yOffset, color, light);
 		});
 	}
 
@@ -122,13 +127,13 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 		int a = (int) (alpha * 255f);
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
 
-		float startX = -totalWidth / 2f;
+		float startX = -totalWidth / 2f + xOffset;
 
 		var renderType = RenderTypes.textSeeThrough(StableIdMapper.to(spriteSheet.textureId()));
 
 		geom.submitGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
 			Matrix4fc matrix = pose.pose();
-			renderChar(vertexConsumer, matrix, index, startX, 0f, color, light);
+			renderChar(vertexConsumer, matrix, index, startX, yOffset, color, light);
 		});
 	}
 
@@ -138,7 +143,7 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 		if (a <= 0)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(ctx, -totalWidth / 2f, color, 0, text.length());
+		blitChars(ctx, -totalWidth / 2f + xOffset, color, 0, text.length());
 	}
 
 	@Override
@@ -147,7 +152,7 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 		if (a <= 0 || index < 0 || index >= charInfos.length)
 			return;
 		int color = (a << 24) | (fillColor & 0x00FFFFFF);
-		blitChars(ctx, -totalWidth / 2f, color, index, index + 1);
+		blitChars(ctx, -totalWidth / 2f + xOffset, color, index, index + 1);
 	}
 
 	private void blitChars(IHudRenderContext ctx, float startX, int color, int from, int to) {
@@ -160,7 +165,7 @@ public class SpriteSkinRenderer implements ISkinRenderer {
 			int x = Math.round(startX + info.x);
 			int width = Math.round(info.quadWidth);
 			int height = Math.round(charHeight);
-			int y = -(height / 2);
+			int y = Math.round(-(height / 2) + yOffset);
 			float u = info.minU * texWidth;
 			float v = info.minV * texHeight;
 			ctx.blitSprite(spriteSheet.textureId(),

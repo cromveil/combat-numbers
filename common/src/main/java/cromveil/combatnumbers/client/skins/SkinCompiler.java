@@ -49,6 +49,6 @@ public final class SkinCompiler {
 
 		SpriteSheet sheet = SpriteSheet.create(
 				renderId, s.columns(), s.cellWidth(), s.cellHeight(), s.charOrder(), charAdvances);
-		return new SpriteSkin(sheet, s.fillColor(), s.letterSpacing(), s.colored(), s.scale());
+		return new SpriteSkin(sheet, s.fillColor(), s.letterSpacing(), s.colored(), s.xOffset(), s.yOffset(), s.scale());
 	}
 }
