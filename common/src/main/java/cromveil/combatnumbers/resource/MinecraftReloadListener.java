@@ -12,11 +12,11 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-class MinecraftReloadListener<T> extends SimpleJsonResourceReloadListener<T> {
+public class MinecraftReloadListener<T> extends SimpleJsonResourceReloadListener<T> {
 
 	private final IResourceLoadCallback<T> consumer;
 
-	MinecraftReloadListener(Codec<T> codec, String directory, IResourceLoadCallback<T> consumer) {
+	public MinecraftReloadListener(Codec<T> codec, String directory, IResourceLoadCallback<T> consumer) {
 		super(codec, FileToIdConverter.json(directory));
 		this.consumer = consumer;
 	}

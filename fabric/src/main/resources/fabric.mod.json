@@ -17,16 +17,16 @@
     "environment": "*",
     "entrypoints": {
 		"main": [
-			"cromveil.combatnumbers.CombatNumbers"
+			"cromveil.combatnumbers.fabric.CombatNumbers"
 		],
 		"client": [
-			"cromveil.combatnumbers.CombatNumbersClient"
+			"cromveil.combatnumbers.fabric.CombatNumbersClient"
 		],
 		"modmenu": [
-			"cromveil.combatnumbers.CombatNumbersModMenu"
+			"cromveil.combatnumbers.fabric.CombatNumbersModMenu"
 		],
 		"fabric-gametest": [
-			"cromveil.combatnumbers.gametest.CombatNumbersGameTest"
+			"cromveil.combatnumbers.fabric.gametest.CombatNumbersGameTest"
 		]
     },
     "mixins": [
