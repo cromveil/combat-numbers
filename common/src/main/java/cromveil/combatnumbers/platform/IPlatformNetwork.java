@@ -11,4 +11,7 @@ public interface IPlatformNetwork {
 	}
 
 	void sendToPlayer(ServerPlayer player, CustomPacketPayload packet);
+
+	default void sendToServer(CustomPacketPayload packet) {
+	}
 }

@@ -26,4 +26,9 @@ public class ForgeNetwork implements IPlatformNetwork {
 	public void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {
 		channel.send(packet, PacketDistributor.PLAYER.with(player));
 	}
+
+	@Override
+	public void sendToServer(CustomPacketPayload packet) {
+		channel.send(packet, PacketDistributor.SERVER.noArg());
+	}
 }

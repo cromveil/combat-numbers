@@ -1,17 +1,20 @@
 package cromveil.combatnumbers.neoforge;
 
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import cromveil.combatnumbers.StableIdMapper;
+import cromveil.combatnumbers.client.ClientStatsCache;
 import cromveil.combatnumbers.client.FloatingTextFactory;
+import cromveil.combatnumbers.client.StatsScreen;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.core.styles.StyleTable;
 import cromveil.combatnumbers.packets.RenderPacket;
+import cromveil.combatnumbers.packets.StatsResponsePacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
 import cromveil.combatnumbers.packets.SyncStyleTablePacket;
+import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ClientPayloadHandlers {
 
@@ -49,6 +52,17 @@ public class ClientPayloadHandlers {
 		context.enqueueWork(() -> floatingTextFactory.onRenderPacket(
 				payload.entityId(), payload.value(),
 				payload.skinIndex(), payload.animationIndex()));
+	}
+
+	static void onStatsResponse(StatsResponsePacket payload, IPayloadContext context) {
+		context.enqueueWork(() -> {
+			ClientStatsCache.current = payload;
+			Minecraft mc = Minecraft.getInstance();
+			if (mc.screen instanceof StatsScreen s)
+				s.refreshFromCache();
+			else
+				mc.setScreen(new StatsScreen());
+		});
 	}
 
 	public static StyleTable styleTable() {

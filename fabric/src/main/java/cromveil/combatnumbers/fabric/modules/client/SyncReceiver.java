@@ -2,12 +2,14 @@ package cromveil.combatnumbers.fabric.modules.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-
 import cromveil.combatnumbers.StableIdMapper;
+import cromveil.combatnumbers.client.ClientStatsCache;
+import cromveil.combatnumbers.client.StatsScreen;
 import cromveil.combatnumbers.client.animation.AnimationResolver;
 import cromveil.combatnumbers.client.skins.SkinResolver;
 import cromveil.combatnumbers.core.IClientSetup;
 import cromveil.combatnumbers.core.styles.StyleTable;
+import cromveil.combatnumbers.packets.StatsResponsePacket;
 import cromveil.combatnumbers.packets.SyncAnimationDataPacket;
 import cromveil.combatnumbers.packets.SyncSkinDataPacket;
 import cromveil.combatnumbers.packets.SyncSpriteTexturePacket;
@@ -44,6 +46,17 @@ public final class SyncReceiver implements IClientSetup {
 			ClientPlayNetworking.registerReceiver(SyncSpriteTexturePacket.TYPE,
 					(packet, context) -> context.client().execute(
 							() -> skinResolver.setServerTextureBytes(packet.textures())));
+
+			ClientPlayNetworking.registerReceiver(StatsResponsePacket.TYPE,
+					(packet, context) -> context.client().execute(
+							() -> {
+								ClientStatsCache.current = packet;
+								StatsScreen screen = new StatsScreen();
+								if (context.client().screen instanceof StatsScreen s)
+									s.refreshFromCache();
+								else
+									context.client().setScreen(screen);
+							}));
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {

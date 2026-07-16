@@ -5,6 +5,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import cromveil.combatnumbers.platform.IPlatformNetwork;
 
@@ -24,5 +25,10 @@ public class NeoForgeNetwork implements IPlatformNetwork {
 	@Override
 	public void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {
 		player.connection.send(packet);
+	}
+
+	@Override
+	public void sendToServer(CustomPacketPayload packet) {
+		PacketDistributor.sendToServer(packet);
 	}
 }
