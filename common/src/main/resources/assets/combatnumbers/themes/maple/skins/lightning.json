@@ -2,12 +2,14 @@
   "type": "sprite",
   "settings": {
     "texture": "combatnumbers:lightning_119_40x44",
+    "char_order": "0123456789",
     "columns": 10,
     "cell_width": 40,
     "cell_height": 44,
-    "char_order": "0123456789",
     "letter_spacing": -14.0,
-    "scale": 0.3,
+    "x_offset": 0,
+    "y_offset": -3,
+    "scale": 0.285,
     "advances": { "1": 0.75 }
   }
 }

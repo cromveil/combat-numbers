@@ -2,12 +2,15 @@
   "type": "sprite",
   "settings": {
     "texture": "combatnumbers:wither_85_57x67",
+    "char_order": "0123456789",
     "columns": 10,
     "cell_width": 57,
     "cell_height": 67,
-    "char_order": "0123456789",
-    "letter_spacing": -5.0,
-    "scale": 0.25,
-    "advances": { "1": 0.75 }
+    "letter_spacing": -13.0,
+    "scale": 0.17,
+    "y_offset": -2.0,
+    "advances": {
+      "1": 0.75
+    }
   }
 }
