@@ -1,0 +1,32 @@
+[
+  {
+    "start": 0,
+    "duration": 0,
+    "channels": {
+      "x": { "type": "random", "min": -12, "max": 12 },
+      "y": { "type": "random", "min": -4, "max": 4 }
+    }
+  },
+  {
+    "start": 0,
+    "duration": 120,
+    "channels": {
+      "scale": { "type": "keyframe", "values": [2, 0.8], "easing": "ease_in_sine" },
+      "opacity": { "type": "keyframe", "values": [0.2, 1], "easing": "ease_out" }
+    }
+  },
+  {
+    "start": 400,
+    "duration": 600,
+    "channels": {
+      "y": { "type": "tween", "to": 10, "compose": "add", "easing": "linear" }
+    }
+  },
+  {
+    "start": 700,
+    "duration": 300,
+    "channels": {
+      "opacity": { "type": "keyframe", "values": [1, 0], "easing": "ease_out_circ" }
+    }
+  }
+]

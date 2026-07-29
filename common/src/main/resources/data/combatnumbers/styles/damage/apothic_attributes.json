@@ -1,0 +1,6 @@
+{
+	"rules": [
+		{ "when": { "type": "apothic_attributes:cold_damage" },	"then": { "skin": "combatnumbers:ice", "animation": "combatnumbers:impact_small" } },
+		{ "when": { "type": "apothic_attributes:fire_damage" },	"then": { "skin": "combatnumbers:fire", "animation": "combatnumbers:impact_small" } }
+	]
+}
