@@ -1,0 +1,17 @@
+{
+    "rules": [
+        { "when": { "type": "irons_spellbooks:poison_cloud" },			"then": { "skin": "combatnumbers:nature", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:nature_magic" },			"then": { "skin": "combatnumbers:nature", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:lightning_magic" },		"then": { "skin": "combatnumbers:lightning", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:ice_magic" },				"then": { "skin": "combatnumbers:ice", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:holy_magic" },			"then": { "skin": "combatnumbers:holy", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:heartstop" },				"then": { "skin": "combatnumbers:blood", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:fire_field" },			"then": { "skin": "combatnumbers:fire", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:evocation_magic" },		"then": { "skin": "combatnumbers:physical", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:eldritch_magic" },		"then": { "skin": "combatnumbers:deep", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:blood_magic" },			"then": { "skin": "combatnumbers:blood", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:fire_magic" },			"then": { "skin": "combatnumbers:fire", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:ender_magic" },			"then": { "skin": "combatnumbers:magic", "animation": "combatnumbers:impact" } },
+		{ "when": { "type": "irons_spellbooks:dragon_breath_pool" },	"then": { "skin": "combatnumbers:magic", "animation": "combatnumbers:impact" } }
+    ]
+}
